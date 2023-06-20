@@ -89,7 +89,7 @@ window.addEventListener('load', async function(){
       $('#firebaseui-auth-container').classList.remove('hidden');
       mainDiv.classList.add('hidden');
       $('#user').classList.add('hidden');
-      ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
+      let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
       ui.start('#firebaseui-auth-container', {
         signInOptions: [
           firebase.auth.GoogleAuthProvider.PROVIDER_ID
