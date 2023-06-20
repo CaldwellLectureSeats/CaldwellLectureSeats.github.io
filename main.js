@@ -504,12 +504,13 @@ nameInput.addEventListener('input',e=>{
 });
 
 
-////////////// Dark Mode functionality /////////////
+////////////// Accessibility Preferences /////////////
 
+// dark mode
 const themeToggle = $('#theme-switch');
-themeToggle.addEventListener('click',e=>{
+function toggleTheme(){
   setTheme(themeToggle.innerText.startsWith('dark'));
-})
+}
 function setTheme(dark){
   if(dark){
     localStorage.theme='dark';
@@ -522,3 +523,13 @@ function setTheme(dark){
   }
 }
 setTheme(localStorage.theme);
+
+// font size
+function changeFontSize(i){
+  let newSize=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-font-size'))+i+'pt';
+  localStorage.fontSize=newSize;
+  document.documentElement.style.setProperty('--main-font-size',newSize);
+}
+if(localStorage.fontSize){
+  document.documentElement.style.setProperty('--main-font-size',localStorage.fontSize);
+}

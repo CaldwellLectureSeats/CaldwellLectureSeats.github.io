@@ -70,7 +70,6 @@
     </div>
 
     <div id="profile">
-      Welcome!
       <div>
         <div id="email"></div>
         Preferred Name:
@@ -151,7 +150,11 @@
       <div id="QRreaderVideo"></div>
     </div>
   </div>
-  <i class="material-icons" id="theme-switch">light_mode</i>
+  <div id="accessibility">
+    <i class="material-icons" onclick="changeFontSize(1)">text_increase</i>
+    <i class="material-icons" onclick="changeFontSize(-1)">text_decrease</i>
+    <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()">light_mode</i>
+  </div>
 </body>
 <script src="main.js"></script>
 </html>

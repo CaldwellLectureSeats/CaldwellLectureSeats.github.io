@@ -26,6 +26,10 @@
 
 /* ------------- general styling -------------------------- */
 
+:root {
+  --main-font-size: 14pt;
+}
+
 * {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-size: 98%;
@@ -86,7 +90,7 @@ a {
 
 #main {
   padding:0.75em;
-  font-size: 14pt;
+  font-size: var(--main-font-size);
   width: fit-content;
   flex: 1;
   /* min-width: 350px; */
@@ -107,7 +111,6 @@ button {
   border-radius: 5px;
   border: none;
   padding: 0.5em 1em;
-  /* font-size: 18px; */
 }
 button:hover {
   background-color: var(--hover-color);
@@ -178,16 +181,18 @@ button.big {
   background-color: #ddd;
   border-radius: 5px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  width: fit-content;
+  /* width: fit-content; */
   color: #333;
   padding: 1em;
-  font-size: 10pt;
   text-align: center;
-  flex-basis: 133px;
+  flex-basis: 150px;
   /* flex: 1 1 0px; */
 }
+.sectionCard>div {
+  font-size: 70%;
+}
 .sectionCard>div:first-child {
-  font-size: 11pt;
+  font-size: 90%;
 }
 .sectionCard:hover {
   background-color: var(--hover-color);
@@ -205,4 +210,4 @@ button.big {
   padding:0.5em;
 } */
 
-#theme-switch {position:fixed;bottom:2px;right:2px;}
+#accessibility {position:fixed;bottom:2px;right:2px;display:flex;flex-direction:column;gap:1em;}
