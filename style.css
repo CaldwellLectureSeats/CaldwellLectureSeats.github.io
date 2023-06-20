@@ -1,0 +1,208 @@
+
+
+/* ----------------- colors -------------------------- */
+
+:root {
+  --background-color: #f8f8f8;
+  --font-color: black;
+  --button-color: #dde;
+  --hover-color: #cab;
+  --active-color: #cbc;
+}
+
+:root[theme='dark'] {
+  --background-color: #222;
+  --font-color: #ccc;
+  --button-color: #bac;
+  --hover-color: #cbd;
+  --active-color: #cbc;
+}
+
+.themeColor {
+  color:#A27;
+}
+
+
+
+/* ------------- general styling -------------------------- */
+
+* {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 98%;
+  position: relative;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--font-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.hidden {display: none !important;}
+
+.material-icons {
+  font-size: inherit;
+  vertical-align: bottom;
+}
+
+
+/* ------------- header and title -------------------------- */
+
+#header {
+  display:grid;
+  grid-template-columns: 66.667% 33.334%;	
+  box-shadow: 0 4px 2px -2px gray;
+}
+
+#title {
+  font-size: 18pt;font-weight: bold;
+}
+
+#user {
+  font-size: 15px;
+  text-align:right;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+#userPhoto {
+  height:20px;
+  border-radius: 50%;
+  vertical-align:bottom;
+  padding-right: 3px;
+}
+
+
+/* ------------- main -------------------------- */
+
+#main {
+  padding:1em;
+  font-size: 14pt;
+  width: fit-content;
+  flex: 1;
+  min-width: 350px;
+}
+#main > div {display:none;}
+#main > div:first-child {display:flex;flex-direction:column;gap:1em;height:100%}
+
+.flexcol {display:flex;flex-direction:column;gap:1em}
+.center {justify-content: center;}
+
+.separator {
+  border-bottom: dashed 1px gray;
+}
+
+button {
+  cursor: pointer;
+  background-color: var(--button-color);
+  border-radius: 5px;
+  border: none;
+  padding: 0.5em 1em;
+  /* font-size: 18px; */
+}
+button:hover {
+  background-color: var(--hover-color);
+}
+button:active {
+  background-color: var(--active-color);
+}
+button:disabled {
+  background-color: #999;
+}
+button.big {
+  min-width: 300px;
+}
+
+[onclick] {
+  cursor: pointer;
+}
+
+[contenteditable] {
+  background-color: #ccc;
+  color: black;
+  border: solid 1px gray;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+
+/* ------------- specific items -------------------------- */
+
+[name] {
+  margin-top: 1.5em;
+}
+[name]:before {
+  position:absolute;
+  bottom:calc(100% + 0.5em);
+  content:attr(name);
+}
+
+#instructors {
+  height: 5em;
+}
+
+#QRcode {
+  background-color: white;
+  padding: 1em;
+  position: fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+}
+#QRcode > img {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.sectionCards {
+  display: flex;
+  flex-direction: row;
+  flex-flow:row wrap; 
+  gap: 1em;
+}
+.sectionCard {
+  display: flex;
+  flex-direction: column;
+  background-color: #ddd;
+  border-radius: 5px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  width: fit-content;
+  color: #333;
+  padding: 1em;
+  font-size: 10pt;
+  text-align: center;
+  flex-basis: 133px;
+  /* flex: 1 1 0px; */
+}
+.sectionCard>div:first-child {
+  font-size: 11pt;
+}
+.sectionCard:hover {
+  background-color: var(--hover-color);
+  cursor: pointer;
+}
+
+/* #addIntructorSection {
+  position: absolute;
+  top: 0.5em;
+  bottom: 0.5em;
+  left: 0.5em;
+  width: fit-content;
+  background-color: var(--background-color);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  padding:0.5em;
+} */
+
+#theme-switch {position:fixed;bottom:2px;right:2px;}

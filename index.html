@@ -1,0 +1,156 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LectureSeats</title>
+  <link rel="icon" type="image/x-icon" href="/lecture-seats-256.png">
+  <!-- google drive -->
+  <script src="https://apis.google.com/js/client.js" async defer></script>
+  <!-- qr code generator amd scammer -->
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <!-- md5 -->
+  <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/build/md5.min.js"></script>
+  <!-- firebase init -->
+  <script src="firebase.mjs" type="module"></script>
+  <!-- login ui -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+  <!-- stylesheet and icons -->
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div id="header">
+    <a href="index.html" id="title">Lecture<span class="themeColor">Seats</span></a>
+    <span id="user" onclick="showInMain('profile')">
+      <img id="userPhoto">
+      <span id="userDisplayName"></span>
+    </span>
+  </div>
+  <div id="firebaseui-auth-container" class="hidden"></div>
+  <div id="main" class="hidden">
+
+    <div id="sections">
+      <select id="semesterSelect"><option disabled selected value>Select Semester</option></select>
+      <div id="instructorSections" class="sectionCards hidden" name="Sections I'm teaching">
+        <div id="addInstructorSectionBtn" class="sectionCard center"><i class="material-icons">add_circle</i></div>
+      </div>
+      <div id="studentSections" class="sectionCards" name="Sections I'm enrolled in">
+        <div id="addStudentSectionBtn" class="sectionCard center"><i class="material-icons">add_circle</i></div>
+      </div>
+    </div>
+
+    <div id="addInstructorSection">
+      <div class="menuTitle">Create New Section</div>
+      Semester:
+      <select id="sectionSemesterSelect"><option disabled selected value></option></select>
+      Section Id:
+      <input id="sectionIdInput" placeholder="e.g., CS-195-001">
+      Pattern (days/times):
+      <input id="sectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
+      Room:
+      <select id="sectionRoomSelect"><option disabled selected value></option></select>
+      Instructors:
+      <textarea id="sectionInstructorInput"></textarea>
+      <div>
+        <input type="checkbox" id="allowEnroll"><label for="allowEnroll">Allow students to self-enroll</label>
+      </div>
+      <button id="sectionSubmitBtn">Add Section</button>
+      <button onclick="hideInMain('addInstructorSection')">Cancel</button>
+    </div>
+
+    <div id="selectStudentSection">
+      <div class="menuTitle">Select section where you are a student</div>
+      <div id="availableStudentSections" class="sectionCards"></div>
+      <button onclick="hideInMain('selectStudentSection')">Cancel</button>
+    </div>
+
+    <div id="profile">
+      <div>
+        <div id="email"></div>
+        Preferred Name:
+        <input id="nameInput">
+        <button id="saveNameBtn" class="hidden">Save Name</button>
+      </div>
+      <button id="logoutBtn" class="big" onclick="auth.signOut()">Sign Out</button>
+      <div class="separator"></div>
+      <button id="sectionsBtn" class="big" onclick="showInMain('sections')">My Sections</button>
+      <div class="separator"></div>
+      <!-- for instructors and admins -->
+      <button id="allSectionsBtn" class="big hidden" onclick="showInMain('allSections')">All Sections</button>
+      <button id="roomsBtn" class="big hidden" onclick="showInMain('rooms')">Rooms</button>
+    </div>
+
+    <!-- for instructors and admins -->
+    <div id="rooms">
+      <div><button onclick="hideInMain('rooms')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+    </div>
+    <div id="allSections">
+      <div><button onclick="hideInMain('allSections')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+    </div>
+
+    <!-- for instructors -->
+    <div id="getAttendance">
+      <div><button onclick="hideInMain('getAttendance')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div id="getAttendanceSectionId"></div>
+      Attendance passcode:
+      <div>
+        <input id="getAttendanceClassCodeInput">
+        <i class="material-icons" onclick="randomAttendanceClassCodeClick()" id="randomAttendanceClassCodeBtn">autorenew</i>
+        <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
+      </div>
+      <div>
+        <input type="checkbox" id="getAttendanceSeatRequiredCheckbox">
+        <label for="getAttendanceSeatRequiredCheckbox">Seat code required</label>
+      </div>
+      <div>
+        <input type="checkbox" id="getAttendancePhotoRequiredCheckbox">
+        <label for="getAttendancePhotoRequiredCheckbox">Photo required</label>
+      </div>
+      <div>
+        <span id="collectingAttendance">Collect</span>
+        attendance for the next
+        <span id="minutesToCollectAttendance" contenteditable="true">75.0</span>
+        minutes
+      </div>
+      <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
+      <div class="separator"></div>
+      <div id="attendanceMarked"></div>
+    </div>
+    <div id="QRcode" onclick="hideInMain('QRcode')"></div>
+    <!-- <div id="room"></div>
+    <div id="attendanceRecord">
+      <div><button onclick="hideInMain('attendanceRecord')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+    </div> -->
+
+    <!-- for students -->
+    <div id="markAttendance">
+      <div><button onclick="hideInMain('markAttendance')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div id="markAttendanceSectionId"></div>
+      Attendance passcode:
+      <div>
+        <input type="password" id="markAttendanceClassCodeInput">
+        <i class="material-icons" onclick="markAttendanceQRcodeButtonClick()">qr_code_scanner</i>
+      </div>
+      Seat code:
+      <div>
+        <input id="markAttendanceSeatCodeInput">
+        <i class="material-icons" onclick="markAttendanceQRseatButtonClick()">qr_code_scanner</i>
+      </div>
+      Selfie:
+      <video id="video" width="300" autoplay></video>
+      <button id="markAttendanceButton">Mark Attendance</button>
+    </div>
+    <div id="QRreader">
+      <div><button onclick="hideInMain('QRreader')" id="QRReaderBackButton"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div id="QRreaderVideo"></div>
+    </div>
+  </div>
+  <i class="material-icons" id="theme-switch">light_mode</i>
+</body>
+<script src="main.js"></script>
+</html>
