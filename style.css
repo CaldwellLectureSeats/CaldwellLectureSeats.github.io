@@ -120,7 +120,7 @@ button:disabled {
   background-color: #999;
 }
 
-button, input {
+button, input, select {
   max-width: 300px;
 }
 
@@ -170,7 +170,7 @@ button, input {
 
 .sectionCards {
   display: grid;
-  grid-template-columns: repeat( auto-fill, minmax(150px, 1fr) );
+  grid-template-columns: repeat( auto-fill, minmax(9em, 1fr) );
   gap: 1em;
 }
 .sectionCard {
@@ -205,4 +205,15 @@ button, input {
   padding:0.5em;
 } */
 
-#accessibility {position:fixed;bottom:2px;right:2px;display:flex;flex-direction:column;gap:1em;}
+#accessibility {
+  position:fixed;
+  bottom:0px;
+  right:0px;
+  padding:2px;
+  display:flex;
+  flex-direction:column;
+  gap:1em;
+  background-color: var(--background-color);
+  border-radius: 5px;
+  opacity:0.5;
+}
