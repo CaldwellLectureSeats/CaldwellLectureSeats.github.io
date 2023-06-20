@@ -508,7 +508,7 @@ nameInput.addEventListener('input',e=>{
 
 // dark mode
 const themeToggle = $('#theme-switch');
-function toggleTheme(){
+function toggleDarkMode(){
   setTheme(themeToggle.innerText.startsWith('dark'));
 }
 function setTheme(dark){
