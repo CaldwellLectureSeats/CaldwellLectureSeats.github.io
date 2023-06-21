@@ -171,11 +171,11 @@ async function getSections(semester){
       allSections[semester]={a:[]};
     }
   }
-  return allSections[semester].a;
+  return allSections[semester];
 }
 
 async function getSection(semester,sectionId){
-  return (await getSections(semester)).filter(s=>s.id===sectionId)[0];
+  return (await getSections(semester))[sectionId];
 }
 
 async function getRooms(semester){
@@ -342,8 +342,8 @@ function stopTakingAttendance(){
 
 $('#sectionSubmitBtn').addEventListener('click',async e=>{
   let semester=$('#sectionSemesterSelect').value;
+  let id=$('#sectionIdInput').value;
   let newSection={
-    id:$('#sectionIdInput').value,
     pattern:$('#sectionPatternInput').value,
     room:$('#sectionRoomSelect').value,
     i:$('#sectionInstructorInput').value?.split('\n').map(txt=>txt.trim())
@@ -352,10 +352,10 @@ $('#sectionSubmitBtn').addEventListener('click',async e=>{
     alert('Please select semester.');
     return;
   }
-  if(!newSection.id){
+  if(!id){
     alert('Please enter section id.');
     return;
-  }else if((await getSections(semester)).filter(s=>s.id==newSection.id).length){
+  }else if(await getSection(semester,id)){
     alert('Section '+newSection.id+' already exists.')
     return;
   }
@@ -371,13 +371,14 @@ $('#sectionSubmitBtn').addEventListener('click',async e=>{
     alert('Please enter section instructor(s).');
     return;
   }
-  let sections=await getSections(semester);
-  let r=await db.updateOneArrayUnion('sections',semester,'a',newSection);
+  let r=await db.updateOne('sections',semester,{[id]:newSection});
+  // let r=await db.updateOneArrayUnion('sections',semester,'a',newSection);
   if(r.error){
     alert('Error: Cannot add section.')
   }else{
-    sections.push(newSection);
-    addSectionCard(newSection,$('#instructorSections'));
+    let sections=await getSections(semester);
+    sections[id]=newSection;
+    addSectionCard(id,newSection,$('#instructorSections'));
     hideInMain('addInstructorSection');
   }
 });
@@ -385,22 +386,22 @@ $('#sectionSubmitBtn').addEventListener('click',async e=>{
 
 //////////////// Section cards /////////////////////
 
-function makeSectionCard(section,onclick){
+function makeSectionCard(id,section,onclick){
   var card=document.createElement('div');
   card._sectionDoc=section;
-  card.id=section.id;
+  card.id=id;
   card.className='sectionCard';
   if(section.a && section.e && section.e>db.now()){
     card.classList.add('acceptingAttendance');
   }
   var d=card.appendChild(document.createElement('div'));
   d.class='cardTitle';
-  d.innerText=section.id;
+  d.innerText=id;
   d=card.appendChild(document.createElement('div'));
   d.innerText=section.pattern;
   d=card.appendChild(document.createElement('div'));
   d.innerText=section.room;
-  section.i.forEach(i=>{
+  section?.i?.forEach(i=>{
     d=card.appendChild(document.createElement('div'));
     d.innerText=i;
   })
@@ -417,7 +418,7 @@ async function getAttendanceCardClick(event){
 
 async function showMarkAttendance(id){
   showInMain('markAttendance');
-  var section=(await getSections(localStorage.semesterSelected)).filter(s=>s.id===id)[0];
+  var section=await getSection(localStorage.semesterSelected,id);
   $('#markAttendanceSectionId').innerText=id;
 }
 
@@ -425,17 +426,21 @@ function markAttendanceCardClick(event){
   showMarkAttendance(event.currentTarget.id);
 }
 
-function addSectionToStudentClick(event){
-  hideInMain('selectStudentSection');
-  if(!userDoc[localStorage.semesterSelected])userDoc[localStorage.semesterSelected]=[];
-  userDoc[localStorage.semesterSelected].push(event.currentTarget.id);
-  addSectionCard(event.currentTarget._sectionDoc,$('#studentSections'));
-  db.updateOneArrayUnion('users',auth.currentUser.email,localStorage.semesterSelected,event.currentTarget.id);
-  //TODO: error-check
+async function addSectionToStudentClick(event){
+  let r=await db.updateOneArrayUnion('users',auth.currentUser.email,localStorage.semesterSelected,id);
+  if(r.error){
+    alert('Something went wrong.')
+  }else{
+    hideInMain('selectStudentSection');
+    if(!userDoc[localStorage.semesterSelected])userDoc[localStorage.semesterSelected]=[];
+    let id=event.currentTarget.id;
+    userDoc[localStorage.semesterSelected].push(id);
+    addSectionCard(id,event.currentTarget._sectionDoc,$('#studentSections'));
+  }
 }
 
-function addSectionCard(section,container,onclick){
-  var card=makeSectionCard(section,onclick);
+function addSectionCard(id,section,container,onclick){
+  var card=makeSectionCard(id,section,onclick);
   container.insertBefore(card,container.lastElementChild);
 }
 
@@ -443,13 +448,11 @@ async function addAvailableStudentSections(){
   var sections=await getSections(localStorage.semesterSelected);
   var sectionsContainer=$('#availableStudentSections');
   // remove old
-  for(let sectionCard of sectionsContainer.children){
-    sectionCard.remove();
-  }
+  sectionsContainer.innerHTML='';
   // add all available sections
-  for(let section of sections){
-    if(!userDoc[localStorage.semesterSelected]?.includes(section.id)){
-      addSectionCard(section,sectionsContainer,addSectionToStudentClick);
+  for(let id in sections){
+    if(!userDoc[localStorage.semesterSelected]?.includes(id)){
+      addSectionCard(id,sections[id],sectionsContainer,addSectionToStudentClick);
     }
   }
 }
@@ -466,12 +469,13 @@ async function addSectionCards(semester){
     instructorSections.children[i].remove();
   }
   // add sections
-  for(let section of sections){
-    if(userDoc[semester]?.includes(section.id)){
-      addSectionCard(section,studentSections,markAttendanceCardClick);
+  for(let id in sections){
+    let section=sections[id];
+    if(userDoc[semester]?.includes(id)){
+      addSectionCard(id,section,studentSections,markAttendanceCardClick);
     }
-    if(!instructorSections.classList.contains('hidden') && section.i.includes(auth.currentUser.email)){
-      addSectionCard(section,instructorSections,getAttendanceCardClick);
+    if(!instructorSections.classList.contains('hidden') && section?.i?.includes(auth.currentUser.email)){
+      addSectionCard(id,section,instructorSections,getAttendanceCardClick);
     }
   }
 }
@@ -489,19 +493,19 @@ const saveNameBtn=$('#saveNameBtn');
 nameInput.addEventListener('input',e=>{
   if(nameInput.lastValue!==nameInput.value){
     saveNameBtn.classList.remove('hidden');
-    saveNameBtn.addEventListener('click',async e=>{
-      saveNameBtn.setAttribute('disabled','true');
-      let r=await db.updateOne('users',auth.currentUser.email,{n:nameInput.value});
-      if(!r.error){
-        saveNameBtn.classList.add('hidden');
-        nameInput.lastValue=nameInput.value;
-      }
-      saveNameBtn.removeAttribute('disabled');
-    })
   }else{
     saveNameBtn.classList.add('hidden');
   }
 });
+saveNameBtn.addEventListener('click',async e=>{
+  saveNameBtn.setAttribute('disabled','true');
+  let r=await db.updateOne('users',auth.currentUser.email,{n:nameInput.value});
+  if(!r.error){
+    saveNameBtn.classList.add('hidden');
+    nameInput.lastValue=nameInput.value;
+  }
+  saveNameBtn.removeAttribute('disabled');
+})
 
 
 ////////////// Accessibility Preferences /////////////
