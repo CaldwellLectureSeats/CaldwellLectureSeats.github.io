@@ -25,7 +25,7 @@
 </head>
 <body>
   <div id="header">
-    <a href="index.html" id="title">Lecture<span class="themeColor">Seats</span></a>
+    <a href="#" id="title">Lecture<span class="themeColor">Seats</span></a>
     <span id="user" onclick="showInMain('profile')">
       <img id="userPhoto">
       <span id="userDisplayName"></span>
@@ -37,10 +37,10 @@
     <div id="sections">
       <select id="semesterSelect"><option disabled selected value>Select Semester</option></select>
       <div id="instructorSections" class="sectionCards hidden" name="Sections I'm teaching">
-        <div id="addInstructorSectionBtn" class="sectionCard center"><i class="material-icons">add_circle</i></div>
+        <div id="addInstructorSectionBtn" class="sectionCard center" onclick="createNewSection()"><i class="material-icons">add_circle</i></div>
       </div>
       <div id="studentSections" class="sectionCards" name="Sections I'm enrolled in">
-        <div id="addStudentSectionBtn" class="sectionCard center"><i class="material-icons">add_circle</i></div>
+        <div id="addStudentSectionBtn" class="sectionCard center" onclick="showAvailableStudentSections()"><i class="material-icons">add_circle</i></div>
       </div>
     </div>
 
@@ -50,23 +50,26 @@
       <select id="sectionSemesterSelect"><option disabled selected value></option></select>
       Section Id:
       <input id="sectionIdInput" placeholder="e.g., CS-195-001">
+      Additional Id's (i.e., cross-listed; one section id per line):
+      <textarea id="sectionCrosslistInput"></textarea>
       Pattern (days/times):
       <input id="sectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
       Room:
       <select id="sectionRoomSelect"><option disabled selected value></option></select>
-      Instructors:
+      Instructors (one instructor per line):
       <textarea id="sectionInstructorInput"></textarea>
-      <div>
+      <!-- <div>
         <input type="checkbox" id="allowEnroll"><label for="allowEnroll">Allow students to self-enroll</label>
-      </div>
-      <button id="sectionSubmitBtn">Add Section</button>
-      <button onclick="hideInMain('addInstructorSection')">Cancel</button>
+      </div> -->
+      <button id="sectionSubmitBtn">Save Section</button>
+      <button id="sectionDeleteBtn" class="hidden">Delete Section</button>
+      <button onclick="navigateBack()">Cancel</button>
     </div>
 
     <div id="selectStudentSection">
       <div class="menuTitle">Select section where you are a student</div>
       <div id="availableStudentSections" class="sectionCards"></div>
-      <button onclick="hideInMain('selectStudentSection')">Cancel</button>
+      <button onclick="navigateBack()">Cancel</button>
     </div>
 
     <div id="profile">
@@ -87,16 +90,23 @@
 
     <!-- for instructors and admins -->
     <div id="rooms">
-      <div><button onclick="hideInMain('rooms')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
     </div>
     <div id="allSections">
-      <div><button onclick="hideInMain('allSections')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
     </div>
 
     <!-- for instructors -->
     <div id="getAttendance">
-      <div><button onclick="hideInMain('getAttendance')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
-      <div id="getAttendanceSectionId"></div>
+      <div><button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div>
+        <span id="getAttendanceSectionId"></span>
+        <span id="getAttendanceCrossListIds"></span>
+      </div>
+      <div style="display:flex">
+        <div id="getAttendanceSectionInfo"></div>
+        <i class="material-icons" id="getAttendanceEditBtn" onclick>edit</i>
+      </div>
       Attendance passcode:
       <div>
         <input id="getAttendanceClassCodeInput">
@@ -121,15 +131,15 @@
       <div class="separator"></div>
       <div id="attendanceMarked"></div>
     </div>
-    <div id="QRcode" onclick="hideInMain('QRcode')"></div>
+    <div id="QRcode" onclick="navigateBack()"></div>
     <!-- <div id="room"></div>
     <div id="attendanceRecord">
-      <div><button onclick="hideInMain('attendanceRecord')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
     </div> -->
 
     <!-- for students -->
     <div id="markAttendance">
-      <div><button onclick="hideInMain('markAttendance')"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
       <div id="markAttendanceSectionId"></div>
       Attendance passcode:
       <div>
@@ -144,9 +154,10 @@
       Selfie:
       <video id="video" width="300" autoplay></video>
       <button id="markAttendanceButton">Mark Attendance</button>
+      <button id="markAttendanceRemoveButton">Remove from My Section</button>
     </div>
     <div id="QRreader">
-      <div><button onclick="hideInMain('QRreader')" id="QRReaderBackButton"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <div><button onclick="navigateBack()" id="QRReaderBackButton"><i class="material-icons">arrow_back_ios</i>Back</button></div>
       <div id="QRreaderVideo"></div>
     </div>
   </div>

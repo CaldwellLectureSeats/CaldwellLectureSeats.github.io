@@ -118,6 +118,7 @@ button:active {
 }
 button:disabled {
   background-color: #999;
+  cursor: default;
 }
 
 button, input, select {

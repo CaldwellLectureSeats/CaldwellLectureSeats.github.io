@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 // import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getFirestore, Timestamp, FieldPath, collection, doc, addDoc, setDoc, getDocs, getDoc, updateDoc, arrayUnion, query, where, deleteField } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+import { getFirestore, Timestamp, collection, doc, addDoc, setDoc, getDocs, getDoc, updateDoc, arrayUnion, arrayRemove, query, where, deleteField } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
 
 // firebase configuration
 const firebaseConfig = {
@@ -35,11 +35,9 @@ window.db = {};
 
 window.db.now=()=>Timestamp.now().seconds;
 
-window.db.FieldPath = FieldPath;
-
 window.db.deleteField = deleteField;
-
 window.db.arrayUnion = arrayUnion;
+window.db.arrayRemove = arrayRemove;
 
 window.db.find = async function(collectionName, ...queries){
   try{
@@ -104,15 +102,15 @@ window.db.updateOne = async function(collectionName, id, data, ...data2){
   }
 }
 
-window.db.updateOneArrayUnion = async function(collectionName, id, arrayField, data){
-  try{
-    await updateDoc(doc(DATABASE, collectionName, id),{[arrayField]:arrayUnion(data)});
-    return true;
-  }catch(e){
-    console.error(e);
-    return {error:e.code||'unknown error'};
-  }
-}
+// window.db.updateOneArrayUnion = async function(collectionName, id, arrayField, data){
+//   try{
+//     await updateDoc(doc(DATABASE, collectionName, id),{[arrayField]:arrayUnion(data)});
+//     return true;
+//   }catch(e){
+//     console.error(e);
+//     return {error:e.code||'unknown error'};
+//   }
+// }
 
 window.db.upsertOne = async function(collectionName, id, data){
   try{
