@@ -98,12 +98,21 @@ a {
 #main > div:first-child {display:flex;flex-direction:column;gap:1em;height:100%}
 
 .flexcol {display:flex;flex-direction:column;gap:1em}
-.center {justify-content: center;}
+/* .center {justify-content:center;} */
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.fitcontent {width:fit-content;height:fit-content;}
+.w300 {width:300px}
 
 .separator {
   border-bottom: dashed 1px gray;
   width:300px;
 }
+
+fieldset {border:none;margin:0;padding:0;}
 
 button {
   cursor: pointer;
@@ -155,14 +164,24 @@ button, input, select {
   height: 5em;
 }
 
-#QRcode {
-  background-color: white;
+#QRcode, #loading {
   padding: 1em;
   position: fixed;
   left:0;
   top:0;
   width:100%;
   height:100%;
+}
+
+#loading {
+  z-index: 100;
+  pointer-events: none;
+  background-color: gray;
+  opacity: 0.5;
+}
+
+#QRcode {
+  background-color: white;
 }
 #QRcode > img {
   position: fixed;
@@ -172,14 +191,21 @@ button, input, select {
 }
 
 #selfieContainer {
-  width: 300px;
-  height: 300px;
-  min-height: 300px;
+  width: 200px;
+  height: 200px;
+  min-height: 200px;
   border-radius: 150px;
   overflow: hidden;
-  justify-content: center;
   display: flex;
+  justify-content: center;
   align-items: center;
+  transform: scaleX(-1);
+}
+#selfieUndo {
+  cursor: pointer;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
 }
 
 .sectionCards {

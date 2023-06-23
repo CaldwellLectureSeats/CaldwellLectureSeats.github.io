@@ -13,28 +13,30 @@ async function initGoogleAPI(){
   });
 }
 
-function signInToGoogleAPI(){
-  let tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    expires_in: 60*60*12,
-    scope: 'https://www.googleapis.com/auth/drive.file',
-    callback: ()=>{
-      let token=gapi.client.getToken();
-      if(token){
-        localStorage.authToken=JSON.stringify(token);
-      }else{
-        googleAPIsignOut();
-        return;
+function signInToGoogleAPI(prompt){
+  return new Promise(async function(resolve, reject){
+    if(!gapi.client)await initGoogleAPI();
+    let tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: 'https://www.googleapis.com/auth/drive.file',
+      expires_in: 60*60*12,
+      callback: async ()=>{
+        let token=gapi.client.getToken();
+        if(token){
+          localStorage.authToken=JSON.stringify(token);
+          resolve();
+        }else{
+          googleAPIsignOut();
+          reject();
+        }
       }
-      // hide sign-in button, display main
-      mainDiv.classList.remove('hidden');
-      $('#enableGoogleDriveDiv').classList.add('hidden');
-    }
+    });
+    tokenClient.requestAccessToken({hint:auth.currentUser.email, prompt:prompt?'consent':'none'});
   });
-  tokenClient.requestAccessToken({hint: auth.currentUser.email, prompt: 'consent'});
 }
 
 async function verifyAuthToken(){
+  if(!gapi.client)await initGoogleAPI();
   if(!gapi.client.getToken()){
     if(localStorage.authToken){
       gapi.client.setToken(JSON.parse(localStorage.authToken));
@@ -64,20 +66,22 @@ function testDrive(){
   }).then(r=>console.log(r.result.files.map(f=>f.name + ' : ' + f.mimeType)))
 }
 
-var appFolderId;
-async function getAppFolderId(){
-  if(appFolderId)return appFolderId;
-  let r=await gapi.client.drive.files.list({q: "trashed = false and mimeType = '"+FOLDER_TYPE+"' and name = '"+APP_FOLDER+"'"});
-  let files = response.result.files;
-  if(file?.length){
-    appFolderId=files[0].id;
+var folderIds={};
+async function getFolderId(folderName,shareEmails){
+  if(folderIds[folderName])return folderIds[folderName];
+  let r=await gapi.client.drive.files.list({q: "trashed = false and mimeType = '"+FOLDER_TYPE+"' and name = '"+folderName+"'"});
+  let files = r.result.files;
+  if(files?.length){
+    var folderId=files[0].id;
   }else{
-    appFolderId=(await createFolder(APP_FOLDER,null)).id;
+    var folderId=await createFolder(folderName,folderName===APP_FOLDER?null:await getFolderId(APP_FOLDER),shareEmails);
   }
-  return appFolderId;
+  folderIds[folderName]=folderId;
+  return folderId;
 }
 
-async function createFolder(name,parentFolderId=appFolderId,shareEmails){
+async function createFolder(name,parentFolderId,shareEmails){
+  if(parentFolderId===undefined)parentFolderId=await getFolderId(APP_FOLDER);
   var metadata = {
     name, mimeType:FOLDER_TYPE, parents: parentFolderId?[parentFolderId]:[]
   };
@@ -97,13 +101,12 @@ async function createFolder(name,parentFolderId=appFolderId,shareEmails){
 }
 
 //TODO: this is only for text files, need to update to upload images
-async function uploadFile(name, fileContent, folderId=appFolderId, shareEmails){
-  var metadata = {
-    name, mimeType:'text/plain', parents:folderId?[folderId]:[],
-  };
+async function uploadFile(name,fileBlob,folderId,shareEmails){
+  if(folderId===undefined)folderId=await getFolderId(APP_FOLDER);
+  var metadata = { name, parents:[folderId] }; //, mimeType:fileBlob.type
   var form = new FormData();
   form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-  form.append('file', new Blob([fileContent], {type: 'text/plain'}));
+  form.append('file', fileBlob);
   var res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
   {
     method: 'POST',
@@ -114,6 +117,9 @@ async function uploadFile(name, fileContent, folderId=appFolderId, shareEmails){
     res = await res.json();
     shareFile(res.id,shareEmails)
     return res.id;
+  }else{
+    console.log(res);
+    return null;
   }
 }
 
@@ -141,4 +147,5 @@ function shareFile(fileId,emails){
   //  await gapi.client.drive.files.get({fileId:fileId,fields: 'webContentLink'});
   // can later get shared file contents
   //  (await gapi.client.drive.files.get({fileId, mimeType:'text/plain', alt:'media'})).body
+  // or via a link; e.g. img.src = 'https://drive.google.com/uc?id='+fileId
 }

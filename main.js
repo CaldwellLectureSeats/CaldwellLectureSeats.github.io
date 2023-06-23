@@ -28,6 +28,12 @@ function getDateTime(){
   return [date,time];
 }
 
+function getLocation(){
+  return new Promise(function(resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+}
+
 
 ///////////// Initialize and Sign in ///////////////
 
@@ -129,25 +135,44 @@ function signOut(){
 ///////////////////// Navigation ///////////////////
 
 const mainDiv = $('#main');
-window.onhashchange=function(){
-  makeFirstElementChild(mainDiv,$(location.hash||'#sections'));
+window.onhashchange=function(event){
+  console.log('hashchange')
+  if(navAllowed){
+    makeFirstElementChild(mainDiv,$(location.hash||'#sections'));
+  }else if(location.hash!=='#_'){
+    location.hash='#_';
+  }
 }
 function showInMain(childOfMain){
-  window.location.hash=childOfMain;
+  if(navAllowed)
+    window.location.hash=childOfMain;
 }
 function navigateBack(){
-  history.back();
+  if(navAllowed)
+    history.back();
 }
 
+var navAllowed=true;
 // ensure we don't navigate away from taking attendance until it's stopped
 window.addEventListener('popstate',event=>{
-  // console.log(location.href)
+  console.log(location.href)
   if(location.hash!=='#getAttendance' && location.hash!=='#QRcode' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
     getAttendanceCardClick();
     takingAttendance();
   }
 })
 
+function loadingScreen(on){
+  if(on){
+    $('fieldset').setAttribute('disabled',true);
+    $('#loading').classList.remove('hidden');
+    navAllowed = false;
+  }else{
+    $('fieldset').removeAttribute('disabled');
+    $('#loading').classList.add('hidden');
+    navAllowed = true;
+  }
+}
 
 //////////// Get semesters, sections, rooms ////////
 
@@ -186,27 +211,49 @@ async function getRooms(semester){
 
 //////////////// Mark Attendance ///////////////////
 
-$('#markAttendanceButton').addEventListener('click',async event=>{
+$('#markAttendanceButton').addEventListener('click',checkInfoAndMarkAttendance);
+
+async function checkInfoAndMarkAttendance(){
+  //TODO: check seat/photo, warn user
+  //TODO: disable all inputs and add loading screen
+  loadingScreen(true);
   let code=$('#markAttendanceClassCodeInput').value;
   if(code){
-    let user=auth.currentUser.email.split('@')[0].replaceAll('.','_');
+    let semesterSectionId=localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+$('#markAttendanceSectionId').innerText;
+    let section=$('#markAttendanceSectionId')._sectionDoc;
+    let seat=$('#markAttendanceSeatCodeInput').value;
+    let photoId=null;
     let currentDT=getDateTime();
-    let data={'_a': code, [user]: db.arrayUnion({
-      d:currentDT[0],
-      t:currentDT[1],
-      a:code,
-      seat:$('#markAttendanceSeatCodeInput').value,
-      //TODO: add photo url
-    }) };
-    let r=await db.updateOne('attend', localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+$('#markAttendanceSectionId').innerText, data);
-    if(r.error){
-      alert('ERROR: Your attendance was NOT marked.\n\nPlease make sure the instructor is taking attendance, and that your attendance passcode is correct.');
-    }else{
-      alert('Your attendance was marked.')
+    if(selfieBlob){
+      if(!await verifyAuthToken())await signInToGoogleAPI();
+      let folderId=await getFolderId(semesterSectionId,section.i);
+      photoId=await uploadFile('selfie-'+currentDT.join('-').replace(':','-')+'.jpg',selfieBlob,folderId);
     }
-    //TODO: save receipt (in gdrive)
+    markAttendance(semesterSectionId,code,seat,photoId,currentDT[0],currentDT[1]);
   }
-})
+}
+
+async function markAttendance(semesterSectionId,code,seat,photo,date,time){
+  let user=auth.currentUser.email.split('@')[0].replaceAll('.','_');
+  let loc=await getLocation();
+  let data={'_a': code, [user]: db.arrayUnion({
+    d:date,
+    t:time,
+    a:code,
+    s:seat,
+    l:loc.coords.latitude+','+loc.coords.longitude,
+    p:photo
+  }) };
+  let r=await db.updateOne('attend', semesterSectionId, data);
+  loadingScreen(false);
+  if(r.error){
+    alert('ERROR: Your attendance was NOT marked.\n\nPlease make sure the instructor is taking attendance, and that your attendance passcode is correct.');
+  }else{
+    alert('Your attendance was marked.')
+    //TODO: either go back to homepage or add some visual indicator that attendance was marked
+  }
+  //TODO: save receipt (in gdrive)
+}
 
 function openQRreader(target){
   showInMain('QRreader');
@@ -231,23 +278,34 @@ function markAttendanceQRseatButtonClick(event){
   openQRreader('markAttendanceClassSeatInput');
 }
 
+var selfieBlob=null;
 $('#takeSelfieStartVideoBtn').addEventListener('click',event=>{
   event.currentTarget.classList.add('hidden');
   $('#selfieImg').classList.add('hidden');
   $('#selfieCanvas').classList.add('hidden');
+  $('#selfieUndo').classList.add('hidden');
   $('#selfieVideo').classList.remove('hidden');
   $('#takeSelfieBtn').classList.remove('hidden');
-  startCamera($('#selfieVideo'),300);
+  startCamera($('#selfieVideo'),200);
 });
-
-$('#takeSelfieBtn').addEventListener('click',event=>{
+$('#takeSelfieBtn').addEventListener('click',async event=>{
   event.currentTarget.classList.add('hidden');
   $('#selfieImg').classList.add('hidden');
-  $('#selfieCanvas').classList.remove('hidden');
   $('#selfieVideo').classList.add('hidden');
+  $('#selfieCanvas').classList.remove('hidden');
+  $('#selfieUndo').classList.remove('hidden');
   $('#takeSelfieStartVideoBtn').classList.remove('hidden');
-  let r=takePhoto($('#selfieVideo'),$('#selfieCanvas'),300);
-  console.log(r);
+  selfieBlob=await takePhoto($('#selfieVideo'),$('#selfieCanvas'),200);
+});
+$('#selfieUndo').addEventListener('click',event=>{
+  stopCamera();
+  event.currentTarget.classList.add('hidden');
+  $('#selfieImg').classList.remove('hidden');
+  $('#selfieVideo').classList.add('hidden');
+  $('#selfieCanvas').classList.add('hidden');
+  $('#takeSelfieBtn').classList.add('hidden');
+  $('#takeSelfieStartVideoBtn').classList.remove('hidden');
+  selfieBlob=null;
 });
 
 //////////////// Collect Attendance ////////////////
@@ -558,12 +616,12 @@ async function getAttendanceCardClick(event){
 }
 
 async function showMarkAttendance(id){
-  showInMain('markAttendance');
-  $('#markAttendanceSectionId').innerText=id;
 }
 
 function markAttendanceCardClick(event){
-  showMarkAttendance(event.currentTarget.id);
+  showInMain('markAttendance');
+  $('#markAttendanceSectionId').innerText=event.currentTarget.id;
+  $('#markAttendanceSectionId')._sectionDoc=event.currentTarget._sectionDoc;
 }
 
 async function addSectionToStudentClick(event){
