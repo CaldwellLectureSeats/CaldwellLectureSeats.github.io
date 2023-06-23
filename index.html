@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LectureSeats</title>
   <link rel="icon" type="image/x-icon" href="/lecture-seats-256.png">
-  <!-- google drive -->
-  <script src="https://apis.google.com/js/client.js" async defer></script>
   <!-- qr code generator amd scammer -->
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <!-- md5 -->
   <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/build/md5.min.js"></script>
+  <!-- google drive -->
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
+  <script src="gdrive.js"></script>
+  <!-- photo -->
+  <script src="photo.js"></script>
   <!-- firebase init -->
   <script src="firebase.mjs" type="module"></script>
   <!-- login ui -->
@@ -31,7 +35,13 @@
       <span id="userDisplayName"></span>
     </span>
   </div>
+
   <div id="firebaseui-auth-container" class="hidden"></div>
+  
+  <!-- <div id="enableGoogleDriveDiv" class="hidden">
+    <button onclick="signInToGoogleAPI()">Enable Google Drive Access</button>
+  </div> -->
+
   <div id="main" class="hidden">
 
     <div id="sections">
@@ -79,7 +89,7 @@
         <input id="nameInput">
         <button id="saveNameBtn" class="hidden">Save Name</button>
       </div>
-      <button id="logoutBtn" class="big" onclick="auth.signOut()">Sign Out</button>
+      <button id="logoutBtn" class="big" onclick="signOut()">Sign Out</button>
       <div class="separator"></div>
       <button id="sectionsBtn" class="big" onclick="showInMain('sections')">My Sections</button>
       <div class="separator"></div>
@@ -152,8 +162,16 @@
         <i class="material-icons" onclick="markAttendanceQRseatButtonClick()">qr_code_scanner</i>
       </div>
       Selfie:
-      <video id="video" width="300" autoplay></video>
+      <div id="selfieContainer">
+        <img id="selfieImg" src="user512.png" style="width:100%;height:100%;">
+        <video id="selfieVideo" width="300" autoplay class="hidden"></video>
+        <canvas id="selfieCanvas" class="hidden"></canvas>
+      </div>
+      <button id="takeSelfieStartVideoBtn"><i class="material-icons">add_a_photo</i></button>
+      <button class="hidden" id="takeSelfieBtn"><i class="material-icons">radio_button_checked</i></button>
+      <div class="separator"></div>
       <button id="markAttendanceButton">Mark Attendance</button>
+      <div class="separator"></div>
       <button id="markAttendanceRemoveButton">Remove from My Section</button>
     </div>
     <div id="QRreader">

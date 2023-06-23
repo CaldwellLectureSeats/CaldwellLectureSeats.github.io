@@ -23,8 +23,8 @@ function pad0(i,len=2){
 
 function getDateTime(){
   let d=new Date(),
-    date=d.getFullYear()+'-'+pad0(d.getMonth()+1)+'-'+pad0(d.getDate()),
-    time=pad0(d.getHours())+':'+pad0(d.getMinutes());
+  date=d.getFullYear()+'-'+pad0(d.getMonth()+1)+'-'+pad0(d.getDate()),
+  time=pad0(d.getHours())+':'+pad0(d.getMinutes());
   return [date,time];
 }
 
@@ -38,14 +38,23 @@ window.addEventListener('load', async function(){
   // login functionality
   onAuth(async function(user){
     console.log('checking auth',user)
-    if(user){
-      // User is signed in: Hide sign-in button and display main
-      if(!user.email.endsWith('@caldwell.edu')){
-        console.warn('User not from allowed domain.');
-      }
+    if(user){ // User is signed in
+      //TODO: ensure only caldwell.edu users
+      // if(!user.email.endsWith('@caldwell.edu')){
+      //   ...
+      // }
+      // hide sign-in button
       $('#firebaseui-auth-container').classList.add('hidden');
-      $('#user').classList.remove('hidden');
+      // check if user is signed in to google API, as well
+      // await initGoogleAPI();
+      // if(await verifyAuthToken()){
+      //   mainDiv.classList.remove('hidden');
+      // }else{
+      //   $('#enableGoogleDriveDiv').classList.remove('hidden');
+      // }
+      // display main, display user info
       mainDiv.classList.remove('hidden');
+      $('#user').classList.remove('hidden');
       $('#userDisplayName').innerText=user.displayName;
       $('#userPhoto').src=user.photoURL;
       userDoc=await db.findOne('users',user.email);
@@ -111,6 +120,11 @@ window.addEventListener('load', async function(){
   error=>console.error(error) );
 });
 
+function signOut(){
+  auth.signOut();
+  googleAPIsignOut();
+}
+
 
 ///////////////////// Navigation ///////////////////
 
@@ -128,7 +142,7 @@ function navigateBack(){
 // ensure we don't navigate away from taking attendance until it's stopped
 window.addEventListener('popstate',event=>{
   // console.log(location.href)
-  if(location.hash!=='#getAttendance' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
+  if(location.hash!=='#getAttendance' && location.hash!=='#QRcode' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
     getAttendanceCardClick();
     takingAttendance();
   }
@@ -206,8 +220,8 @@ function openQRreader(target){
   $('#QRReaderBackButton').addEventListener('click',closeQRreader);
   // $('#html5-qrcode-button-camera-stop').addEventListener('click',closeQRreader);
   function onScanSuccess(decodedText,decodedResult){
-      document.getElementById(target).value=decodedText;
-      closeQRreader();
+    document.getElementById(target).value=decodedText;
+    closeQRreader();
   }
 }
 function markAttendanceQRcodeButtonClick(event){
@@ -217,6 +231,24 @@ function markAttendanceQRseatButtonClick(event){
   openQRreader('markAttendanceClassSeatInput');
 }
 
+$('#takeSelfieStartVideoBtn').addEventListener('click',event=>{
+  event.currentTarget.classList.add('hidden');
+  $('#selfieImg').classList.add('hidden');
+  $('#selfieCanvas').classList.add('hidden');
+  $('#selfieVideo').classList.remove('hidden');
+  $('#takeSelfieBtn').classList.remove('hidden');
+  startCamera($('#selfieVideo'),300);
+});
+
+$('#takeSelfieBtn').addEventListener('click',event=>{
+  event.currentTarget.classList.add('hidden');
+  $('#selfieImg').classList.add('hidden');
+  $('#selfieCanvas').classList.remove('hidden');
+  $('#selfieVideo').classList.add('hidden');
+  $('#takeSelfieStartVideoBtn').classList.remove('hidden');
+  let r=takePhoto($('#selfieVideo'),$('#selfieCanvas'),300);
+  console.log(r);
+});
 
 //////////////// Collect Attendance ////////////////
 
@@ -300,6 +332,7 @@ function takingAttendance(){
   attendanceTimer=setInterval(updateAttendanceTime,1000);
 }
 
+// TODO: update time on QR code screen, as well
 function updateAttendanceTime(){
   let secondsLeftToEnd=parseInt(localStorage.attendanceEndtime)-db.now();
   if(secondsLeftToEnd<=0){
@@ -509,9 +542,9 @@ function makeSectionCard(id,section,onclick,showCrossListed){
 
 async function getAttendanceCardClick(event){
   showInMain('getAttendance');
-  let section=event.currentTarget._sectionDoc;
-  let sectionId=event.currentTarget.id;
-  $('#getAttendanceSectionId').innerText=localStorage.takingAttendance||sectionId;
+  let sectionId=localStorage.takingAttendance||event.currentTarget.id;
+  let section=await getSection(localStorage.semesterSelected,sectionId);
+  $('#getAttendanceSectionId').innerText=sectionId;
   $('#getAttendanceCrossListIds').innerHTML=section.x?'<span>'+section.x.join('</span> <span>')+'</span>':'';
   $('#getAttendanceSectionInfo').innerText=section.pattern+'\n'+section.room+'\n'+section.i.join('\n');
   // $('#getAttendanceEditBtn')._sectionId=sectionId;

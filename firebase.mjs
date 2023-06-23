@@ -5,14 +5,25 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore, Timestamp, collection, doc, addDoc, setDoc, getDocs, getDoc, updateDoc, arrayUnion, arrayRemove, query, where, deleteField } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
 
 // firebase configuration
+window.API_KEY = "AIzaSyDtn21mi-DzG-TGErzkkaNqUifB-cC1KQQ";
 const firebaseConfig = {
-  apiKey: "AIzaSyDtn21mi-DzG-TGErzkkaNqUifB-cC1KQQ",
+  apiKey: window.API_KEY,
   authDomain: "lectureseats.firebaseapp.com",
   projectId: "lectureseats",
   storageBucket: "lectureseats.appspot.com",
   messagingSenderId: "911998665124",
   appId: "1:911998665124:web:27b4b44bcc6cd3b7054131",
-  measurementId: "G-VT95CQX9DC"
+  measurementId: "G-VT95CQX9DC",
+
+  clientId: "911998665124-be5qcdaj4co3082a7kcn6so1638itpjo.apps.googleusercontent.com",
+  scopes: [
+    "email",
+    "profile",
+    "https://www.googleapis.com/auth/drive.file"
+  ],
+  discoveryDocs: [
+    "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
+  ]
 };
 
 // Initialize Firebase
@@ -25,9 +36,13 @@ window.auth = getAuth();
 
 // bind global onAuth to onAuthStateChanged
 window.onAuth = f => onAuthStateChanged(window.auth, f);
+
+// window.provider = new GoogleAuthProvider();
+// window.provider.addScope("https://www.googleapis.com/auth/drive.file");
 // window.gauth = GoogleAuthProvider;
 // window.signInWithRedirect = signInWithRedirect;
 // window.signInWithPopup = signInWithPopup;
+
 
 const DATABASE = getFirestore(app);
 
