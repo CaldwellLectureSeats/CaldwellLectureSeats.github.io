@@ -1,6 +1,6 @@
 
 
-/* ----------------- colors -------------------------- */
+/* ----------------- color theme -------------------------- */
 
 :root {
   --background-color: #f8f8f8;
@@ -54,49 +54,6 @@ body {
   vertical-align: bottom;
 }
 
-
-/* ------------- header and title -------------------------- */
-
-#header {
-  display:grid;
-  grid-template-columns: 66.667% 33.334%;	
-  box-shadow: 0 4px 2px -2px gray;
-}
-
-#title {
-  font-size: 18pt;font-weight: bold;
-}
-
-#user {
-  font-size: 15px;
-  text-align:right;
-  cursor: pointer;
-}
-
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
-#userPhoto {
-  height:20px;
-  border-radius: 50%;
-  vertical-align:bottom;
-  padding-right: 3px;
-}
-
-
-/* ------------- main -------------------------- */
-
-#main, #enableGoogleDriveDiv {
-  padding:0.75em;
-  font-size: var(--main-font-size);
-  flex: 1;
-  overflow-y: auto;
-}
-#main > div {display:none;}
-#main > div:first-child {display:flex;flex-direction:column;gap:1em;height:100%}
-
 .flexcol {display:flex;flex-direction:column;gap:1em}
 /* .center {justify-content:center;} */
 .center {
@@ -111,8 +68,6 @@ a {
   border-bottom: dashed 1px gray;
   width:300px;
 }
-
-fieldset {border:none;margin:0;padding:0;}
 
 button {
   cursor: pointer;
@@ -147,6 +102,59 @@ button, input, select {
   padding: 2px;
   border-radius: 3px;
 }
+
+
+/* ------------- header and title -------------------------- */
+
+#header {
+  display:grid;
+  grid-template-columns: 66.667% 33.334%;	
+  box-shadow: 0 4px 2px -2px gray;
+}
+
+#title {
+  font-size: 18pt;font-weight: bold;
+}
+
+#user {
+  font-size: 15px;
+  text-align:right;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+#userPhoto {
+  height:20px;
+  border-radius: 50%;
+  vertical-align:bottom;
+  padding-right: 3px;
+}
+
+
+/* ------------- main -------------------------- */
+
+fieldset {
+  border:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction: column;
+  width:100%;
+  height:100%
+}
+
+#main, #enableGoogleDriveDiv {
+  padding:0.75em;
+  font-size: var(--main-font-size);
+  flex: 1;
+  overflow-y: auto;
+}
+#main > div {display:none;}
+#main > div:first-child {display:flex;flex-direction:column;gap:1em;height:100%}
 
 
 /* ------------- specific items -------------------------- */
@@ -206,6 +214,17 @@ button, input, select {
   position: absolute;
   bottom: 0px;
   right: 0px;
+}
+
+#attendanceMarked > div:before {
+  content: '✔️ ';
+}
+#attendanceMarked > div[failed]:before {
+  content: '❌ ';
+}
+#attendanceMarked > div[failed]:after {
+  content: ' (failed to mark attendance)';
+  color: #f45;
 }
 
 .sectionCards {

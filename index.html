@@ -52,7 +52,7 @@
       <div id="instructorSections" class="sectionCards hidden" name="Sections I'm teaching">
         <div id="addInstructorSectionBtn" class="sectionCard center" onclick="createNewSection()"><i class="material-icons">add_circle</i></div>
       </div>
-      <div id="studentSections" class="sectionCards" name="Sections I'm enrolled in">
+      <div id="studentSections" class="sectionCards hidden" name="Sections I'm enrolled in">
         <div id="addStudentSectionBtn" class="sectionCard center" onclick="showAvailableStudentSections()"><i class="material-icons">add_circle</i></div>
       </div>
     </div>
@@ -154,6 +154,7 @@
     <div id="markAttendance">
       <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
       <div id="markAttendanceSectionId"></div>
+      <div id="attendanceMarked"></div>
       Attendance passcode:
       <div>
         <input type="password" id="markAttendanceClassCodeInput">
