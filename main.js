@@ -234,7 +234,6 @@ async function getRooms(semester){
 
 function showMarkAttendance(sectionId,section){
   showInMain('markAttendance');
-  mainDiv.scrollTop=0;
   $('#markAttendanceSectionId').innerText=sectionId;
   $('#markAttendanceSectionId')._sectionDoc=section;
   $('#markAttendanceClassCodeInput').value='';
@@ -252,6 +251,7 @@ function showMarkedAttendances(section){
       d.innerText=attended[1];
       if(!attended[0])d.setAttribute('failed',true);
     }
+    mainDiv.scrollTop=0;
   }else{
     attendanceMarkedDiv.innerHTML='';
   }
@@ -298,9 +298,11 @@ async function checkInfoAndMarkAttendance(){
     }else{
       loadingScreen(false);
       alert('ERROR: Your attendance was NOT marked.\n\nPlease make sure the instructor is taking attendance, and that your attendance passcode is correct.');
+      console.log('here')
       if(!section.attended)section.attended=[];
       section.attended.push([0,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
       showMarkedAttendances(section);
+      
     }
   }else{
     alert('Please enter a valid attendance passcode.')
