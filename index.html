@@ -193,16 +193,22 @@
     </div>
   </div>
 
-  <div id="loading" class="hidden center">
-    <img src="https://i.giphy.com/media/FgH5xSNjGHZsiYPWAX/giphy.webp" alt="Loading...">
-  </div>
-
   <div id="accessibility" class="flexcol">
     <i class="material-icons" onclick="changeFontSize(1)">text_increase</i>
     <i class="material-icons" onclick="changeFontSize(-1)">text_decrease</i>
     <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()">light_mode</i>
   </div>
-  </fieldset>
+
+  <div id="loading" class="hidden center">
+    <img src="https://i.giphy.com/media/FgH5xSNjGHZsiYPWAX/giphy.webp" alt="Loading...">
+  </div>
+
+  <div id="toast" class="hidden">
+    <i id="closeToastBtn" class="material-icons top-right" onclick="this.parentElement.classList.add('hidden')">close</i>
+    <span id="toastMessage"></span>
+  </div>
+  
+</fieldset>
 </body>
 <script src="main.js"></script>
 </html>

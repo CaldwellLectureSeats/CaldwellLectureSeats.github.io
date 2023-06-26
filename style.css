@@ -73,6 +73,11 @@ scrollbar {width:5px;height:5px;}
   justify-content: center;
   align-items: center;
 }
+.top-right {
+  position:absolute;
+  right:1em;
+  top:1em;
+}
 .fitcontent {width:fit-content;height:fit-content;}
 .w300 {width:300px}
 
@@ -280,6 +285,24 @@ fieldset {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   padding:0.5em;
 } */
+
+#toast {
+  position:fixed;
+  bottom:1em;
+  left:50%;
+  transform: translateX(-50%);
+  width:80%;
+  background-color: #333;
+  color: #ccc;
+  padding: 1em;
+  padding-right: 3em;
+  border: solid 1px gray;
+  border-radius: 5px;
+  overflow: auto;
+}
+#toastMessage {
+  white-space: pre;
+}
 
 #accessibility {
   position:fixed;

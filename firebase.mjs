@@ -63,7 +63,8 @@ window.db.find = async function(collectionName, ...queries){
     }
     return r.docs.map(doc=>({id:doc.id, ...doc.data()}));
   }catch(e){
-    console.error(e);
+    // console.error(e);
+    toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
 }
@@ -82,7 +83,8 @@ window.db.findOne = async function(collectionName, id){
     var docSnap = await getDoc(doc(DATABASE, collectionName, id));
     return docSnap.exists()?docSnap.data():null;
   }catch(e){
-    console.error(e);
+    // console.error(e);
+    toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
 }
@@ -97,7 +99,8 @@ window.db.insertOne = async function(collectionName, data, id){
       return docRef.id;
     }
   }catch(e){
-    console.error(e);
+    // console.error(e);
+    toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
 }
@@ -107,12 +110,13 @@ window.db.updateOne = async function(collectionName, id, data, ...data2){
     if(data2.length){
       await updateDoc(doc(DATABASE, collectionName, id), data, ...data2);
     }else{
-      console.log('updating',collectionName,id,data)
+      // console.log('updating',collectionName,id,data)
       await updateDoc(doc(DATABASE, collectionName, id), data);
     }
     return true;
   }catch(e){
-    console.error(e);
+    // console.error(e);
+    toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
 }
@@ -135,7 +139,8 @@ window.db.upsertOne = async function(collectionName, id, data){
     if(e.code==='not-found'){
       return await window.db.insertOne(collectionName,data,id);
     }
-    console.error(e);
+    // console.error(e);
+    toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
 }

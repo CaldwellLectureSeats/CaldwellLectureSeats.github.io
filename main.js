@@ -43,7 +43,8 @@ window.addEventListener('load', async function(){
   window.history.pushState(null,'LectureSeats',location.origin+this.location.pathname);
   // login functionality
   onAuth(async function(user){
-    console.log('checking auth',user)
+    // console.log('checking auth',user)
+    toast(user,'checking auth');
     if(user){ // User is signed in
       //TODO: ensure only caldwell.edu users
       // if(!user.email.endsWith('@caldwell.edu')){
@@ -124,7 +125,8 @@ window.addEventListener('load', async function(){
       });
     }
   },
-  error=>console.error(error) );
+  error=>toast(error,'Error: '+error)
+  );
 });
 
 function signOut(){
@@ -132,12 +134,24 @@ function signOut(){
   googleAPIsignOut();
 }
 
+function toast(msg,title){
+  let toastMessage=$('#toastMessage');
+  toastMessage.innerHTML=title?title+'\n\n':'';
+  if(typeof(msg)==='object'){
+    for(let item in msg){
+      if(msg[item])toastMessage.innerHTML+=item+' : '+msg[item]+'\n';
+    }
+  }else{
+    toastMessage.innerHTML+=msg;
+  }
+  $('#toast').classList.remove('hidden');
+}
+
 
 ///////////////////// Navigation ///////////////////
 
 const mainDiv = $('#main');
 window.onhashchange=function(event){
-  console.log('hashchange')
   if(navAllowed){
     makeFirstElementChild(mainDiv,$(location.hash||'#sections'));
   }else if(location.hash!=='#_'){
@@ -156,7 +170,6 @@ function navigateBack(){
 var navAllowed=true;
 // ensure we don't navigate away from taking attendance until it's stopped
 window.addEventListener('popstate',event=>{
-  console.log(location.href)
   if(location.hash!=='#getAttendance' && location.hash!=='#QRcode' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
     showGetAttendance();
     takingAttendance();
