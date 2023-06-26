@@ -67,14 +67,22 @@ window.addEventListener('load', async function(){
       $('#userPhoto').src=user.photoURL;
       userDoc=await db.findOne('users',user.email);
       // if this is a new user, update their record in the database
-      if(userDoc.error){
+      if(userDoc?.error){
         alert('Something went wrong.');
         return;
-      }else if(userDoc===null){
+      }
+      if(userDoc===null){
         userDoc={n:user.displayName};
-        await db.insertOne('users', userDoc, user.email);
+        let r=await db.insertOne('users', userDoc, user.email);
+        if(r.error){
+          toast(r.error.code,'Error')
+          return;
+        }
       }else if(!userDoc.n){
-        await db.updateOne('users', user.email, {n:user.displayName});
+        let r=await db.updateOne('users', user.email, {n:user.displayName});
+        if(r.error){
+          toast(r.error.code,'Error')
+        }
       }
       // display user name
       nameInput.value=nameInput.lastValue=userDoc.n||user.displayName;
@@ -282,17 +290,18 @@ async function checkInfoAndMarkAttendance(){
       photoId=await uploadFile('selfie-'+currentDT.join('-').replace(':','-')+'.jpg',selfieBlob,folderId);
     }
     if(await markAttendance(semesterSectionId,code,seat,photoId,currentDT[0],currentDT[1])){
+      loadingScreen(false);
       alert('Your attendance was marked.')
       if(!section.attended)section.attended=[];
       section.attended.push([1,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
       showMarkAttendance(markAttendanceIdDiv.innerText,section);
     }else{
+      loadingScreen(false);
       alert('ERROR: Your attendance was NOT marked.\n\nPlease make sure the instructor is taking attendance, and that your attendance passcode is correct.');
       if(!section.attended)section.attended=[];
       section.attended.push([0,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
       showMarkedAttendances(section);
     }
-    loadingScreen(false);
   }else{
     alert('Please enter a valid attendance passcode.')
   }

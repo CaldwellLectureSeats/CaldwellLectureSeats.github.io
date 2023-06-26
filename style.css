@@ -315,10 +315,3 @@ fieldset {
   font-size: 16pt;
 }
 
-
-/* for Safari */
-@supports not (gap:1em) {
-  #main > div:first-child > * {margin:1em}
-  .flexcol > * {margin:1em}
-  .flexrow > * {margin:0.5em}
-}
