@@ -19,10 +19,10 @@
   <!-- firebase init -->
   <script src="firebase.mjs" type="module"></script>
   <!-- login ui -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" /> -->
   <!-- stylesheet and icons -->
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -39,7 +39,9 @@
     </span>
   </div>
 
-  <div id="firebaseui-auth-container" class="hidden"></div>
+  <div id="firebaseui-auth-container" class="hidden">
+    <button onclick="signIn()">Sign in with Google</button>
+  </div>
   
   <!-- <div id="enableGoogleDriveDiv" class="hidden">
     <button onclick="signInToGoogleAPI()">Enable Google Drive Access</button>

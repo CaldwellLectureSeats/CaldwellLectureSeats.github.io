@@ -1,7 +1,7 @@
 // import required firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-// import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+// import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import { getFirestore, Timestamp, collection, doc, addDoc, setDoc, getDocs, getDoc, updateDoc, arrayUnion, arrayRemove, query, where, deleteField } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
 
 // firebase configuration
@@ -37,11 +37,23 @@ window.auth = getAuth();
 // bind global onAuth to onAuthStateChanged
 window.onAuth = f => onAuthStateChanged(window.auth, f);
 
-// window.provider = new GoogleAuthProvider();
+let provider = new GoogleAuthProvider();
+provider.setCustomParameters({
+  prompt: "select_account",
+  login_hint: localStorage.email||null
+});  
+
 // window.provider.addScope("https://www.googleapis.com/auth/drive.file");
 // window.gauth = GoogleAuthProvider;
 // window.signInWithRedirect = signInWithRedirect;
 // window.signInWithPopup = signInWithPopup;
+
+window.signIn=async function(){
+  // signInWithRedirect(auth, provider);
+  signInWithPopup(auth, provider);
+  // const userCred = await getRedirectResult(auth);
+  // console.log(userCred)
+}
 
 
 const DATABASE = getFirestore(app);

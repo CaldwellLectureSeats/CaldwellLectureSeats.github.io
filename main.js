@@ -124,13 +124,13 @@ window.addEventListener('load', async function(){
       $('#firebaseui-auth-container').classList.remove('hidden');
       mainDiv.classList.add('hidden');
       $('#user').classList.add('hidden');
-      let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
-      ui.start('#firebaseui-auth-container', {
-        signInOptions: [
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID
-        ],
-        signInSuccessUrl:'#',
-      });
+      // let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
+      // ui.start('#firebaseui-auth-container', {
+      //   signInOptions: [
+      //     firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      //   ],
+      //   signInSuccessUrl:'#',
+      // });
     }
   },
   error=>toast(error,'Error: '+error)

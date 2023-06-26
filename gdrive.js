@@ -53,8 +53,8 @@ function googleAPIsignOut(){
   const token=gapi?.client?.getToken();
   if(token){
     google.accounts.oauth2.revoke(token.access_token);
+    gapi.client.setToken('');
   }
-  gapi.client.setToken('');
   delete localStorage.authToken;
 }
 
