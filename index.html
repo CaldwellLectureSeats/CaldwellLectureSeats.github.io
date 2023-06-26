@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
-  <fieldset>
+  <fieldset class="flexcol">
 
   <div id="header">
     <a href="#" id="title">Lecture<span class="themeColor">Seats</span></a>
@@ -121,7 +121,7 @@
         <i class="material-icons" id="getAttendanceEditBtn" onclick>edit</i>
       </div>
       Attendance passcode:
-      <div>
+      <div class="flexrow">
         <input id="getAttendanceClassCodeInput">
         <i class="material-icons" onclick="randomAttendanceClassCodeClick()" id="randomAttendanceClassCodeBtn">autorenew</i>
         <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
@@ -197,7 +197,7 @@
     <img src="https://i.giphy.com/media/FgH5xSNjGHZsiYPWAX/giphy.webp" alt="Loading...">
   </div>
 
-  <div id="accessibility">
+  <div id="accessibility" class="flexcol">
     <i class="material-icons" onclick="changeFontSize(1)">text_increase</i>
     <i class="material-icons" onclick="changeFontSize(-1)">text_decrease</i>
     <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()">light_mode</i>
