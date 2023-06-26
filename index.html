@@ -58,6 +58,7 @@
     </div>
 
     <div id="addInstructorSection">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Create New Section</div>
       Semester:
       <select id="sectionSemesterSelect"><option disabled selected value></option></select>
@@ -76,13 +77,12 @@
       </div> -->
       <button id="sectionSubmitBtn">Save Section</button>
       <button id="sectionDeleteBtn" class="hidden">Delete Section</button>
-      <button onclick="navigateBack()">Cancel</button>
     </div>
 
     <div id="selectStudentSection">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Select section where you are a student</div>
       <div id="availableStudentSections" class="sectionCards"></div>
-      <button onclick="navigateBack()">Cancel</button>
     </div>
 
     <div id="profile">
@@ -103,15 +103,15 @@
 
     <!-- for instructors and admins -->
     <div id="rooms">
-      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
     </div>
     <div id="allSections">
-      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
     </div>
 
     <!-- for instructors -->
     <div id="getAttendance">
-      <div><button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div>
         <span id="getAttendanceSectionId"></span>
         <span id="getAttendanceCrossListIds"></span>
@@ -142,28 +142,34 @@
       </div>
       <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
       <div class="separator"></div>
-      <div id="attendanceMarked"></div>
+      <div id="attendanceMarked" class="ahidden">
+        hi
+      </div>
     </div>
     <div id="QRcode" onclick="navigateBack()"></div>
-    <!-- <div id="room"></div>
+    <div id="room">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+    </div>
     <div id="attendanceRecord">
-      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
-    </div> -->
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div id="attendance"></div>
+      <button id="downloadAttendanceBtn">Download</button>
+    </div>
 
     <!-- for students -->
     <div id="markAttendance">
-      <div><button onclick="navigateBack()"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="markAttendanceSectionId"></div>
       <div id="attendanceMarked"></div>
       Attendance passcode:
-      <div>
-        <input type="password" id="markAttendanceClassCodeInput">
-        <i class="material-icons" onclick="markAttendanceQRcodeButtonClick()">qr_code_scanner</i>
+      <div class="flexrow w300">
+        <input type="password" id="markAttendanceClassCodeInput" class="grow">
+        <i class="material-symbols-outlined" onclick="markAttendanceQRcodeButtonClick()">qr_code_scanner</i>
       </div>
       Seat code:
-      <div>
-        <input id="markAttendanceSeatCodeInput">
-        <i class="material-icons" onclick="markAttendanceQRseatButtonClick()">qr_code_scanner</i>
+      <div class="flexrow w300">
+        <input id="markAttendanceSeatCodeInput" class="grow">
+        <i class="material-symbols-outlined" onclick="markAttendanceQRseatButtonClick()">barcode_scanner</i>
       </div>
       Selfie:
       <div class="w300 center">
@@ -179,10 +185,10 @@
       <div class="separator"></div>
       <button id="markAttendanceButton">Mark Attendance</button>
       <div class="separator"></div>
-      <button id="markAttendanceRemoveButton">Remove from My Section</button>
+      <button id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove from My Sections</button>
     </div>
     <div id="QRreader">
-      <div><button onclick="navigateBack()" id="QRReaderBackButton"><i class="material-icons">arrow_back_ios</i>Back</button></div>
+      <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="QRreaderVideo"></div>
     </div>
   </div>

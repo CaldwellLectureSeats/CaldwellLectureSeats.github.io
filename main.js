@@ -187,7 +187,7 @@ async function getSections(semester){
   if(semester && !allSections[semester]){
     allSections[semester]=await db.findOne('sections',semester);
     if(allSections[semester].error){
-      alert('Something went wrong.');
+      alert('Something went wrong. Try to reload.');
       return;
     }else if(allSections[semester]===null){
       allSections[semester]={};
@@ -320,7 +320,7 @@ function markAttendanceQRcodeButtonClick(event){
   openQRreader('markAttendanceClassCodeInput');
 }
 function markAttendanceQRseatButtonClick(event){
-  openQRreader('markAttendanceClassSeatInput');
+  openQRreader('markAttendanceSeatCodeInput');
 }
 
 var selfieBlob=null;
@@ -725,7 +725,7 @@ async function showEnrolledAndTeachingSections(semester){
     instructorSections.classList.remove('hidden');
   }
   var sections=await getSections(semester);
-  // remove old
+  // remove old (remove every card except the [+] card)
   for(let i=studentSections.childElementCount-1;i--;){
     studentSections.children[i].remove();
   }
@@ -733,7 +733,7 @@ async function showEnrolledAndTeachingSections(semester){
     instructorSections.children[i].remove();
   }
   // add sections
-  for(let id in sections){
+  for(let id of Object.keys(sections).sort()){
     let section=sections[id];
     if(userDoc[semester]?.includes(id)){
       addSectionCard(id,section,studentSections,markAttendanceCardClick);
