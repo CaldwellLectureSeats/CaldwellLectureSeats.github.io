@@ -348,32 +348,36 @@ function markAttendanceQRseatButtonClick(event){
 }
 
 var selfieBlob=null;
-$('#takeSelfieStartVideoBtn').addEventListener('click',event=>{
-  event.currentTarget.classList.add('hidden');
-  $('#selfieImg').classList.add('hidden');
-  $('#selfieCanvas').classList.add('hidden');
-  $('#selfieUndo').classList.add('hidden');
-  $('#selfieVideo').classList.remove('hidden');
-  $('#takeSelfieBtn').classList.remove('hidden');
-  startCamera($('#selfieVideo'),200);
-});
-$('#takeSelfieBtn').addEventListener('click',async event=>{
-  event.currentTarget.classList.add('hidden');
-  $('#selfieImg').classList.add('hidden');
-  $('#selfieVideo').classList.add('hidden');
-  $('#selfieCanvas').classList.remove('hidden');
-  $('#selfieUndo').classList.remove('hidden');
-  $('#takeSelfieStartVideoBtn').classList.remove('hidden');
-  selfieBlob=await takePhoto($('#selfieVideo'),$('#selfieCanvas'),200);
-});
-$('#selfieUndo').addEventListener('click',event=>{
+const selfieBtn=$('#selfieBtn');
+const selfieImg=$('#selfieImg');
+const selfieCanvas=$('#selfieCanvas');
+const selfieVideo=$('#selfieVideo');
+const selfieUndo=$('#selfieUndo');
+async function photoClick(){
+  if(selfieBtn.innerText.endsWith('...')){
+    selfieBtn.innerHTML='<span class="material-symbols-outlined">camera</span> Snap Photo';
+    selfieImg.classList.add('hidden');
+    selfieCanvas.classList.add('hidden');
+    selfieUndo.classList.add('hidden');
+    selfieVideo.classList.remove('hidden');
+    startCamera(selfieVideo,200);
+  }else{
+    selfieBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> Take a Selfie...';
+    selfieImg.classList.add('hidden');
+    selfieVideo.classList.add('hidden');
+    selfieCanvas.classList.remove('hidden');
+    selfieUndo.classList.remove('hidden');
+    selfieBlob=await takePhoto(selfieVideo,selfieCanvas,200);
+  }
+}
+selfieBtn.onclick=selfieImg.onclick=selfieVideo.onclick=selfieCanvas.onclick= photoClick;
+
+selfieUndo.addEventListener('click',event=>{
   stopCamera();
-  event.currentTarget.classList.add('hidden');
-  $('#selfieImg').classList.remove('hidden');
-  $('#selfieVideo').classList.add('hidden');
-  $('#selfieCanvas').classList.add('hidden');
-  $('#takeSelfieBtn').classList.add('hidden');
-  $('#takeSelfieStartVideoBtn').classList.remove('hidden');
+  selfieUndo.classList.add('hidden');
+  selfieImg.classList.remove('hidden');
+  selfieVideo.classList.add('hidden');
+  selfieCanvas.classList.add('hidden');
   selfieBlob=null;
 });
 

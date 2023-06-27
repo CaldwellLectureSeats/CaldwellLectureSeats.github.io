@@ -42,11 +42,7 @@ provider.setCustomParameters({
   prompt: "select_account",
   login_hint: localStorage.email||null
 });  
-
-// window.provider.addScope("https://www.googleapis.com/auth/drive.file");
-// window.gauth = GoogleAuthProvider;
-// window.signInWithRedirect = signInWithRedirect;
-// window.signInWithPopup = signInWithPopup;
+provider.addScope("https://www.googleapis.com/auth/drive.file");
 
 window.signIn=async function(){
   // signInWithRedirect(auth, provider);
