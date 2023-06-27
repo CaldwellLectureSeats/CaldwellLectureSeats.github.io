@@ -9,7 +9,13 @@ function stopCamera(){
 async function startCamera(video,size){
   cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
   video.srcObject = cameraStream;
-  setTimeout(()=>{
+  let resizeLoop;
+  function resize(){
+    if(video.videoWidth){
+      clearInterval(resizeLoop);
+    }else{
+      return;
+    }
     try{
       if(video.videoWidth>video.videoHeight){
         video.setAttribute('height',size);
@@ -22,7 +28,8 @@ async function startCamera(video,size){
     }catch(e){
       toast(video.width+','+video.height,'ERROR',-1);
     }
-  },200);
+  }
+  setInterval(resize,50);
 }
 
 function takePhoto(video,canvas,size,imageType="image/jpeg"){
