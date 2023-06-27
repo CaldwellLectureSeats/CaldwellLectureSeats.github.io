@@ -37,7 +37,7 @@ function signInToGoogleAPI(prompt){
         }
       }
     });
-    tokenClient.requestAccessToken({hint:auth.currentUser.email, prompt:prompt?'consent':''});
+    tokenClient.requestAccessToken({hint:auth?.currentUser?.email, prompt:prompt?'select_account':''});
   });
 }
 

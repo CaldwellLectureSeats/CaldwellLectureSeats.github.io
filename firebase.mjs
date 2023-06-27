@@ -33,6 +33,7 @@ const app = initializeApp(firebaseConfig);
 
 // init authentication
 window.auth = getAuth();
+window.getRedirectResult=getRedirectResult;
 
 // bind global onAuth to onAuthStateChanged
 window.onAuth = f => onAuthStateChanged(window.auth, f);
@@ -45,8 +46,8 @@ provider.setCustomParameters({
 // provider.addScope("https://www.googleapis.com/auth/drive.file");
 
 window.signIn=async function(){
-  signInWithRedirect(auth, provider);
-  // signInWithPopup(auth, provider);
+  // signInWithRedirect(auth, provider);
+  signInWithPopup(auth, provider);
   // const userCred = await getRedirectResult(auth);
   // console.log(userCred)
 }
