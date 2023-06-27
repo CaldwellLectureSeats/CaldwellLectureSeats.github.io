@@ -9,6 +9,11 @@ function stopCamera(){
 async function startCamera(video,size){
   cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
   video.srcObject = cameraStream;
+  video.onloadedmetadata = function(e) {
+    console.log(e);
+    toast([video.videoWidth,video.videoHeight],'meta',1);
+    video.play();
+  }
   let resizeLoop;
   function resize(){
     if(video.videoWidth){
@@ -24,7 +29,7 @@ async function startCamera(video,size){
         video.setAttribute('width',size);
         video.removeAttribute('height');
       }
-      toast([video.videoWidth,video.videoHeight,video.getAttribute('width'),video.getAttribute('height')].toString())
+      // toast([video.videoWidth,video.videoHeight,video.getAttribute('width'),video.getAttribute('height')].toString())
     }catch(e){
       toast(video.width+','+video.height,'ERROR',-1);
     }
