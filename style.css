@@ -240,7 +240,7 @@ fieldset {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* transform: scaleX(-1); */
+  transform: scaleX(-1);
 }
 #selfieUndo {
   cursor: pointer;
