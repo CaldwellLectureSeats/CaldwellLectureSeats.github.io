@@ -10,31 +10,15 @@ async function startCamera(video,size){
   cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
   video.srcObject = cameraStream;
   video.onloadedmetadata = function(e) {
-    console.log(e);
-    toast([video.videoWidth,video.videoHeight],'meta',1);
+    if(video.videoWidth>video.videoHeight){
+      video.setAttribute('height',size);
+      video.removeAttribute('width');
+    }else{
+      video.setAttribute('width',size);
+      video.removeAttribute('height');
+    }
     video.play();
   }
-  let resizeLoop;
-  function resize(){
-    if(video.videoWidth){
-      clearInterval(resizeLoop);
-    }else{
-      return;
-    }
-    try{
-      if(video.videoWidth>video.videoHeight){
-        video.setAttribute('height',size);
-        video.removeAttribute('width');
-      }else{
-        video.setAttribute('width',size);
-        video.removeAttribute('height');
-      }
-      // toast([video.videoWidth,video.videoHeight,video.getAttribute('width'),video.getAttribute('height')].toString())
-    }catch(e){
-      toast(video.width+','+video.height,'ERROR',-1);
-    }
-  }
-  setInterval(resize,50);
 }
 
 function takePhoto(video,canvas,size,imageType="image/jpeg"){
