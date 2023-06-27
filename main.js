@@ -142,19 +142,6 @@ function signOut(){
   googleAPIsignOut();
 }
 
-function toast(msg,title){
-  let toastMessage=$('#toastMessage');
-  toastMessage.innerHTML=title?title+'\n\n':'';
-  if(typeof(msg)==='object'){
-    for(let item in msg){
-      if(msg[item])toastMessage.innerHTML+=item+' : '+msg[item]+'\n';
-    }
-  }else{
-    toastMessage.innerHTML+=msg;
-  }
-  $('#toast').classList.remove('hidden');
-}
-
 
 ///////////////////// Navigation ///////////////////
 
@@ -285,7 +272,7 @@ async function checkInfoAndMarkAttendance(){
     let photoId=null;
     let currentDT=getDateTime();
     if(selfieBlob){
-      if(!await verifyAuthToken())await signInToGoogleAPI();
+      if(!await verifyAuthToken())await signInToGoogleAPI(true);
       let folderId=await getFolderId(semesterSectionId,section.i);
       photoId=await uploadFile('selfie-'+currentDT.join('-').replace(':','-')+'.jpg',selfieBlob,folderId);
     }
@@ -805,6 +792,32 @@ saveNameBtn.addEventListener('click',async e=>{
   }
   saveNameBtn.removeAttribute('disabled');
 })
+
+
+///////////////// Toast ////////////////////////////
+function toast(msg,title){
+  let toastMessage=$('#toastMessage');
+  toastMessage.innerHTML=title?title+'\n\n':'';
+  if(typeof(msg)==='object'){
+    for(let item in msg){
+      if(msg[item])toastMessage.innerHTML+=item+' : '+msg[item]+'\n';
+    }
+  }else{
+    toastMessage.innerHTML+=msg;
+  }
+  window.addEventListener('mousedown',closeToast);
+  window.addEventListener('keydown',closeToast);
+  window.addEventListener('popstate',closeToast);
+  mainDiv.addEventListener('scroll',closeToast);
+  $('#toast').classList.remove('hidden');
+}
+function closeToast(){
+  window.removeEventListener('mousedown',closeToast);
+  window.removeEventListener('keydown',closeToast);
+  window.removeEventListener('popstate',closeToast);
+  mainDiv.removeEventListener('scroll',closeToast);
+  $('#toast').classList.add('hidden');
+}
 
 
 ////////////// Accessibility Preferences /////////////
