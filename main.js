@@ -1,5 +1,6 @@
 'use strict'
 
+//TODO: change all alerts to toasts
 
 /////////////////// Constants //////////////////////
 
@@ -44,7 +45,7 @@ window.addEventListener('load', async function(){
   // login functionality
   onAuth(async function(user){
     // console.log('checking auth',user)
-    toast(user,'checking auth');
+    // toast(user,'checking auth');
     if(user){ // User is signed in
       //TODO: ensure only caldwell.edu users
       // if(!user.email.endsWith('@caldwell.edu')){
@@ -68,20 +69,20 @@ window.addEventListener('load', async function(){
       userDoc=await db.findOne('users',user.email);
       // if this is a new user, update their record in the database
       if(userDoc?.error){
-        alert('Something went wrong.');
+        toast('Something went wrong.','Error',-1);
         return;
       }
       if(userDoc===null){
         userDoc={n:user.displayName};
         let r=await db.insertOne('users', userDoc, user.email);
         if(r.error){
-          toast(r.error.code,'Error')
+          toast(r.error.code,'Error',-1);
           return;
         }
       }else if(!userDoc.n){
         let r=await db.updateOne('users', user.email, {n:user.displayName});
         if(r.error){
-          toast(r.error.code,'Error')
+          toast(r.error.code,'Error',-1);
         }
       }
       // display user name
@@ -133,7 +134,7 @@ window.addEventListener('load', async function(){
       // });
     }
   },
-  error=>toast(error,'Error: '+error)
+  error=>toast(error,'Error: '+error,-1)
   );
 });
 
@@ -195,7 +196,8 @@ async function getSections(semester){
   if(semester && !allSections[semester]){
     allSections[semester]=await db.findOne('sections',semester);
     if(allSections[semester].error){
-      alert('Something went wrong. Try to reload.');
+      // alert('Something went wrong. Try to reload.');
+      toast('Something went wrong.\nTry to reload.','Error',-1);
       return;
     }else if(allSections[semester]===null){
       allSections[semester]={};
@@ -249,7 +251,8 @@ $('#markAttendanceRemoveButton').addEventListener('click',async e=>{
     let sectionId=$('#markAttendanceSectionId').innerText;
     let r=await db.updateOne('users',auth.currentUser.email,{[localStorage.semesterSelected]:db.arrayRemove(sectionId)});
     if(r.error){
-      alert('Something went wrong. Please try again.');
+      toast('Something went wrong. Please try again.','Error',-1);
+      // alert('Something went wrong. Please try again.');
     }else{
       userDoc[localStorage.semesterSelected]=userDoc[localStorage.semesterSelected].filter(e=>e!==sectionId);
       showEnrolledAndTeachingSections(localStorage.semesterSelected);
@@ -278,21 +281,23 @@ async function checkInfoAndMarkAttendance(){
     }
     if(await markAttendance(semesterSectionId,code,seat,photoId,currentDT[0],currentDT[1])){
       loadingScreen(false);
-      alert('Your attendance was marked.')
       if(!section.attended)section.attended=[];
       section.attended.push([1,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
       showMarkAttendance(markAttendanceIdDiv.innerText,section);
+      // alert('Your attendance was marked.')
+      toast('Your attendance was marked.','Success!',1);
     }else{
       loadingScreen(false);
-      alert('ERROR: Your attendance was NOT marked.\n\nPlease make sure the instructor is taking attendance, and that your attendance passcode is correct.');
       console.log('here')
       if(!section.attended)section.attended=[];
       section.attended.push([0,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
       showMarkedAttendances(section);
-      
+      // alert('ERROR: Your attendance was NOT marked.\n\nPlease make sure the instructor is taking attendance, and that your attendance passcode is correct.');
+      toast('Please make sure the instructor is taking attendance, and that your attendance passcode is correct.','Your attendance was NOT marked.',-1);
     }
   }else{
-    alert('Please enter a valid attendance passcode.')
+    toast('Please enter a valid attendance passcode.');
+    // alert('Please enter a valid attendance passcode.')
   }
 }
 
@@ -795,28 +800,36 @@ saveNameBtn.addEventListener('click',async e=>{
 
 
 ///////////////// Toast ////////////////////////////
-function toast(msg,title){
-  let toastMessage=$('#toastMessage');
-  toastMessage.innerHTML=title?title+'\n\n':'';
+const toastDiv=$('#toast');
+const toastMsg=$('#toastMessage');
+function toast(msg,title,affect){
+  if(affect){
+    toastDiv.style.setProperty('--toast-accent',affect>0?'#4f6':'#f64')
+  }
+  toastMsg.innerHTML=title?title+'\n\n':'';
   if(typeof(msg)==='object'){
     for(let item in msg){
-      if(msg[item])toastMessage.innerHTML+=item+' : '+msg[item]+'\n';
+      if(msg[item])toastMsg.innerHTML+=item+' : '+msg[item]+'\n';
     }
   }else{
-    toastMessage.innerHTML+=msg;
+    toastMsg.innerHTML+=msg;
   }
-  window.addEventListener('mousedown',closeToast);
-  window.addEventListener('keydown',closeToast);
-  window.addEventListener('popstate',closeToast);
-  mainDiv.addEventListener('scroll',closeToast);
-  $('#toast').classList.remove('hidden');
+  setTimeout(()=>{
+    window.addEventListener('mousedown',closeToast);
+    window.addEventListener('keydown',closeToast);
+    window.addEventListener('popstate',closeToast);
+    mainDiv.addEventListener('scroll',closeToast);
+    toastDiv.classList.remove('hidden');
+    toastDiv.classList.add('slide-up');
+  },200);
 }
 function closeToast(){
   window.removeEventListener('mousedown',closeToast);
   window.removeEventListener('keydown',closeToast);
   window.removeEventListener('popstate',closeToast);
   mainDiv.removeEventListener('scroll',closeToast);
-  $('#toast').classList.add('hidden');
+  toastDiv.classList.add('hidden');
+  toastDiv.classList.remove('slide-up');
 }
 
 

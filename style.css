@@ -72,6 +72,8 @@ scrollbar {width:5px;height:5px;}
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  gap: 1em;
 }
 .top-right {
   position:absolute;
@@ -237,7 +239,7 @@ fieldset {
   display: flex;
   justify-content: center;
   align-items: center;
-  transform: scaleX(-1);
+  /* transform: scaleX(-1); */
 }
 #selfieUndo {
   cursor: pointer;
@@ -294,11 +296,28 @@ fieldset {
   padding:0.5em;
 } */
 
+#loading {
+  color:white;
+}
+#loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid #03f; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 #toast {
+  --toast-accent: gray;
   position:fixed;
   bottom:1em;
   left:50%;
-  transform: translateX(-50%);
+  transform: translate(-50% , 100%);
   width:80%;
   background-color: #333;
   color: #ccc;
@@ -306,10 +325,19 @@ fieldset {
   padding-right: 3em;
   border: solid 1px gray;
   border-radius: 5px;
-  overflow: auto;
+  overflow: hidden;
+  border-left: 8px solid var(--toast-accent);
+}
+#toast.slide-up {
+  animation: progress .2s linear forwards;
+}
+@keyframes progress {
+  100%{
+    transform: translate(-50% , 0%);
+  }
 }
 #toastMessage {
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 #accessibility {
