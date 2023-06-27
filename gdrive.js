@@ -10,6 +10,10 @@ async function initGoogleAPI(){
   await gapi.client.init({
     apiKey: window.API_KEY,
     discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    // client_id: CLIENT_ID,
+    // scope: 'https://www.googleapis.com/auth/drive.file',
+    // ux_mode: 'redirect',
+    // redirect_uri: '#'
   });
 }
 
@@ -19,6 +23,8 @@ function signInToGoogleAPI(prompt){
     let tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: 'https://www.googleapis.com/auth/drive.file',
+      // redirect_uri: 'http://127.0.0.1:5500/',
+      // ux_mode: 'redirect',
       expires_in: 60*60*12,
       callback: async ()=>{
         let token=gapi.client.getToken();
@@ -31,7 +37,7 @@ function signInToGoogleAPI(prompt){
         }
       }
     });
-    tokenClient.requestAccessToken({hint:auth.currentUser.email, prompt:prompt?'consent':'none'});
+    tokenClient.requestAccessToken({hint:auth.currentUser.email, prompt:prompt?'consent':''});
   });
 }
 
