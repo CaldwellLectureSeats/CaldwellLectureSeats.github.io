@@ -17,27 +17,32 @@ async function initGoogleAPI(){
   });
 }
 
-function signInToGoogleAPI(prompt){
+function signInToGoogleAPI(prompt='select_account'){
   return new Promise(async function(resolve, reject){
-    if(!gapi.client)await initGoogleAPI();
-    let tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/drive.file',
-      // redirect_uri: 'http://127.0.0.1:5500/',
-      // ux_mode: 'redirect',
-      expires_in: 60*60*12,
-      callback: async ()=>{
-        let token=gapi.client.getToken();
-        if(token){
-          localStorage.authToken=JSON.stringify(token);
-          resolve();
-        }else{
-          googleAPIsignOut();
-          reject();
-        }
-      }
-    });
-    tokenClient.requestAccessToken({hint:auth?.currentUser?.email, prompt:prompt?'select_account':''});
+    try{
+      if(!gapi.client)await initGoogleAPI();
+      let tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/drive.file',
+        // redirect_uri: 'http://127.0.0.1:5500/',
+        // ux_mode: 'redirect',
+        expires_in: 60*60*12,
+        callback: async ()=>{
+          let token=gapi.client.getToken();
+          if(token){
+            localStorage.authToken=JSON.stringify(token);
+            resolve(true);
+          }else{
+            googleAPIsignOut();
+            resolve(false);
+          }
+        },
+        error_callback: e=>resolve({error:e.message})
+      });
+      tokenClient.requestAccessToken({hint:auth?.currentUser?.email, prompt});
+    }catch(e){
+      reject(e);
+    }
   });
 }
 
@@ -52,13 +57,14 @@ async function verifyAuthToken(){
   }
   var r = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='+gapi.client.getToken().access_token);
   r = await r.json();
+  if(r.expires_in)console.log('token expires in',(r.expires_in/60).toFixed(1)+'m');
   return !r.error;
 }
 
 function googleAPIsignOut(){
   const token=gapi?.client?.getToken();
   if(token){
-    google.accounts.oauth2.revoke(token.access_token);
+    // google.accounts.oauth2.revoke(token.access_token);
     gapi.client.setToken('');
   }
   delete localStorage.authToken;
@@ -129,6 +135,25 @@ async function uploadFile(name,fileBlob,folderId,shareEmails){
   }
 }
 
+async function fetchPostForm(url,headers,body){
+  var form = new FormData();
+  for(key in body){
+    form.append(key,body[key]);
+  }
+  var res=await fetch(url,
+  {
+    method: 'POST',
+    headers: new Headers(headers),
+    body: form,
+  });
+  if(res.ok){
+    return await res.text();
+  }else{
+    console.warn(res);
+    return null;
+  }
+}
+
 function shareFile(fileId,emails){
   if(!emails)return;
   if(emails?.constructor!==Array)emails=[emails];
@@ -154,4 +179,8 @@ function shareFile(fileId,emails){
   // can later get shared file contents
   //  (await gapi.client.drive.files.get({fileId, mimeType:'text/plain', alt:'media'})).body
   // or via a link; e.g. img.src = 'https://drive.google.com/uc?id='+fileId
+}
+
+function getLinkFromFileId(fileId){
+  return 'https://drive.google.com/uc?id='+fileId;
 }

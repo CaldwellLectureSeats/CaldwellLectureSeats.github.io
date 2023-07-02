@@ -1,7 +1,7 @@
 // import required firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-// import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+// import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithCredential, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import { getFirestore, Timestamp, collection, doc, addDoc, setDoc, getDocs, getDoc, updateDoc, arrayUnion, arrayRemove, query, where, deleteField } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
 
 // firebase configuration
@@ -33,7 +33,7 @@ const app = initializeApp(firebaseConfig);
 
 // init authentication
 window.auth = getAuth();
-window.getRedirectResult=getRedirectResult;
+
 
 // bind global onAuth to onAuthStateChanged
 window.onAuth = f => onAuthStateChanged(window.auth, f);
@@ -43,11 +43,23 @@ provider.setCustomParameters({
   prompt: "select_account",
   login_hint: localStorage.email||null
 });  
-// provider.addScope("https://www.googleapis.com/auth/drive.file");
+provider.addScope("https://www.googleapis.com/auth/drive.file");
+
+
+// debugging
+// window.provider=provider;
+// window.GoogleAuthProvider=GoogleAuthProvider;
+// window.getRedirectResult=getRedirectResult;
+// window.signInWithCredential=signInWithCredential;
+
+
 
 window.signIn=async function(){
   // signInWithRedirect(auth, provider);
-  signInWithPopup(auth, provider);
+  return signInWithPopup(auth, provider).then(r=>{
+    localStorage.authToken=JSON.stringify({access_token:r._tokenResponse.oauthAccessToken})
+    localStorage._tokenResponse=JSON.stringify(r._tokenResponse);
+  });
   // const userCred = await getRedirectResult(auth);
   // console.log(userCred)
 }
