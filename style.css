@@ -231,7 +231,6 @@ div[name]:before {
 
 #loading {
   z-index: 100;
-  pointer-events: none;
   background-color: gray;
   opacity: 0.5;
 }
@@ -308,6 +307,32 @@ div[name]:before {
 .table-header {
   background-color: #cbc;
   color:black;
+  cursor: pointer;
+}
+
+#roomMap {
+  display: grid;
+  gap: 2px;
+  width: fit-content;
+  /* transform-origin: top left; */
+}
+#roomMap > * {
+  background-color: teal;
+  /* width: 25px;
+  height: 25px; */
+  overflow: hidden;
+  font-size: 10px;
+  color:white;
+  background-size: cover;
+  border-radius: 5px 5px 0px 0px;
+  text-align: center;
+}
+#roomMap > * > span {
+  position: absolute;
+  bottom: 111%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: pre;
 }
 
 .sectionCards {

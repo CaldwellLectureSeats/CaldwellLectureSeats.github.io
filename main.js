@@ -107,6 +107,8 @@ window.addEventListener('load', async function(){
         if(r.error){
           toastError('Could not update name.\n\n'+r.error.code);
         }
+      }else{
+        $('#userDisplayName').innerText=userDoc.n;
       }
       // display user name
       nameInput.value=nameInput.lastValue=userDoc.n||user.displayName;
@@ -173,18 +175,23 @@ window.onhashchange=function(event){
   }
 }
 function showInMain(childOfMain){
-  if(navAllowed)
-  window.location.hash=childOfMain;
+  if(navAllowed)window.location.hash=childOfMain;
 }
 function navigateBack(){
-  if(navAllowed)
-  history.back();
+  if(navAllowed)history.back();
 }
+
+window.addEventListener('keydown',e=>{
+  //TODO: check that this works; disable repeats
+  if(e.key==='Escape'){
+    navigateBack();
+  }
+});
 
 var navAllowed=true;
 // ensure we don't navigate away from taking attendance until it's stopped
 window.addEventListener('popstate',event=>{
-  if(location.hash!=='#getAttendance' && location.hash!=='#QRcode' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
+  if(location.hash!=='#getAttendance' && location.hash!=='#QRcode' && location.hash!=='#room' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
     showGetAttendance();
     takingAttendance();
   }
@@ -228,14 +235,22 @@ async function getSection(semester,sectionId){
   if(sections)return sections[sectionId];
 }
 
-async function getRooms(semester){
+async function getRooms(){
   if(!allRooms?.length){
     allRooms=await db.find('rooms');
   }
   return allRooms;
 }
 
-async function getAttendance(semester,sectionId,refresh){
+async function getRoom(roomId){
+  return (await getRooms()).filter(r=>r.id===roomId)[0];
+}
+
+async function getRoomMap(roomId){
+  return (await getRoom(roomId)).map.toLowerCase().split('\n').map(r=>r.split('\t'));
+}
+
+async function getAttendance(semester,sectionId,refresh,filter){
   let attendId=semester+SEMESTER_SECTION_SEPARATOR+sectionId;
   if(refresh || !allAttendances[attendId]){
     allAttendances[attendId]=await db.findOne('attend',attendId);
@@ -250,8 +265,22 @@ async function getAttendance(semester,sectionId,refresh){
       }
     }
   }
+  if(filter && typeof(filter)==='object'){
+    let filteredAttendances={};
+    for(let user in allAttendances[attendId]){
+      filteredAttendances[user]=allAttendances[attendId][user]
+      .filter(attendDoc=>{
+        for(let filterKey in filter){
+          if(attendDoc[filterKey]!==filter[filterKey])return false;
+        }
+        return true;
+      });
+    }
+    return filteredAttendances;
+  }
   return allAttendances[attendId];
 }
+
 
 //////////////// Mark Attendance ///////////////////
 
@@ -269,6 +298,12 @@ async function showMarkAttendance(sectionId,section){
   $('#selfieImg').src=userDoc.img||auth.currentUser.photoURL||'user512.png';
   showMarkedAttendances(section);
   checkMissingAttendanceInfo();
+}
+
+async function validateSeat(seatCode,roomCode){
+  seatCode=seatCode?.toLowerCase()?.trim();
+  if(!seatCode)return;
+  return (await getRoomMap(roomCode)).flat().indexOf(seatCode)>=0;
 }
 
 async function checkMissingAttendanceInfo(){
@@ -304,8 +339,8 @@ async function checkMissingAttendanceInfo(){
   }else{
     $('label[for="markAttendanceSeatCodeInput"]').classList.remove('required');
   }
-  if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_SEAT && !$('#markAttendanceSeatCodeInput').value){
-    markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Seat code';
+  if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_SEAT && !(await validateSeat($('#markAttendanceSeatCodeInput').value,markAttendanceSectionId._sectionDoc.room))){
+    markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Valid seat code';
   }
   // check photo, if required
   if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_PHOTO){
@@ -363,11 +398,8 @@ $('#markAttendanceButton').addEventListener('click',checkInfoAndMarkAttendance);
 
 async function checkInfoAndMarkAttendance(){
   // check if any info is missing (and get new location coords)
-  console.log(markAttendanceLocation.value)
   markAttendanceLocation.value=null;
-  console.log(markAttendanceLocation.value)
   await checkMissingAttendanceInfo();
-  console.log(markAttendanceLocation.value)
   if(!markAttendanceRequirementsList.innerHTML){
     // collect all info
     loadingScreen(true);
@@ -398,7 +430,7 @@ async function checkInfoAndMarkAttendance(){
 
 async function markAttendance(semesterSectionId,code,seat,photo,loc,date,time){
   let user=auth.currentUser.email.split('@')[0].replaceAll('.','_');
-  let data={d:date,t:time,a:code};
+  let data={n:userDoc.n,d:date,t:time,a:code};
   if(seat)data.s=seat;
   if(loc)data.l=loc;
   if(photo)data.p=photo;
@@ -411,7 +443,6 @@ function openQRreader(target){
   var html5QrcodeScanner = new Html5QrcodeScanner("QRreaderVideo", {fps:10,qrbox:250});
   html5QrcodeScanner.render(onScanSuccess);
   function closeQRreader(){
-    console.log('closing qrcode reader');
     html5QrcodeScanner.clear();
     window.removeEventListener('popstate',closeQRreader);
   }
@@ -553,32 +584,40 @@ async function collectAttendanceBtnClick(){
       toast('Please enter a passcode for taking attendance.');
       return;
     }
-    // save preferred minutes value
-    localStorage.minutesToCollectAttendance=minutesToCollectAttendance.innerText;
+    loadingScreen(true);
     // save attendance info for section
     let sectionId=$('#getAttendanceSectionId').innerText;
     let section=await getSection(localStorage.semesterSelected,sectionId);
     section.a=md5(getAttendanceClassCodeInput.value).toUpperCase();
     section.e=db.now()+60*parseFloat(minutesToCollectAttendance.innerText);
+    // update section in database
+    let r=await db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+sectionId,{s:localStorage.semesterSelected,id:sectionId,i:section.i,a:section.a,e:section.e});
+    if(r.error){
+      toastError('Cannot start taking attendance.\nWe are having issues writing to the database.\n'+r.error)
+      loadingScreen(false);
+      return;
+    }
+    if(section?.x?.length){
+      for(let crossListId of section.x){
+        r=await db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+crossListId,{s:localStorage.semesterSelected,id:crossListId,i:section.i,a:section.a,e:section.e});
+        if(r.error){
+          toastError('Cannot start taking attendance.\nWe are having issues writing to the database.\n'+r.error)
+          loadingScreen(false);
+          return;
+        }
+      }
+    }
     // mark section as taking-attendance locally
+    localStorage.minutesToCollectAttendance=minutesToCollectAttendance.innerText;
     localStorage.attendanceCode=getAttendanceClassCodeInput.value;
     localStorage.takingAttendance=sectionId;
     localStorage.attendanceEndtime=section.e;
     // update UI and start timer
     takingAttendance();
-    // update section in database
-    // TODO: errorcheck
-    db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+sectionId,{s:localStorage.semesterSelected,id:sectionId,i:section.i,a:section.a,e:section.e});
-    if(section?.x?.length){
-      for(let crossListId of section.x){
-        db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+crossListId,{s:localStorage.semesterSelected,id:crossListId,i:section.i,a:section.a,e:section.e});
-      }
-    }
-    //TODO:
-    // save seat requirement option
   }else{
     stopTakingAttendance();
   }
+  loadingScreen(false);
 }
 
 function takingAttendance(){
@@ -637,11 +676,11 @@ async function stopTakingAttendance(){
 const attendancesDiv=$('#attendances');
 
 async function attendanceToday(){
-  attendanceFiltered({d:getDateTime()[0]});
+  await attendanceFiltered({d:getDateTime()[0]});
 }
 
 async function attendanceHistory(){
-  attendanceFiltered();
+  await attendanceFiltered();
 }
 
 var attendanceTable;
@@ -653,18 +692,10 @@ async function attendanceFiltered(filter){
   let filteredAttendances={},attendanceCodesAndTimes={};
   // get filtered data
   for(let sid of sectionIds){
-    let attendance=await getAttendance(localStorage.semesterSelected,sid,1);
-    filteredAttendances[sid]={};
-    for(let user in attendance){
-      if(!filter)filter={};
-      filteredAttendances[sid][user]=attendance[user].filter(attendDoc=>{
-        for(let filterKey in filter){
-          if(attendDoc[filterKey]!==filter[filterKey])return false;
-        }
-        attendanceCodesAndTimes[attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a]=attendDoc.d+' '+attendDoc.t;
-        return true;
-      });
-    }
+    filteredAttendances[sid]=await getAttendance(localStorage.semesterSelected,sid,1,filter);
+    Object.values(filteredAttendances[sid]).flat().forEach(attendDoc=>{
+      attendanceCodesAndTimes[attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a]=attendDoc.d+' '+attendDoc.t;
+    })
   }
   // sort attendance codes by datetime
   attendanceCodesAndTimes=Object.entries(attendanceCodesAndTimes).sort((x,y)=>x[1]>y[1]?1:-1);
@@ -684,6 +715,7 @@ async function attendanceFiltered(filter){
         let i=attendanceTable.attendanceCodes.indexOf(attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a);
         if(!rec[i+2])rec[i+2]='';
         rec[i+2]+=' '+attendDoc.t;
+        rec._attendDoc=attendDoc;
       }
       attendanceTable.push(rec);
     }
@@ -705,7 +737,7 @@ function displayAttendanceTable(){
   for(let rec of [attendanceTable.header].concat(attendanceTable)){
     for(let i=0;i<attendanceTable.header.length;i++){
       var d=attendancesDiv.appendChild(document.createElement('div'));
-      d.innerText=rec[i]||'';
+      d.innerText=rec[i]||'❌';
       if(i>1){
         d.title=attendanceTable.attendanceCodes[i-2];
         if(rec!==attendanceTable.header)d.style.overflowX='scroll';
@@ -755,7 +787,65 @@ function downloadAttendanceRecord(){
 }
 
 
-/////////// Create/Edit Section /////////////////////
+////////////// Room Map ////////////////////////////
+
+const roomMap=$('#roomMap');
+
+async function showRoom(){
+  // updated attendance table
+  await attendanceToday();
+  // create seat-student lookup table
+  var seating={};
+  for(let rec of attendanceTable){
+    seating[rec._attendDoc?.s?.toLowerCase()?.trim()]=rec._attendDoc;
+  }
+  // clear map and recreate from room
+  roomMap.innerHTML='';
+  let section=await getSection(localStorage.semesterSelected,$('#getAttendanceSectionId').innerText);
+  let room=await getRoomMap(section.room);
+  roomMap._rows=room.length;
+  roomMap._cols=0;
+  for(let rowNum=0;rowNum<room.length;rowNum++){
+    let row=room[rowNum];
+    roomMap._cols=Math.max(roomMap._cols,row.length);
+    for(let colNum=0;colNum<row.length;colNum++){
+      let seatCode=room[rowNum][colNum];
+      if(seatCode){
+        let seat=roomMap.appendChild(document.createElement('div'));
+        seat.style.gridRow=rowNum+1;
+        seat.style.gridColumn=colNum+1;
+        let student=seating[seatCode];
+        if(student){
+          seat.title=student.n;
+          seat.style.backgroundImage=`url("https://drive.google.com/uc?id=${student.p}")`;
+          seat.innerHTML=`<span>${student.n}</span>`;
+          seat.onmouseover=function(e){seat.style.transform='scale(2)';seat.style.overflow='visible';seat.style.zIndex=10;}
+          seat.onmouseout=function(e){seat.style.transform='';seat.style.overflow='hidden';seat.style.zIndex='';}
+          seat.onclick=function(e){seat.style.transform=seat.style.transform==='scale(6)'?'':'scale(6)';}
+        }else{
+          seat.innerText=seatCode;
+        }
+      }
+    }
+  }
+  let zoom=parseFloat(localStorage.roomMapZoom)||1;
+  roomMap.style.width=roomMap._cols*25*zoom;
+  roomMap.style.height=roomMap._rows*25*zoom;
+  $('#roomMapZoom').value=zoom;
+  // display the room map
+  showInMain('room');
+}
+
+function changeRoomMapSize(range){
+  let value=parseFloat(range.value);
+  range.title=(value*100).toFixed(0)+'%';
+  roomMap.style.width=roomMap._cols*25*value;
+  roomMap.style.height=roomMap._rows*25*value;
+  localStorage.roomMapZoom=value;
+}
+
+
+/////////// Create/Edit Section ////////////////////
 
 const CREATE_SECTION_BUTTON_TEXT = 'Create New Section';
 

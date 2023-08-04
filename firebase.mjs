@@ -29,6 +29,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+
 // const analytics = getAnalytics(app);
 
 // init authentication
@@ -57,7 +58,7 @@ provider.addScope("https://www.googleapis.com/auth/drive.file");
 window.signIn=async function(){
   // signInWithRedirect(auth, provider);
   return signInWithPopup(auth, provider).then(r=>{
-    localStorage.authToken=JSON.stringify({access_token:r._tokenResponse.oauthAccessToken})
+    localStorage.authToken=JSON.stringify({access_token:r._tokenResponse.oauthAccessToken});
     localStorage._tokenResponse=JSON.stringify(r._tokenResponse);
   });
   // const userCred = await getRedirectResult(auth);
@@ -76,6 +77,7 @@ window.db.arrayUnion = arrayUnion;
 window.db.arrayRemove = arrayRemove;
 
 window.db.find = async function(collectionName, ...queries){
+  if(!navigator.onLine)return {error:'You are offline.'};
   try{
     if(queries){
       var r=await getDocs(query(collection(DATABASE, collectionName), ...queries.map(q=>where(...q))));
@@ -100,6 +102,7 @@ window.db.find = async function(collectionName, ...queries){
 // }
 
 window.db.findOne = async function(collectionName, id){
+  if(!navigator.onLine)return {error:'You are offline.'};
   try{
     var docSnap = await getDoc(doc(DATABASE, collectionName, id));
     return docSnap.exists()?docSnap.data():null;
@@ -111,6 +114,7 @@ window.db.findOne = async function(collectionName, id){
 }
 
 window.db.insertOne = async function(collectionName, data, id){
+  if(!navigator.onLine)return {error:'You are offline.'};
   try{
     if(id){
       var docRef = await setDoc(doc(DATABASE, collectionName, id), data);
@@ -127,6 +131,7 @@ window.db.insertOne = async function(collectionName, data, id){
 }
 
 window.db.updateOne = async function(collectionName, id, data, ...data2){
+  if(!navigator.onLine)return {error:'You are offline.'};
   try{
     if(data2.length){
       await updateDoc(doc(DATABASE, collectionName, id), data, ...data2);
@@ -153,6 +158,7 @@ window.db.updateOne = async function(collectionName, id, data, ...data2){
 // }
 
 window.db.upsertOne = async function(collectionName, id, data){
+  if(!navigator.onLine)return {error:'You are offline.'};
   try{
     await updateDoc(doc(DATABASE, collectionName, id), data);
     return true;
@@ -160,7 +166,7 @@ window.db.upsertOne = async function(collectionName, id, data){
     if(e.code==='not-found'){
       return await window.db.insertOne(collectionName,data,id);
     }
-    console.error(e);
+    console.error('Upsert error',e);
     // toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
