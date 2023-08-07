@@ -174,8 +174,14 @@
         <button onclick="attendanceToday()"><i class="material-icons">today autorenew</i></button>
         <button onclick="attendanceHistory()"><i class="material-icons">date_range autorenew</i></button>
       </div>
-      <div id="attendances"></div>
-      <button class="hidden" id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()">Download Attendance</button>
+      <div id="attendancesContainer" class="hidden">
+        <div id="attendances"></div>
+        <!-- <input type="checkbox" id="onyFirstAttendance" name="onyFirstAttendance" checked="true">
+        <label for="onlyFirstAttendance">display only first attendance submission</label>
+        <br> -->
+        <br>
+        <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()">Download Attendance</button>
+      </div>
     </div>
 
     <div id="QRcode" class="center" onclick="navigateBack()"></div>
@@ -261,7 +267,7 @@
       </div>
       <button id="snapPhotoBtn"><span class="material-symbols-outlined">camera</span> Snap photo</button>
       <div class="separator"></div>
-      <button id="saveSelfieBtn" onclick="savePhoto()" disabled><i class="material-symbols-outlined">save</i> Save photo to Google Drive</button>
+      <button id="saveSelfieBtn" onclick="savePhoto()" disabled><i class="material-symbols-outlined">save</i> Save to Google Drive<br>and Continue</button>
     </div>
   
     <div id="QRreader">
@@ -284,7 +290,6 @@
   </div>
 
   <div id="toast" class="hidden">
-    <!-- <i id="closeToastBtn" class="material-icons top-right" onclick="this.parentElement.classList.add('hidden')">close</i> -->
     <span id="toastMessage"></span>
   </div>
   

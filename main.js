@@ -68,6 +68,7 @@ function download(filename, text) {
   document.body.removeChild(a);
 }
 
+
 ///////////// Initialize and Sign in ///////////////
 
 var userDoc;
@@ -295,7 +296,7 @@ async function showMarkAttendance(sectionId,section){
   markAttendanceSectionId._sectionDoc=section;
   markAttendanceClassCodeInput.value='';
   $('#markAttendanceSeatCodeInput').value='';
-  $('#selfieImg').src=userDoc.img||auth.currentUser.photoURL||'user512.png';
+  $('#selfieImg').src=getLinkFromFileId(userDoc.img)||auth.currentUser.photoURL||'user512.png';
   showMarkedAttendances(section);
   checkMissingAttendanceInfo();
 }
@@ -408,7 +409,7 @@ async function checkInfoAndMarkAttendance(){
     let code=markAttendanceClassCodeInput.value;
     let seat=$('#markAttendanceSeatCodeInput').value;
     let loc=markAttendanceLocation.value;
-    loc=loc.latitude+','+loc.longitude+'~'+loc.accuracy;
+    if(loc)loc=[loc.latitude,loc.longitude,loc.accuracy];
     let currentDT=getDateTime();
     if(!section.attended)section.attended=[];
     // try to mark attendance, then display success or fail messages
@@ -461,14 +462,17 @@ var selfieBlob=null,photoId=null,photoTakenTime=null;
 const selfiePhotoBtn=$('#snapPhotoBtn');
 const selfieCanvas=$('#selfieCanvas');
 const selfieVideo=$('#selfieVideo');
+const RETAKE_BTN_TXT='Retake Selfie';
 
 function showTakeSelfieScreen(){
   showInMain('takeSelfie');
   photoClick();
 }
 
+
+
 async function photoClick(event){
-  if(!event || selfiePhotoBtn.innerText.endsWith('...')){
+  if(!event || selfiePhotoBtn.innerText.includes(RETAKE_BTN_TXT)){
     selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">camera</span> Snap Photo';
     hide(selfieCanvas);
     show(selfieVideo);
@@ -481,7 +485,7 @@ async function photoClick(event){
       toastError('Unable to start camera.\nPlease make sure your camera permissions are enabled, reload, and try again.');
     }
   }else{
-    selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> Retake selfie...';
+    selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> '+RETAKE_BTN_TXT;
     hide(selfieVideo);
     show(selfieCanvas);
     $('#saveSelfieBtn').removeAttribute('disabled');
@@ -685,6 +689,8 @@ async function attendanceHistory(){
 
 var attendanceTable;
 const ATTEND_CODE_SEPARATOR=' : ';
+const ATTEND_TABLE_DATA_COL_OFFSET=6;
+
 async function attendanceFiltered(filter){
   let sectionId=$('#getAttendanceSectionId').innerText;
   let section=await getSection(localStorage.semesterSelected,sectionId);
@@ -694,42 +700,65 @@ async function attendanceFiltered(filter){
   for(let sid of sectionIds){
     filteredAttendances[sid]=await getAttendance(localStorage.semesterSelected,sid,1,filter);
     Object.values(filteredAttendances[sid]).flat().forEach(attendDoc=>{
-      attendanceCodesAndTimes[attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a]=attendDoc.d+' '+attendDoc.t;
+      let attendCode=attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a;
+      let dt1=attendanceCodesAndTimes[attendCode];
+      let dt2=attendDoc.d+' '+attendDoc.t;
+      if((!dt1) || (new Date(dt1) > new Date(dt2))){
+        attendanceCodesAndTimes[attendCode]=dt2;
+      }
     })
   }
   // sort attendance codes by datetime
   attendanceCodesAndTimes=Object.entries(attendanceCodesAndTimes).sort((x,y)=>x[1]>y[1]?1:-1);
   // create table
   attendanceTable=[];
+  attendanceTable.filter=filter;
   attendanceTable.semester=localStorage.semesterSelected;
   attendanceTable.id=sectionIds.join('|');
   if(filter?.d)attendanceTable.id+='-'+filter.d;
   attendanceTable.attendanceCodes=attendanceCodesAndTimes.map(x=>x[0]);
-  attendanceTable.header=['Section','User'].concat(attendanceCodesAndTimes.map(x=>x[1]));
+  attendanceTable.header=['Section','User','Name','On-time','Late','Absent'].concat(attendanceCodesAndTimes.map(x=>x[1]));
   for(let sid of sectionIds){
     for(let user in filteredAttendances[sid]){
       let rec=attendanceTable.header.map(x=>'');
       rec[0]=sid;
       rec[1]=user;
+      rec[2]=user;
+      rec[3]=0;
+      rec[4]=0;
+      rec[5]=0;
       for(let attendDoc of filteredAttendances[sid][user]){
         let i=attendanceTable.attendanceCodes.indexOf(attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a);
-        if(!rec[i+2])rec[i+2]='';
-        rec[i+2]+=' '+attendDoc.t;
+        if(rec[i+ATTEND_TABLE_DATA_COL_OFFSET]==='' || attendDoc.t<rec[i+ATTEND_TABLE_DATA_COL_OFFSET]){
+          rec[i+ATTEND_TABLE_DATA_COL_OFFSET]=attendDoc.t;
+        }
         rec._attendDoc=attendDoc;
+        if(attendDoc.n)rec[2]=attendDoc.n;
       }
       attendanceTable.push(rec);
     }
   }
+  for(let rec of attendanceTable){
+    for(let i=ATTEND_TABLE_DATA_COL_OFFSET;i<rec.length;i++){
+      if(rec[i]){
+        let dtStart=attendanceCodesAndTimes[i-ATTEND_TABLE_DATA_COL_OFFSET][1];
+        let attendanceStart=new Date(dtStart);
+        rec[i]=(new Date(dtStart.split(' ')[0]+' '+rec[i]) - attendanceStart)/60000;
+        if(rec[i]>5)rec[4]++;
+        else rec[3]++;
+      }else{
+        rec[5]++;
+      }
+    }
+  }
   // display table
   displayAttendanceTable();
-  show(attendancesDiv);
-  show('downloadAttendanceBtn');
+  show('attendancesContainer');
   window.addEventListener('popstate',hideAttendanceRecord,{once:true});
 }
 
 function hideAttendanceRecord(){
-  hide(attendancesDiv);
-  hide('downloadAttendanceBtn');
+  hide('attendancesContainer');
 }
 
 function displayAttendanceTable(){
@@ -737,15 +766,18 @@ function displayAttendanceTable(){
   for(let rec of [attendanceTable.header].concat(attendanceTable)){
     for(let i=0;i<attendanceTable.header.length;i++){
       var d=attendancesDiv.appendChild(document.createElement('div'));
-      d.innerText=rec[i]||'❌';
-      if(i>1){
-        d.title=attendanceTable.attendanceCodes[i-2];
-        if(rec!==attendanceTable.header)d.style.overflowX='scroll';
-      }
       if(rec===attendanceTable.header){
+        d.innerText=rec[i];
         d.addEventListener('click',()=>sortAttendanceTable(i));
         d.classList.add('table-header');
+      }else if(i>=ATTEND_TABLE_DATA_COL_OFFSET){
+        d.innerText=rec[i]===''?'❌':(rec[i]<5?'✔️':'+'+rec[i]+'min');
+        d.title=attendanceTable.attendanceCodes[i-ATTEND_TABLE_DATA_COL_OFFSET];
+        if(rec!==attendanceTable.header)d.style.overflowX='scroll';
+      }else{
+        d.innerText=rec[i];
       }
+
     }
   }
   attendancesDiv.style.setProperty('--colNum',attendanceTable.header.length);
@@ -775,7 +807,7 @@ function attendanceCSV(){
   let txt='';
   for(let rec of [attendanceTable.header].concat(attendanceTable)){
     for(let i=0;i<attendanceTable.header.length;i++){
-      txt+=(rec[i]||'')+',';
+      txt+=rec[i]+',';
     }
     txt+='\n';
   }
@@ -817,7 +849,7 @@ async function showRoom(){
         let student=seating[seatCode];
         if(student){
           seat.title=student.n;
-          seat.style.backgroundImage=`url("https://drive.google.com/uc?id=${student.p}")`;
+          seat.style.backgroundImage=`url("${getLinkFromFileId(student.p)||'user512.png'}")`;
           seat.innerHTML=`<span>${student.n}</span>`;
           seat.onmouseover=function(e){seat.style.transform='scale(2)';seat.style.overflow='visible';seat.style.zIndex=10;}
           seat.onmouseout=function(e){seat.style.transform='';seat.style.overflow='hidden';seat.style.zIndex='';}
@@ -1149,7 +1181,7 @@ saveNameBtn.addEventListener('click',async e=>{
   let r=await db.updateOne('users',auth.currentUser.email,{n:nameInput.value});
   if(!r.error){
     hide(saveNameBtn);
-    nameInput.lastValue=nameInput.value;
+    $('#userDisplayName').innerText=userDoc.n=nameInput.lastValue=nameInput.value;
   }
   saveNameBtn.removeAttribute('disabled');
 })

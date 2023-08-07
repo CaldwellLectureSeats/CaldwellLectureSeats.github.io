@@ -70,12 +70,12 @@ function googleAPIsignOut(){
   delete localStorage.authToken;
 }
 
-function testDrive(){
-  gapi.client.drive.files.list({
+async function getAllFiles(){
+  return (await gapi.client.drive.files.list({
     pageSize: 20,
     fields: '*',
     q: 'trashed = false'
-  }).then(r=>console.log(r.result.files.map(f=>f.name + ' : ' + f.mimeType)))
+  }))?.result?.files;
 }
 
 var folderIds={};
@@ -158,14 +158,16 @@ function shareFile(fileId,emails){
   if(!emails)return;
   if(emails?.constructor!==Array)emails=[emails];
   for(var email of emails){
+    let resource={role:'reader',withLink:true};
+    if(email==='all'){
+      resource.value='anyone';
+      resource.type='anyone';
+    }else{
+      resource.type='user';
+      resource.emailAddress=email;
+    }
     gapi.client.drive.permissions.create({
-      'fileId': fileId,
-      'resource': {
-        type: 'user',
-        role: 'reader',
-        emailAddress: email,
-        withLink: true
-      }
+      fileId,resource
     }).then(response=>{
       console.log('File shared successfully.');
       console.log('Permission ID: ' + response.result.id);
@@ -182,5 +184,6 @@ function shareFile(fileId,emails){
 }
 
 function getLinkFromFileId(fileId){
+  if((!fileId) || fileId?.startsWith('http'))return fileId;
   return 'https://drive.google.com/uc?id='+fileId;
 }
