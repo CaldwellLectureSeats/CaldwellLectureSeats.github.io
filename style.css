@@ -291,18 +291,25 @@ div[name]:before {
   color: #f45;
 }
 
+row {
+  display: contents;
+}
 #attendances {
   --colNum: 4;
   display:grid;
   grid-template-columns: repeat(var(--colNum), auto);
   font-size:80%;
-  width:100%;
+  max-width:100%;
+  width:fit-content;
   overflow:auto;
 }
-#attendances > div {
+#attendances > row > div {
   border: solid 1px gray;
   padding: 0.4em;
   white-space : nowrap;
+}
+#attendances > row > div:nth-child(n+4):nth-child(n) {
+  text-align: center;
 }
 .table-header {
   background-color: #cbc;

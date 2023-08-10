@@ -180,6 +180,12 @@
         <label for="onlyFirstAttendance">display only first attendance submission</label>
         <br> -->
         <br>
+        +<input id="minLateInput" type="number" step="1" min="20" max="200" value="20"  maxlength="3" size="3" oninput="attendanceFiltered()">min
+        is considered late
+        <br>
+        Points (out of 100) for late attendance <input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="attendanceFiltered()">
+        <br>
+        <br>
         <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()">Download Attendance</button>
       </div>
     </div>

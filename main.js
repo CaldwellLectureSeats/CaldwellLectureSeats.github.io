@@ -252,6 +252,7 @@ async function getRoomMap(roomId){
 }
 
 async function getAttendance(semester,sectionId,refresh,filter){
+  // get all attendance docs for semester/section
   let attendId=semester+SEMESTER_SECTION_SEPARATOR+sectionId;
   if(refresh || !allAttendances[attendId]){
     allAttendances[attendId]=await db.findOne('attend',attendId);
@@ -266,16 +267,29 @@ async function getAttendance(semester,sectionId,refresh,filter){
       }
     }
   }
+  // find latest name/photo info
+  for(let userId in allAttendances[attendId]){
+    let name,photo;
+    for(let attendDoc of allAttendances[attendId][userId]){
+      name=attendDoc.n;
+      photo=attendDoc.p;
+    }
+    allAttendances[attendId][userId]._name=name;
+    allAttendances[attendId][userId]._photo=photo;
+  }
+  // filter, if needed
   if(filter && typeof(filter)==='object'){
     let filteredAttendances={};
-    for(let user in allAttendances[attendId]){
-      filteredAttendances[user]=allAttendances[attendId][user]
+    for(let userId in allAttendances[attendId]){
+      filteredAttendances[userId]=allAttendances[attendId][userId]
       .filter(attendDoc=>{
         for(let filterKey in filter){
           if(attendDoc[filterKey]!==filter[filterKey])return false;
         }
         return true;
       });
+      filteredAttendances[userId]._name=allAttendances[attendId][userId]._name;
+      filteredAttendances[userId]._photo=allAttendances[attendId][userId]._photo;
     }
     return filteredAttendances;
   }
@@ -684,14 +698,15 @@ async function attendanceToday(){
 }
 
 async function attendanceHistory(){
-  await attendanceFiltered();
+  await attendanceFiltered(null);
 }
 
 var attendanceTable;
 const ATTEND_CODE_SEPARATOR=' : ';
-const ATTEND_TABLE_DATA_COL_OFFSET=6;
+const ATTEND_TABLE_DATA_COL_OFFSET=7;
+const summaryCol=i=>i>2&&i<ATTEND_TABLE_DATA_COL_OFFSET;
 
-async function attendanceFiltered(filter){
+async function attendanceFiltered(filter=attendanceTable?.filter){
   let sectionId=$('#getAttendanceSectionId').innerText;
   let section=await getSection(localStorage.semesterSelected,sectionId);
   let sectionIds=[sectionId].concat(section.x||[]);
@@ -715,28 +730,39 @@ async function attendanceFiltered(filter){
   attendanceTable.filter=filter;
   attendanceTable.semester=localStorage.semesterSelected;
   attendanceTable.id=sectionIds.join('|');
-  if(filter?.d)attendanceTable.id+='-'+filter.d;
+  if(filter?.d)attendanceTable.id+='--'+filter.d;
   attendanceTable.attendanceCodes=attendanceCodesAndTimes.map(x=>x[0]);
-  attendanceTable.header=['Section','User','Name','On-time','Late','Absent'].concat(attendanceCodesAndTimes.map(x=>x[1]));
+  attendanceTable.header=['Section','User','Name','Attendance-Grade','On-time','Late','Absent'].concat(attendanceCodesAndTimes.map(x=>x[1]));
   for(let sid of sectionIds){
     for(let user in filteredAttendances[sid]){
       let rec=attendanceTable.header.map(x=>'');
+      rec._name=filteredAttendances[sid][user]._name;
+      rec._photo=filteredAttendances[sid][user]._photo;
       rec[0]=sid;
       rec[1]=user;
-      rec[2]=user;
+      rec[2]=filteredAttendances[sid][user]._name||user;
       rec[3]=0;
       rec[4]=0;
       rec[5]=0;
+      rec[6]=0;
       for(let attendDoc of filteredAttendances[sid][user]){
         let i=attendanceTable.attendanceCodes.indexOf(attendDoc.d+ATTEND_CODE_SEPARATOR+attendDoc.a);
         if(rec[i+ATTEND_TABLE_DATA_COL_OFFSET]==='' || attendDoc.t<rec[i+ATTEND_TABLE_DATA_COL_OFFSET]){
           rec[i+ATTEND_TABLE_DATA_COL_OFFSET]=attendDoc.t;
         }
-        rec._attendDoc=attendDoc;
-        if(attendDoc.n)rec[2]=attendDoc.n;
+        // rec._attendDoc=Object.assign(rec._attendDoc||{},attendDoc);
+        rec._seat=attendDoc.s;
       }
       attendanceTable.push(rec);
     }
+  }
+  var consideredLate=parseInt($('#minLateInput').value);
+  if(!consideredLate || consideredLate<1){
+    $('#minLateInput').value=consideredLate=20;
+  }
+  var pointsForLate=parseInt($('#pointsLateInput').value);
+  if(!pointsForLate){
+    $('#pointsLateInput').value=pointsForLate=20;
   }
   for(let rec of attendanceTable){
     for(let i=ATTEND_TABLE_DATA_COL_OFFSET;i<rec.length;i++){
@@ -744,12 +770,13 @@ async function attendanceFiltered(filter){
         let dtStart=attendanceCodesAndTimes[i-ATTEND_TABLE_DATA_COL_OFFSET][1];
         let attendanceStart=new Date(dtStart);
         rec[i]=(new Date(dtStart.split(' ')[0]+' '+rec[i]) - attendanceStart)/60000;
-        if(rec[i]>5)rec[4]++;
-        else rec[3]++;
+        if(rec[i]>=consideredLate)rec[5]++;
+        else rec[4]++;
       }else{
-        rec[5]++;
+        rec[6]++;
       }
     }
+    rec[3]=((rec[4]*100+rec[5]*pointsForLate)/(rec[4]+rec[5]+rec[6])).toFixed(1);
   }
   // display table
   displayAttendanceTable();
@@ -763,24 +790,30 @@ function hideAttendanceRecord(){
 
 function displayAttendanceTable(){
   attendancesDiv.innerHTML='';
+  var consideredLate=parseInt($('#minLateInput').value);
+  if(!consideredLate){
+    $('#minLateInput').value=consideredLate=20;
+  }
   for(let rec of [attendanceTable.header].concat(attendanceTable)){
+    var row=attendancesDiv.appendChild(document.createElement('row'));
     for(let i=0;i<attendanceTable.header.length;i++){
-      var d=attendancesDiv.appendChild(document.createElement('div'));
-      if(rec===attendanceTable.header){
-        d.innerText=rec[i];
-        d.addEventListener('click',()=>sortAttendanceTable(i));
-        d.classList.add('table-header');
-      }else if(i>=ATTEND_TABLE_DATA_COL_OFFSET){
-        d.innerText=rec[i]===''?'❌':(rec[i]<5?'✔️':'+'+rec[i]+'min');
-        d.title=attendanceTable.attendanceCodes[i-ATTEND_TABLE_DATA_COL_OFFSET];
-        if(rec!==attendanceTable.header)d.style.overflowX='scroll';
-      }else{
-        d.innerText=rec[i];
+      if(!attendanceTable.filter || !summaryCol(i)){
+        var d=row.appendChild(document.createElement('div'));
+        if(rec===attendanceTable.header){
+          d.innerText=rec[i];
+          d.title=attendanceTable.attendanceCodes[i-ATTEND_TABLE_DATA_COL_OFFSET];
+          d.addEventListener('click',()=>sortAttendanceTable(i));
+          d.classList.add('table-header');
+        }else if(i>=ATTEND_TABLE_DATA_COL_OFFSET){
+          d.innerText=rec[i]===''?'❌':(rec[i]<consideredLate?'✔️':'+'+rec[i]+'min');
+          if(rec!==attendanceTable.header)d.style.overflowX='scroll';
+        }else{
+          d.innerText=rec[i];
+        }
       }
-
     }
   }
-  attendancesDiv.style.setProperty('--colNum',attendanceTable.header.length);
+  attendancesDiv.style.setProperty('--colNum',row.children.length);
 }
 
 var sortedFields=[];
@@ -796,6 +829,7 @@ function sortAttendanceTable(col){
   .sort(compare)
   .map(a=>a.item);
   sortedTable.id=attendanceTable.id;
+  sortedTable.filter=attendanceTable.filter;
   sortedTable.semester=attendanceTable.semester;
   sortedTable.header=attendanceTable.header;
   sortedTable.attendanceCodes=attendanceTable.attendanceCodes;
@@ -829,7 +863,7 @@ async function showRoom(){
   // create seat-student lookup table
   var seating={};
   for(let rec of attendanceTable){
-    seating[rec._attendDoc?.s?.toLowerCase()?.trim()]=rec._attendDoc;
+    seating[rec._seat?.toLowerCase()?.trim()]=rec;
   }
   // clear map and recreate from room
   roomMap.innerHTML='';
@@ -848,9 +882,9 @@ async function showRoom(){
         seat.style.gridColumn=colNum+1;
         let student=seating[seatCode];
         if(student){
-          seat.title=student.n;
-          seat.style.backgroundImage=`url("${getLinkFromFileId(student.p)||'user512.png'}")`;
-          seat.innerHTML=`<span>${student.n}</span>`;
+          seat.title=student._name;
+          seat.style.backgroundImage=`url("${getLinkFromFileId(student._photo)||'user512.png'}")`;
+          seat.innerHTML=`<span>${student._name}</span>`;
           seat.onmouseover=function(e){seat.style.transform='scale(2)';seat.style.overflow='visible';seat.style.zIndex=10;}
           seat.onmouseout=function(e){seat.style.transform='';seat.style.overflow='hidden';seat.style.zIndex='';}
           seat.onclick=function(e){seat.style.transform=seat.style.transform==='scale(6)'?'':'scale(6)';}
