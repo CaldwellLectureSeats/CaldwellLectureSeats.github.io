@@ -216,6 +216,10 @@ div[name]:before {
   content:attr(name);
 }
 
+/* .spinOnClick:active {
+  animation: 0.5s spin forwards;
+} */
+
 #instructors {
   height: 5em;
 }
@@ -318,15 +322,25 @@ row {
 }
 
 #roomMap {
-  display: grid;
-  gap: 2px;
-  width: fit-content;
+  /* display: grid; */
+  /* gap: 2px; */
+  width: max-content;
   /* transform-origin: top left; */
+  --seat-width: 25px;
+  --seat-height: 25px;
+  --row-align: center;
 }
-#roomMap > * {
+#roomMap > div {
+  text-align: var(--row-align);
+}
+#roomMap > div > div {
+  width: var(--seat-width);
+  height: var(--seat-height);
+  display: inline-block;
+  margin: 2px;
+}
+#roomMap > div > div.seat {
   background-color: teal;
-  /* width: 25px;
-  height: 25px; */
   overflow: hidden;
   font-size: 10px;
   color:white;
@@ -334,7 +348,7 @@ row {
   border-radius: 5px 5px 0px 0px;
   text-align: center;
 }
-#roomMap > * > span {
+.seat > span {
   position: absolute;
   bottom: 111%;
   left: 50%;

@@ -68,6 +68,10 @@ function download(filename, text) {
   document.body.removeChild(a);
 }
 
+function spinOnce(element){
+  element.style.animation='';element.offsetWidth;element.style.animation='spin 0.5s';
+}
+
 
 ///////////// Initialize and Sign in ///////////////
 
@@ -329,23 +333,26 @@ async function checkMissingAttendanceInfo(){
     markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Attendance passcode';
   }
   // check location permissions
-  if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC){
-    $('label[for="markAttendanceLocation"]').classList.add('required');
-  }else{
-    $('label[for="markAttendanceLocation"]').classList.remove('required');
-  }
+  // if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC){
+  //   $('label[for="markAttendanceLocation"]').classList.add('required');
+  // }else{
+  //   $('label[for="markAttendanceLocation"]').classList.remove('required');
+  // }
   if(!markAttendanceLocation.value){
     let r=await getLocation();
     if(r.error){
       hide(markAttendanceLocation);
-      show('markAttendanceLocationOff');
+      if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC){
+        $('label[for="markAttendanceLocation"]').classList.add('required');
+        show('markAttendanceLocationOffButRequired');
+        markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Location';
+      }else{
+        show('markAttendanceLocationOff');
+      }
     }else{
       markAttendanceLocation.value=r;
       show(markAttendanceLocation);
       hide('markAttendanceLocationOff');
-    }
-    if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC && r.error){
-      markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Location';
     }
   }
   // check seat code, if required
@@ -374,6 +381,7 @@ async function checkMissingAttendanceInfo(){
   if(markAttendanceRequirementsList.innerHTML){
     $('#markAttendanceButton').setAttribute('disabled',true);
     show('markAttendanceRequirements');
+    // toast(markAttendanceRequirementsList.innerHTML,'Missing required attendance info',-1);
   }else{
     $('#markAttendanceButton').removeAttribute('disabled');
     hide('markAttendanceRequirements');
@@ -556,6 +564,7 @@ async function showGetAttendance(sectionId){
   $('#getAttendanceSectionId').innerText=sectionId;
   $('#getAttendanceCrossListIds').innerHTML=section.x?'<span>'+section.x.join('</span> <span>')+'</span>':'';
   $('#getAttendanceSectionInfo').innerText=section.pattern+'\n'+section.room+'\n'+section.i.join('\n');
+  // $('#getAttendanceSectionInfo').innerText+=
   $('#getAttendanceEditBtn').onclick=e=>{editSection(sectionId)};
   if(localStorage.attendanceCode){
     getAttendanceClassCodeInput.value=localStorage.attendanceCode;
@@ -874,12 +883,12 @@ async function showRoom(){
   for(let rowNum=0;rowNum<room.length;rowNum++){
     let row=room[rowNum];
     roomMap._cols=Math.max(roomMap._cols,row.length);
+    let rowDiv=roomMap.appendChild(document.createElement('div'));
     for(let colNum=0;colNum<row.length;colNum++){
       let seatCode=room[rowNum][colNum];
+      let seat=rowDiv.appendChild(document.createElement('div'));
       if(seatCode){
-        let seat=roomMap.appendChild(document.createElement('div'));
-        seat.style.gridRow=rowNum+1;
-        seat.style.gridColumn=colNum+1;
+        seat.classList.add('seat');
         let student=seating[seatCode];
         if(student){
           seat.title=student._name;
@@ -895,8 +904,8 @@ async function showRoom(){
     }
   }
   let zoom=parseFloat(localStorage.roomMapZoom)||1;
-  roomMap.style.width=roomMap._cols*25*zoom;
-  roomMap.style.height=roomMap._rows*25*zoom;
+  roomMap.style.setProperty('--seat-width',25*zoom);
+  roomMap.style.setProperty('--seat-height',25*zoom);
   $('#roomMapZoom').value=zoom;
   // display the room map
   showInMain('room');
@@ -905,8 +914,8 @@ async function showRoom(){
 function changeRoomMapSize(range){
   let value=parseFloat(range.value);
   range.title=(value*100).toFixed(0)+'%';
-  roomMap.style.width=roomMap._cols*25*value;
-  roomMap.style.height=roomMap._rows*25*value;
+  roomMap.style.setProperty('--seat-width',25*value);
+  roomMap.style.setProperty('--seat-height',25*value);
   localStorage.roomMapZoom=value;
 }
 

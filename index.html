@@ -180,7 +180,7 @@
         <label for="onlyFirstAttendance">display only first attendance submission</label>
         <br> -->
         <br>
-        +<input id="minLateInput" type="number" step="1" min="20" max="200" value="20"  maxlength="3" size="3" oninput="attendanceFiltered()">min
+        +<input id="minLateInput" type="number" step="1" min="5" max="200" value="10"  maxlength="3" size="3" oninput="attendanceFiltered()">min
         is considered late
         <br>
         Points (out of 100) for late attendance <input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="attendanceFiltered()">
@@ -236,10 +236,16 @@
         &nbsp;
         <i class="material-symbols-outlined">location_on</i> ✔️
       </span>
-      <div id="markAttendanceLocationOff">
+      <div id="markAttendanceLocationOff" class="hidden">
+        <i class="material-symbols-outlined">location_off</i> Your location sharing is off
+        <br>
+        <small style="font-size:smaller">(turn on location-sharing and refresh page to enable)</small>
+        <!-- <i class="material-icons" onclick="checkMissingAttendanceInfo()" id="randomAttendanceClassCodeBtn">autorenew</i> -->
+      </div>
+      <div id="markAttendanceLocationOffButRequired" class="hidden">
         <i class="material-symbols-outlined">location_off</i> ❌
         Please turn on location sharing and refresh.
-        <i class="material-icons" onclick="checkMissingAttendanceInfo()" id="randomAttendanceClassCodeBtn">autorenew</i>
+        <i class="material-icons spinOnClick" onclick="spinOnce(this);checkMissingAttendanceInfo();" id="randomAttendanceClassCodeBtn">autorenew</i>
       </div>
       <!-- <div class="separator"></div> -->
       <button id="markAttendanceButton" disabled>Mark Attendance</button>
