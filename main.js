@@ -550,7 +550,7 @@ function closeQRreader(){
 function onScanResult(result,err){
   if(result){
     document.getElementById(scanTarget).value=result.text;
-    checkInfoAndMarkAttendance();
+    checkMissingAttendanceInfo();
     closeQRreader();
     navigateBack();
   }
