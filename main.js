@@ -514,7 +514,7 @@ async function markAttendance(semester,sectionId,code,seat,photoBlob,loc,date,ti
 }
 
 
-//////////////// QR scanner ///////////////////
+//////////////// Code scanner ///////////////////
 
 // function openQRreader(target){
 //   showInMain('QRreader');
@@ -550,6 +550,7 @@ function closeQRreader(){
 function onScanResult(result,err){
   if(result){
     document.getElementById(scanTarget).value=result.text;
+    checkInfoAndMarkAttendance();
     closeQRreader();
     navigateBack();
   }
