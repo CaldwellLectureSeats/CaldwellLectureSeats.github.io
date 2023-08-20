@@ -513,20 +513,55 @@ async function markAttendance(semester,sectionId,code,seat,photoBlob,loc,date,ti
   }
 }
 
-function openQRreader(target){
+
+//////////////// QR scanner ///////////////////
+
+// function openQRreader(target){
+//   showInMain('QRreader');
+//   var html5QrcodeScanner = new Html5QrcodeScanner("QRreaderVideo", {fps:10,qrbox:250});
+//   html5QrcodeScanner.render(onScanSuccess);
+//   function closeQRreader(){
+//     html5QrcodeScanner.clear();
+//     window.removeEventListener('popstate',closeQRreader);
+//   }
+//   window.addEventListener('popstate',closeQRreader);
+//   function onScanSuccess(decodedText,decodedResult){
+//     document.getElementById(target).value=decodedText;
+//     closeQRreader();
+//     navigateBack();
+//   }
+// }
+
+var currentQRstream;
+const codeReader=new ZXing.BrowserMultiFormatReader();
+var scanTarget;
+
+async function openQRreader(target){
   showInMain('QRreader');
-  var html5QrcodeScanner = new Html5QrcodeScanner("QRreaderVideo", {fps:10,qrbox:250});
-  html5QrcodeScanner.render(onScanSuccess);
-  function closeQRreader(){
-    html5QrcodeScanner.clear();
-    window.removeEventListener('popstate',closeQRreader);
-  }
+  currentQRstream=await getVideoStream(false);
+  scanTarget=target;
+  startQRreader();
   window.addEventListener('popstate',closeQRreader);
-  function onScanSuccess(decodedText,decodedResult){
-    document.getElementById(target).value=decodedText;
+}
+function closeQRreader(){
+  codeReader.reset();
+  window.removeEventListener('popstate',closeQRreader);
+}
+function onScanResult(result,err){
+  if(result){
+    document.getElementById(scanTarget).value=result.text;
     closeQRreader();
     navigateBack();
   }
+  // if(err && !(err instanceof ZXing.NotFoundException)){}
+}
+async function startQRreader(){
+  codeReader.decodeFromStream(currentQRstream,"QRreaderVideo",onScanResult);
+}
+async function switchQRCamera(){
+  currentQRstream=await switchCameraStream(currentQRstream);
+  codeReader.reset();
+  startQRreader();
 }
 
 
@@ -545,6 +580,7 @@ async function enableSelfieCamera(){
     hide('addPhotoBtn');
     show(selfieVideo);
     show('snapPhotoBtn');
+    show('switchPhotoBtn');
   }catch(err){
     selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> Retry taking selfie...';
     toastError('Unable to start camera.\nPlease make sure your camera permissions are enabled, reload, and try again.');
@@ -554,6 +590,7 @@ async function enableSelfieCamera(){
 async function snapPhoto(){
   hide(selfieVideo);
   hide('snapPhotoBtn');
+  hide('switchPhotoBtn');
   show(selfieCanvas);
   show('addPhotoBtn');
   takePhoto(selfieVideo,selfieCanvas,200);
@@ -599,13 +636,26 @@ function randomAttendanceClassCodeClick(){
   getAttendanceClassCodeInput.value=Math.random().toString().substring(2);
 }
 
+// function createQRClick(){
+//   const qrCodeDiv=$("#QRcode");
+//   const collectingAttendanceDiv=$('#collectingAttendanceDiv');
+//   let code=getAttendanceClassCodeInput.value;
+//   if(code!==qrCodeDiv.getAttribute('title')){
+//     qrCodeDiv.innerHTML='';
+//     new QRCode(qrCodeDiv, code);
+//     qrCodeDiv.appendChild(document.createElement('div')).id="QRcodeTime";
+//   }
+//   showInMain('QRcode');
+// }
+
+const codeWriter = new ZXing.BrowserQRCodeSvgWriter();
 function createQRClick(){
   const qrCodeDiv=$("#QRcode");
   const collectingAttendanceDiv=$('#collectingAttendanceDiv');
   let code=getAttendanceClassCodeInput.value;
   if(code!==qrCodeDiv.getAttribute('title')){
     qrCodeDiv.innerHTML='';
-    new QRCode(qrCodeDiv, code);
+    codeWriter.writeToDom('#QRcode', code, 500, 500);
     qrCodeDiv.appendChild(document.createElement('div')).id="QRcodeTime";
   }
   showInMain('QRcode');

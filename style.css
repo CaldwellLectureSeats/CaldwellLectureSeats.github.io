@@ -234,6 +234,10 @@ div[name]:before {
   height: 5em;
 }
 
+#switchQrCameraBtn {
+  text-align: center;
+}
+
 #QRcode, #loading {
   padding: 1em;
   position: fixed;

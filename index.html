@@ -6,8 +6,9 @@
   <title>LectureSeats</title>
   <link rel="icon" type="image/x-icon" href="/lecture-seats-256.png">
   <!-- qr code generator amd scanner -->
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <!-- <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script> -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script> -->
+  <script type="text/javascript" src="https://unpkg.com/@zxing/library@0.20.0"></script>
   <!-- md5 -->
   <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/build/md5.min.js"></script>
   <!-- photo -->
@@ -228,6 +229,7 @@
         </div>
         <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
         <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
+        <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="switchCamera()">cameraswitch</i>
       </div>
       <label for="markAttendanceLocation">Location:</label>
       <span id="markAttendanceLocation" class="hidden">
@@ -280,7 +282,9 @@
   
     <div id="QRreader">
       <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div id="QRreaderVideo"></div>
+      <!-- <div id="QRreaderVideo"></div> -->
+      <video id="QRreaderVideo"></video>
+      <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
     </div>
 
   </div>

@@ -1,24 +1,52 @@
 
 var cameraStream;
+var cameraStreamVideoElement;
+var cameraStreamSize;
 
 function stopCamera(){
-  console.log('stopping camera')
-  //TODO: check if there is a better way to stop camera (because green light is still on on phone after stop)
   cameraStream?.getTracks()?.forEach(track=>track.stop());
 }
 
+function getVideoStream(userFacing){
+  return navigator.mediaDevices.getUserMedia({video:{facingMode:userFacing?'user':'environment'},audio:false});
+}
+
+async function getAllCameraIds(){
+  return (await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput').map(d=>d.deviceId);
+}
+
+async function switchCameraStream(currentStream){
+  let allCameraIds=await getAllCameraIds();
+  let currentDeviceId=currentStream.getVideoTracks()[0].getSettings().deviceId;
+  let currentDeviceIndex=allCameraIds.indexOf(currentDeviceId);
+  currentStream?.getTracks()?.forEach(track=>track.stop());
+  return await navigator.mediaDevices.getUserMedia({video:{deviceId:{exact:allCameraIds[1-currentDeviceIndex]}},audio:false});
+}
+
+async function switchCamera(){
+  if(!cameraStream)return;
+  cameraStream=await switchCameraStream(cameraStream);
+  startVideoFromCameraStream();
+}
+
 async function startCamera(video,size){
-  cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-  video.srcObject = cameraStream;
-  video.onloadedmetadata = function(e) {
-    if(video.videoWidth>video.videoHeight){
-      video.setAttribute('height',size);
-      video.removeAttribute('width');
+  cameraStreamVideoElement=video;
+  cameraStreamSize=size;
+  cameraStream = await getVideoStream(true);
+  startVideoFromCameraStream();
+}
+
+function startVideoFromCameraStream(){
+  cameraStreamVideoElement.srcObject = cameraStream;
+  cameraStreamVideoElement.onloadedmetadata = function(e) {
+    if(cameraStreamVideoElement.videoWidth>cameraStreamVideoElement.videoHeight){
+      cameraStreamVideoElement.setAttribute('height',cameraStreamSize);
+      cameraStreamVideoElement.removeAttribute('width');
     }else{
-      video.setAttribute('width',size);
-      video.removeAttribute('height');
+      cameraStreamVideoElement.setAttribute('width',cameraStreamSize);
+      cameraStreamVideoElement.removeAttribute('height');
     }
-    video.play();
+    cameraStreamVideoElement.play();
   }
 }
 
