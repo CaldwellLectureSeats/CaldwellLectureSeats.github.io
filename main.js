@@ -2,7 +2,6 @@
 
 
 //TODO:
-//  add *required to all required fields (especially for marking attendance)
 //  avoid collisions with reserved fields
 //    make sure RESERVED_ATTEND_FIELDS can never collide with usernames
 //      start them all with periods? make reserved ones in caps and lowercase usernames?
@@ -16,6 +15,7 @@ const INSTRUCTOR=1, ADMIN=2;
 const REQUIRED_LOC=1, REQUIRED_SEAT=2, REQUIRED_PHOTO=4;
 const PHOTO_TIMEOUT=60000;
 const RESERVED_ATTEND_FIELDS=['id','s','i','a','e','_a'];
+const DEFAULT_USER_IMG='user512.png';
 
 
 ////////////// Helper functions ////////////////////
@@ -77,91 +77,117 @@ function spinOnce(element){
 
 var userDoc;
 window.addEventListener('load', async function(){
+  // check if url is a link sign-in
+  await trySigningInWithLink();
   // ensure clean path
   window.history.pushState(null,'LectureSeats',location.origin+this.location.pathname);
   // login functionality
-  onAuth(async function(user){
-    if(user){ // User is signed in
-      //TODO: ensure only caldwell.edu users
-      // if(!user.email.endsWith('@caldwell.edu')){
-      //   ...
-      // }
-      localStorage.email=user.email;
-      // hide sign-in button
-      hide('firebaseui-auth-container');
-      // display main, display user info
-      show(mainDiv);
-      show('user');
-      $('#userDisplayName').innerText=user.displayName;
-      $('#userPhoto').src=user.photoURL;
-      userDoc=await db.findOne('users',user.email);
-      // if this is a new user, update their record in the database
-      if(userDoc?.error){
-        toastError('Failed to search database.\n\n'+userDoc.error);
+  onAuth(checkSignIn, error=>toastError('Authentication error.\n\n'+error));
+});
+
+async function checkSignIn(user){
+  if(user||auth.currentUser){ // User is signed in
+    // hide sign-in button
+    hide('signin');
+    // display main, display user info
+    show(mainDiv);
+    show('user');
+    userDoc=await db.findOne('users',user.email);
+    // if this is a new user, update their record in the database
+    if(userDoc?.error){
+      toastError('Failed to search database.\n\n'+userDoc.error);
+      return;
+    }
+    // save userDoc for new user
+    if(userDoc===null){
+      userDoc={};
+      let r=await db.insertOne('users', userDoc, user.email);
+      if(r.error){
+        toastError('Could not add user to database.\n\n'+r.error.code);
         return;
       }
-      if(userDoc===null){
-        userDoc={n:user.displayName};
-        let r=await db.insertOne('users', userDoc, user.email);
-        if(r.error){
-          toastError('Could not add user to database.\n\n'+r.error.code);
-          return;
-        }
-      }else if(!userDoc.n){
-        let r=await db.updateOne('users', user.email, {n:user.displayName});
-        if(r.error){
-          toastError('Could not update name.\n\n'+r.error.code);
-        }
-      }else{
-        $('#userDisplayName').innerText=userDoc.n;
-      }
-      // display user name
-      nameInput.value=nameInput.lastValue=userDoc.n||user.displayName;
-      // display instructor and admin options, depending on permissions
-      if(userDoc.r&INSTRUCTOR || userDoc.r&ADMIN){
-        show('roomsBtn');
-        show('allSectionsBtn');
-      }
-      // fill semester options
-      let option;
-      let semesterSelect=$('#semesterSelect');
-      if(semesterSelect.children.length==1){
-        let semesters = await getSemesters();
-        for(let semester of semesters){
-          option = semesterSelect.appendChild(document.createElement('option'));
-          option.id = option.value = option.innerText = semester;
-          if(option.id==localStorage.semesterSelected){
-            option.setAttribute('selected',true);
-            showEnrolledAndTeachingSections(semester);
-          }
-        }
-      }
-      // prefill saved values
-      if(localStorage.minutesToCollectAttendance){
-        minutesToCollectAttendance.innerText=localStorage.minutesToCollectAttendance;
-      }
-      // if in the middle of taking attendance, go to attendance-taking section
-      if(localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
-        showGetAttendance();
-        takingAttendance();
-      }
-    }else{
-      // User is signed out: Display sign-in button, hide main
-      show('firebaseui-auth-container');
-      hide(mainDiv);
-      hide('user');
-      // let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
-      // ui.start('#firebaseui-auth-container', {
-      //   signInOptions: [
-      //     firebase.auth.GoogleAuthProvider.PROVIDER_ID
-      //   ],
-      //   signInSuccessUrl:'#',
-      // });
     }
-  },
-  error=>toastError('Authentication error.\n\n'+error)
-  );
-});
+    if(!userDoc.n){
+      forceInMain('profile','Please enter your name and save.');
+    }
+    // display user email, name, photo
+    $('#userDisplayName').innerText=user.email;
+    // $('#displayEmail').innerText=user.email;
+    // $('#userPhoto').src=userDoc.p||DEFAULT_USER_IMG;
+    nameInput.value=nameInput.lastValue=userDoc.n||'';
+    // display instructor and admin options, depending on permissions
+    if(userDoc.r&INSTRUCTOR || userDoc.r&ADMIN){
+      show('roomsBtn');
+      show('allSectionsBtn');
+    }
+    // fill semester options
+    let option;
+    let semesterSelect=$('#semesterSelect');
+    if(semesterSelect.children.length==1){
+      let semesters = await getSemesters();
+      for(let semester of semesters){
+        option = semesterSelect.appendChild(document.createElement('option'));
+        option.id = option.value = option.innerText = semester;
+        if(option.id==localStorage.semesterSelected){
+          option.setAttribute('selected',true);
+          showEnrolledAndTeachingSections(semester);
+        }
+      }
+    }
+    // prefill saved values
+    if(localStorage.minutesToCollectAttendance){
+      minutesToCollectAttendance.innerText=localStorage.minutesToCollectAttendance;
+    }
+    // if in the middle of taking attendance, go to attendance-taking section
+    if(localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
+      showGetAttendance();
+      takingAttendance();
+    }
+  }else{
+    // User is signed out: Display sign-in button, hide main
+    show('signin');
+    hide(mainDiv);
+    hide('user');
+  }
+}
+
+function authErrorHandling(error){
+  switch(error.code){
+    case 'auth/email-already-in-use':
+    toastError(`Email address ${$('#signInEmailInput').value}@caldwell.edu already in use.`);
+    break;
+    case 'auth/invalid-email':
+    toastError(`Email address ${$('#signInEmailInput').value}@caldwell.edu is invalid.`);
+    break;
+    case 'auth/operation-not-allowed':
+    toastError(`Error during sign up.`);
+    break;
+    case 'auth/user-not-found':
+    toastError(`User ${$('#signInEmailInput').value}@caldwell.edu not found.\nDid you mean to click the Register button?`);
+    break;
+    case 'auth/missing-password':
+    toastError('No password provided.');
+    break;
+    case 'auth/weak-password':
+    toastError('Password is not strong enough. Add additional characters including special characters and numbers.');
+    break;
+    default:
+    toastError(error.message);
+    break;
+  }
+}
+
+function signInButtonClick(){
+  signIn($('#signInEmailInput').value,$('#signInPasswordInput').value)
+  .then(a=>console.log(a))
+  .catch(authErrorHandling);
+}
+
+function registerButtonClick(){
+  signUp($('#signInEmailInput').value,$('#signInPasswordInput').value)
+  .then(a=>console.log(a))
+  .catch(authErrorHandling);
+}
 
 function signOut(){
   auth.signOut();
@@ -172,6 +198,18 @@ function signOut(){
 ///////////////////// Navigation ///////////////////
 
 const mainDiv = $('#main');
+
+var navAllowed=true;
+var navDisallowMessage;
+function allowNav(){
+  navAllowed=true;
+  navDisallowMessage=null;
+}
+function disallowNav(disallowMsg){
+  navAllowed=false;
+  navDisallowMessage=disallowMsg;
+}
+
 window.onhashchange=function(event){
   if(navAllowed){
     makeFirstElementChild(mainDiv,$(location.hash||'#sections'));
@@ -181,6 +219,11 @@ window.onhashchange=function(event){
 }
 function showInMain(childOfMain){
   if(navAllowed)window.location.hash=childOfMain;
+  else if(navDisallowMessage)toast(navDisallowMessage);
+}
+function forceInMain(childOfMain,disallowMsg){
+  makeFirstElementChild(mainDiv,$('#'+childOfMain));
+  disallowNav(disallowMsg);
 }
 function navigateBack(){
   if(navAllowed)history.back();
@@ -193,7 +236,6 @@ window.addEventListener('keydown',e=>{
   }
 });
 
-var navAllowed=true;
 // ensure we don't navigate away from taking attendance until it's stopped
 window.addEventListener('popstate',event=>{
   if(location.hash!=='#getAttendance' && location.hash!=='#QRcode' && location.hash!=='#room' && localStorage.takingAttendance && parseInt(localStorage.attendanceEndtime)>db.now()){
@@ -206,11 +248,11 @@ function loadingScreen(on){
   if(on){
     // $('fieldset').setAttribute('disabled',true);
     show('loading');
-    navAllowed = false;
+    disallowNav();
   }else{
     // $('fieldset').removeAttribute('disabled');
     hide('loading');
-    navAllowed = true;
+    allowNav();
   }
 }
 
@@ -314,7 +356,6 @@ async function showMarkAttendance(sectionId,section){
   markAttendanceSectionId._sectionDoc=section;
   markAttendanceClassCodeInput.value='';
   $('#markAttendanceSeatCodeInput').value='';
-  $('#selfieImg').src=getLinkFromFileId(userDoc.img)||auth.currentUser.photoURL||'user512.png';
   showMarkedAttendances(section);
   checkMissingAttendanceInfo();
 }
@@ -333,17 +374,16 @@ async function checkMissingAttendanceInfo(){
     markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Attendance passcode';
   }
   // check location permissions
-  // if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC){
-  //   $('label[for="markAttendanceLocation"]').classList.add('required');
-  // }else{
-  //   $('label[for="markAttendanceLocation"]').classList.remove('required');
-  // }
+  if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC){
+    $('label[for="markAttendanceLocation"]').classList.add('required');
+  }else{
+    $('label[for="markAttendanceLocation"]').classList.remove('required');
+  }
   if(!markAttendanceLocation.value){
     let r=await getLocation();
     if(r.error){
       hide(markAttendanceLocation);
       if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_LOC){
-        $('label[for="markAttendanceLocation"]').classList.add('required');
         show('markAttendanceLocationOffButRequired');
         markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='Location';
       }else{
@@ -366,16 +406,17 @@ async function checkMissingAttendanceInfo(){
   }
   // check photo, if required
   if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_PHOTO){
-    $('label[for="selfieImg"]').classList.add('required');
+    $('label[for="selfieCanvas"]').classList.add('required');
   }else{
-    $('label[for="selfieImg"]').classList.remove('required');
+    $('label[for="selfieCanvas"]').classList.remove('required');
   }
-  let validPhoto=photoId && photoTakenTime && (new Date().getTime()-photoTakenTime)<PHOTO_TIMEOUT;
+  let validPhoto=selfieBlob?.size && photoTakenTime && (new Date().getTime()-photoTakenTime)<PHOTO_TIMEOUT;
   if(markAttendanceSectionId._sectionDoc.rq&REQUIRED_PHOTO && !validPhoto){
-    selfieImg.src='user512.png';
+    show('defaultSelfieImg');
+    hide(selfieCanvas);
+    hide(selfieVideo);
+    selfieBlob=photoTakenTime=null;
     markAttendanceRequirementsList.appendChild(document.createElement('li')).innerText='New photo';
-  }else if(validPhoto){
-    selfieImg.src=getLinkFromFileId(photoId);
   }
   // if any info is missing, display this and disable Mark Attendance button
   if(markAttendanceRequirementsList.innerHTML){
@@ -426,7 +467,7 @@ async function checkInfoAndMarkAttendance(){
   if(!markAttendanceRequirementsList.innerHTML){
     // collect all info
     loadingScreen(true);
-    let semesterSectionId=localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+markAttendanceSectionId.innerText;
+    // let semesterSectionId=localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+markAttendanceSectionId.innerText;
     let section=markAttendanceSectionId._sectionDoc;
     let code=markAttendanceClassCodeInput.value;
     let seat=$('#markAttendanceSeatCodeInput').value;
@@ -435,30 +476,41 @@ async function checkInfoAndMarkAttendance(){
     let currentDT=getDateTime();
     if(!section.attended)section.attended=[];
     // try to mark attendance, then display success or fail messages
-    if(await markAttendance(semesterSectionId,code,seat,photoId,loc,currentDT[0],currentDT[1])){
+    let r=await markAttendance(localStorage.semesterSelected,markAttendanceSectionId.innerText,code,seat,selfieBlob,loc,currentDT[0],currentDT[1],section.rq);
+    if(r?.error){
+      loadingScreen(false);
+      section.attended.push([0,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
+      showMarkedAttendances(section);
+      toast(r.error,'Your attendance was NOT marked.',-1);
+    }else{
       loadingScreen(false);
       section.attended.push([1,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
       showMarkAttendance(markAttendanceSectionId.innerText,section);
       toast('Your attendance was marked.','Success!',1);
-    }else{
-      loadingScreen(false);
-      section.attended.push([0,new Date().toLocaleString(undefined,{timeZoneName:'short'})]);
-      showMarkedAttendances(section);
-      toast('Please make sure the instructor is taking attendance, and that your attendance passcode is correct.','Your attendance was NOT marked.',-1);
     }
   }else{
     toast('Missing some of the required fields.','',-1);
   }
 }
 
-async function markAttendance(semesterSectionId,code,seat,photo,loc,date,time){
+async function markAttendance(semester,sectionId,code,seat,photoBlob,loc,date,time,rq){
   let user=auth.currentUser.email.split('@')[0].replaceAll('.','_');
   let data={n:userDoc.n,d:date,t:time,a:code};
+  if(photoBlob?.size){
+    photoId=[user,semester,sectionId,code+'.jpg'].join('/');
+    // photoId=[user,semester,sectionId,date+'-'+time.split(':').join('-')+'.jpg'].join('/');
+    let r=await uploadFile(photoId,photoBlob);
+    if(r?.error){
+      return {error:'Unable to save photo.\nPlease try again.\n\n'+r.error};
+    }
+    data.p=photoId;
+  }
   if(seat)data.s=seat;
   if(loc)data.l=loc;
-  if(photo)data.p=photo;
-  let r=await db.updateOne('attend',semesterSectionId,{'_a':code, [user]:db.arrayUnion(data)});
-  return !r.error;
+  let r=await db.updateOne('attend',semester+SEMESTER_SECTION_SEPARATOR+sectionId,{'_a':code, [user]:db.arrayUnion(data)});
+  if(r?.error){
+    return {error:'Please make sure the instructor is taking attendance, and that your attendance passcode is correct.'};
+  }
 }
 
 function openQRreader(target){
@@ -481,73 +533,33 @@ function openQRreader(target){
 //////////////// Photo /////////////////////////////
 
 var selfieBlob=null,photoId=null,photoTakenTime=null;
-const selfiePhotoBtn=$('#snapPhotoBtn');
 const selfieCanvas=$('#selfieCanvas');
 const selfieVideo=$('#selfieVideo');
-const RETAKE_BTN_TXT='Retake Selfie';
 
-function showTakeSelfieScreen(){
-  showInMain('takeSelfie');
-  photoClick();
-}
-
-
-
-async function photoClick(event){
-  if(!event || selfiePhotoBtn.innerText.includes(RETAKE_BTN_TXT)){
-    selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">camera</span> Snap Photo';
+async function enableSelfieCamera(){
+  try{
+    await startCamera(selfieVideo,200);
+    window.addEventListener('popstate',stopCamera,{once:true});
+    hide('defaultSelfieImg');
     hide(selfieCanvas);
+    hide('addPhotoBtn');
     show(selfieVideo);
-    $('#saveSelfieBtn').setAttribute('disabled',true);
-    try{
-      await startCamera(selfieVideo,200);
-      window.addEventListener('popstate',stopCamera,{once:true});
-    }catch(err){
-      selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> Retry taking selfie...';
-      toastError('Unable to start camera.\nPlease make sure your camera permissions are enabled, reload, and try again.');
-    }
-  }else{
-    selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> '+RETAKE_BTN_TXT;
-    hide(selfieVideo);
-    show(selfieCanvas);
-    $('#saveSelfieBtn').removeAttribute('disabled');
-    takePhoto(selfieVideo,selfieCanvas,200);
-    selfieBlob=await canvasToBlob(selfieCanvas);
-    window.addEventListener('popstate',warnAboutUnsavedPhoto,{once:true});
+    show('snapPhotoBtn');
+  }catch(err){
+    selfiePhotoBtn.innerHTML='<span class="material-symbols-outlined">photo_camera</span> Retry taking selfie...';
+    toastError('Unable to start camera.\nPlease make sure your camera permissions are enabled, reload, and try again.');
   }
 }
-selfiePhotoBtn.onclick=selfieVideo.onclick=selfieCanvas.onclick=photoClick;
 
-function warnAboutUnsavedPhoto(){
-  if(selfieBlob && !photoId)
-  toast('Your photo was not saved.','Warning',-1);
-}
-
-async function savePhoto(){
-  loadingScreen(true);
-  if(selfieBlob){
-    if(!await verifyAuthToken()){
-      let r=await signInToGoogleAPI();
-      if(r?.error){
-        loadingScreen(false);
-        toastError(r.error+'\n\nPlease make sure your popups are enabled and try again.');
-        return;
-      }
-    }
-    try{
-      let folderId=await getFolderId(localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+markAttendanceSectionId.innerText,markAttendanceSectionId._sectionDoc.i);
-      photoId=await uploadFile('selfie-'+getDateTime().join('-').replace(':','-')+'.jpg',selfieBlob,folderId);
-      photoTakenTime=new Date().getTime();
-      checkMissingAttendanceInfo();
-      loadingScreen(false);
-      navigateBack();
-      toast('Photo saved.','',1);
-    }catch(e){
-      googleAPIsignOut();
-      loadingScreen(false);
-      toast(e.message+'\n\nPlease try again.\nMake sure you allow access to Google Drive when logging in.','Could not upload photo to Google Drive',-1);
-    }
-  }
+async function snapPhoto(){
+  hide(selfieVideo);
+  hide('snapPhotoBtn');
+  show(selfieCanvas);
+  show('addPhotoBtn');
+  takePhoto(selfieVideo,selfieCanvas,200);
+  selfieBlob=await canvasToBlob(selfieCanvas);
+  photoTakenTime=new Date().getTime();
+  checkMissingAttendanceInfo();
 }
 
 
@@ -892,7 +904,8 @@ async function showRoom(){
         let student=seating[seatCode];
         if(student){
           seat.title=student._name;
-          seat.style.backgroundImage=`url("${getLinkFromFileId(student._photo)||'user512.png'}")`;
+          console.log(student._name,student._photo,await getLinkFromStoragePath(student._photo));
+          seat.style.backgroundImage=`url("${await getLinkFromStoragePath(student._photo)||DEFAULT_USER_IMG}")`;
           seat.innerHTML=`<span>${student._name}</span>`;
           seat.onmouseover=function(e){seat.style.transform='scale(2)';seat.style.overflow='visible';seat.style.zIndex=10;}
           seat.onmouseout=function(e){seat.style.transform='';seat.style.overflow='hidden';seat.style.zIndex='';}
@@ -948,8 +961,8 @@ $('#sectionSubmitBtn').addEventListener('click',async event=>{
     i:$('#sectionInstructorInput').value?.split('\n')?.map(txt=>txt.trim())?.filter(txt=>txt),
     x:$('#sectionCrosslistInput').value?.split('\n')?.map(txt=>txt.trim())?.filter(txt=>txt),
     rq:$('#sectionLocRequiredCheckbox').checked*REQUIRED_LOC |
-     $('#sectionSeatRequiredCheckbox').checked*REQUIRED_SEAT |
-     $('#sectionPhotoRequiredCheckbox').checked*REQUIRED_PHOTO
+    $('#sectionSeatRequiredCheckbox').checked*REQUIRED_SEAT |
+    $('#sectionPhotoRequiredCheckbox').checked*REQUIRED_PHOTO
   };
   if(!semester){
     toast('Please select semester.','Missing information:',-1);
@@ -1213,24 +1226,30 @@ $('#semesterSelect').addEventListener('change',e=>{
 const nameInput=$('#nameInput');
 const saveNameBtn=$('#saveNameBtn');
 nameInput.addEventListener('input',e=>{
-  if(nameInput.lastValue!==nameInput.value){
-    show(saveNameBtn);
-  }else{
+  if(!nameInput.value || nameInput.lastValue===nameInput.value){
     hide(saveNameBtn);
+  }else{
+    show(saveNameBtn);
   }
 });
 saveNameBtn.addEventListener('click',async e=>{
   saveNameBtn.setAttribute('disabled','true');
   let r=await db.updateOne('users',auth.currentUser.email,{n:nameInput.value});
-  if(!r.error){
+  if(r.error){
+    toastError('Unable to update name.\n'+r.error);
+  }else{
     hide(saveNameBtn);
-    $('#userDisplayName').innerText=userDoc.n=nameInput.lastValue=nameInput.value;
+    userDoc.n=nameInput.lastValue=nameInput.value;
+    // $('#userDisplayName').innerText=userDoc.n=nameInput.lastValue=nameInput.value;
+    toast('Name updated.','',1);
   }
   saveNameBtn.removeAttribute('disabled');
+  allowNav();
 })
 
 
 ///////////////// Toast ////////////////////////////
+
 const toastDiv=$('#toast');
 const toastMsg=$('#toastMessage');
 function toast(msg,title,affect){

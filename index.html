@@ -5,24 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LectureSeats</title>
   <link rel="icon" type="image/x-icon" href="/lecture-seats-256.png">
-  <!-- qr code generator amd scammer -->
+  <!-- qr code generator amd scanner -->
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <!-- md5 -->
   <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/build/md5.min.js"></script>
-  <!-- google drive -->
-  <script src="https://apis.google.com/js/api.js"></script>
-  <script src="https://accounts.google.com/gsi/client"></script>
-  <script src="gdrive.js"></script>
   <!-- photo -->
   <script src="photo.js"></script>
   <!-- firebase init -->
   <script src="firebase.mjs" type="module"></script>
-  <!-- login ui -->
-  <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" /> -->
   <!-- stylesheet and icons -->
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -33,15 +24,27 @@
   <div id="header">
     <a href="#" id="title">Lecture<span class="themeColor">Seats</span></a>
     <span id="user" onclick="showInMain('profile')">
-      <img id="userPhoto">
+      <!-- <img id="userPhoto"> -->
       <span id="userDisplayName"></span>
     </span>
   </div>
 
-  <div id="firebaseui-auth-container" class="hidden">
-    <button class="google-button" onclick="signIn()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="letter-size"> Sign in with Google</button>
-    <div class="separator"></div>
-    <div class="flexrow">
+  <div id="signin" class="hidden">
+    <table>
+      <tr>
+        <td>Email:</td>
+        <td><input id="signInEmailInput">@caldwell.edu</td>
+      </tr>
+      <tr>
+        <td>Password:</td>
+        <td><input type="password" id="signInPasswordInput"></td>
+      </tr>
+    </table>
+    <button onclick="signInButtonClick()">Sign In</button>
+    <button onclick="registerButtonClick()">Register</button>
+    <!-- <button class="google-button" onclick="signIn()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="letter-size"> Sign in with Google</button> -->
+    <!-- <div class="separator"></div> -->
+    <!-- <div class="flexrow">
       <i class="material-symbols-outlined large-icon" style="margin:1em">warning</i>
       <div>
         <p>
@@ -59,13 +62,9 @@
           </ul>
         </p>
       </div>
-    </div>
+    </div> -->
   </div>
   
-  <!-- <div id="enableGoogleDriveDiv" class="hidden">
-    <button onclick="signInToGoogleAPI()">Enable Google Drive Access</button>
-  </div> -->
-
   <div id="main" class="hidden">
 
     <div id="sections">
@@ -120,18 +119,19 @@
 
     <div id="profile">
       <div>
-        <div id="email"></div>
+        <!-- <div id="displayEmail"></div> -->
+        <br>
         Preferred Name:
-        <input id="nameInput">
+        <input id="nameInput" placeholder="Enter your name">
         <button id="saveNameBtn" class="hidden">Save Name</button>
       </div>
-      <button id="logoutBtn" class="big" onclick="signOut()">Sign Out</button>
-      <div class="separator"></div>
       <button id="sectionsBtn" class="big" onclick="showInMain('sections')">My Sections</button>
-      <div class="separator"></div>
       <!-- for instructors and admins -->
       <button id="allSectionsBtn" class="big hidden" onclick="showInMain('allSections')">All Sections</button>
       <button id="roomsBtn" class="big hidden" onclick="showInMain('rooms')">Rooms</button>
+      <div class="separator"></div>
+      <!-- logout button -->
+      <button id="logoutBtn" class="big" onclick="signOut()">Sign Out</button>
     </div>
 
     <!-- for instructors and admins -->
@@ -204,12 +204,6 @@
       <div class="separator"></div>
     </div>
 
-    <!-- <div id="attendanceRecord">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div id="attendance"></div>
-      <button id="downloadAttendanceBtn">Download</button>
-    </div> -->
-
     <!-- for students -->
     <div id="markAttendance">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
@@ -225,12 +219,16 @@
         <input id="markAttendanceSeatCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
         <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceSeatCodeInput')">barcode_scanner</i>
       </div>
-      <label for="selfieImg">Selfie:</label>
-      <div>
-        <img id="selfieImg" src="user512.png" onclick="showTakeSelfieScreen()">
-        <i class="material-icons large-icon" onclick="showTakeSelfieScreen()">add_a_photo</i>
+      <label for="selfieCanvas">Selfie:</label>
+      <div class="flexrow vertical-center">
+        <div class="selfieContainer">
+          <img id="defaultSelfieImg" class="full-size" src="user512.png" onclick="enableSelfieCamera()">
+          <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
+          <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
+        </div>
+        <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
+        <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
       </div>
-      <!-- <button id="takeSelfieBtn"><span class="material-symbols-outlined">photo_camera</span> Take a new selfie...</button> -->
       <label for="markAttendanceLocation">Location:</label>
       <span id="markAttendanceLocation" class="hidden">
         &nbsp;
@@ -266,21 +264,19 @@
       <br>
     </div>
 
-    <div id="takeSelfie">
+    <!-- <div id="takeSelfie">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       Take new selfie
       <div class="w300 center">
         <div class="selfieContainer">
-          <!-- <img src="user512.png" style="width:100%;height:100%;"> -->
           <video id="selfieVideo" width="300" autoplay playsinline></video>
           <canvas id="selfieCanvas" class="hidden"></canvas>
         </div>
-        <!-- <i id="selfieUndo" class="material-symbols-outlined hidden">undo</i> -->
       </div>
       <button id="snapPhotoBtn"><span class="material-symbols-outlined">camera</span> Snap photo</button>
       <div class="separator"></div>
       <button id="saveSelfieBtn" onclick="savePhoto()" disabled><i class="material-symbols-outlined">save</i> Save to Google Drive<br>and Continue</button>
-    </div>
+    </div> -->
   
     <div id="QRreader">
       <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
