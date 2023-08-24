@@ -102,6 +102,10 @@ scrollbar {width:5px;height:5px;}
   color: red;
 }
 
+.spacer {
+  width: 4em;
+  display: inline-block;
+}
 .separator {
   border-bottom: dashed 1px gray;
   /* border-right: dashed 1px gray; */
@@ -353,7 +357,7 @@ row {
   display: inline-block;
   margin: 2px;
 }
-#roomMap > div > div.seat {
+.seat {
   background-color: teal;
   overflow: hidden;
   font-size: 10px;
@@ -364,10 +368,24 @@ row {
 }
 .seat > span {
   position: absolute;
-  bottom: 111%;
+  /* bottom: 111%; */
+  top: 105%;
   left: 50%;
   transform: translateX(-50%);
   white-space: pre;
+  font-size: 50%;
+  background-color: #333;
+  padding: 1px;
+  border: solid 0.2px #555;
+  border-radius: 1px;
+}
+.seat.taken:hover {
+  overflow: visible;
+  transform: scale(2);
+  z-index: 10;
+}
+.seat.taken:active {
+  transform: scale(6);
 }
 
 .sectionCards {

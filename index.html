@@ -196,9 +196,12 @@
     <div id="room">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div>
-        -
+        <span class="spacer"></span>
+        Zoom: -
         <input id="roomMapZoom" type="range" min="0.5" max="4" value="1" step="0.1" oninput="changeRoomMapSize(this)">
         +
+        <span class="spacer"></span>
+        <button onclick="showRoom()">Refresh <i class="material-icons">autorenew</i></button>
       </div>
       <div id="roomMap"></div>
       <br>
@@ -283,8 +286,10 @@
     <div id="QRreader">
       <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <!-- <div id="QRreaderVideo"></div> -->
-      <video id="QRreaderVideo"></video>
-      <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
+      <div class="w300 center">
+        <video id="QRreaderVideo" class="full-size"></video>
+        <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
+      </div>
     </div>
 
   </div>
