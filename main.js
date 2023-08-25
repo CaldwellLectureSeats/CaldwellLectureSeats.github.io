@@ -180,7 +180,6 @@ function authErrorHandling(error,resettingPassword){
 
 function signInButtonClick(){
   signIn($('#signInEmailInput').value,$('#signInPasswordInput').value)
-  .then(a=>console.log(a))
   .catch(authErrorHandling);
 }
 
@@ -971,13 +970,8 @@ async function showRoom(){
         let student=seating[seatCode];
         if(student){
           seat.classList.add('taken');
-          // seat.title=student._name;
-          console.log(student._name,student._photo,await getLinkFromStoragePath(student._photo));
           seat.style.backgroundImage=`url("${await getLinkFromStoragePath(student._photo)||DEFAULT_USER_IMG}")`;
           seat.innerHTML=`<span>${student._name}</span>`;
-          // seat.onmouseover=function(e){seat.style.transform='scale(2)';seat.style.overflow='visible';seat.style.zIndex=10;}
-          // seat.onmouseout=function(e){seat.style.transform='';seat.style.overflow='hidden';seat.style.zIndex='';}
-          // seat.onclick=function(e){seat.style.transform=seat.style.transform==='scale(6)'?'':'scale(6)';}
         }else{
           seat.innerText=seatCode;
         }
