@@ -1,22 +1,14 @@
 'use strict'
 
 
-//TODO:
-//  avoid collisions with reserved fields
-//    make sure RESERVED_ATTEND_FIELDS can never collide with usernames
-//      start them all with periods? make reserved ones in caps and lowercase usernames?
-//    make sure SEMESTER_SECTION_SEPARATOR doesn't appear in semester or section titles
-
-
 /////////////////// Constants //////////////////////
 
 const SEMESTER_SECTION_SEPARATOR = '|';
 const INSTRUCTOR=1, ADMIN=2;
 const REQUIRED_LOC=1, REQUIRED_SEAT=2, REQUIRED_PHOTO=4;
 const PHOTO_TIMEOUT=60000;
-const RESERVED_ATTEND_FIELDS=['id','i','c','e','_a'];
+const RESERVED_ATTEND_FIELDS=['i','a','e','_a'];
 const DEFAULT_USER_IMG='user512.png';
-
 
 
 ////////////// Helper functions ////////////////////
@@ -275,6 +267,7 @@ function loadingScreen(on){
     allowNav();
   }
 }
+
 
 //////////// Get semesters, sections, rooms ////////
 
@@ -705,10 +698,9 @@ async function collectAttendanceBtnClick(){
     // save attendance info for section
     let sectionId=getAttendanceSectionId.innerText;
     let section=await getSection(localStorage.semesterSelected,sectionId);
-    let c=md5(getAttendanceClassCodeInput.value).toUpperCase();
-    let e=db.now()+60*parseFloat(minutesToCollectAttendance.innerText);
+    let endTime=db.now()+60*parseFloat(minutesToCollectAttendance.innerText);
     // update section in database
-    let r=await db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+sectionId,{i:section.i,c,e});
+    let r=await db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+sectionId,{i:section.i,a:getAttendanceClassCodeInput.value,e:endTime});
     if(r.error){
       toastError('Cannot start taking attendance.\nWe are having issues writing to the database.\n'+r.error)
       loadingScreen(false);
@@ -716,7 +708,7 @@ async function collectAttendanceBtnClick(){
     }
     if(section?.x?.length){
       for(let crossListId of section.x){
-        r=await db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+crossListId,{i:section.i,c,e});
+        r=await db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+crossListId,{i:section.i,a:getAttendanceClassCodeInput.value,e:endTime});
         if(r.error){
           toastError('Cannot start taking attendance.\nWe are having issues writing to the database.\n'+r.error)
           loadingScreen(false);
@@ -728,7 +720,7 @@ async function collectAttendanceBtnClick(){
     localStorage.minutesToCollectAttendance=minutesToCollectAttendance.innerText;
     localStorage.attendanceCode=getAttendanceClassCodeInput.value;
     localStorage.takingAttendance=sectionId;
-    localStorage.attendanceEndtime=e;
+    localStorage.attendanceEndtime=endTime;
     // update UI and start timer
     takingAttendance();
   }else{
@@ -767,10 +759,10 @@ async function stopTakingAttendance(){
   let sectionId=getAttendanceSectionId.innerText;
   let section=await getSection(localStorage.semesterSelected,sectionId);
   // TODO: errorcheck
-  db.updateOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+sectionId,{c:db.deleteField(),e:db.deleteField()});
+  db.updateOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+sectionId,{a:db.deleteField(),e:db.deleteField()});
   if(section?.x?.length){
     for(let crossListId of section.x){
-      db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+crossListId,{c:db.deleteField(),e:db.deleteField()});
+      db.upsertOne('attend',localStorage.semesterSelected+SEMESTER_SECTION_SEPARATOR+crossListId,{a:db.deleteField(),e:db.deleteField()});
     }
   }
   clearInterval(attendanceTimer);
@@ -1048,7 +1040,10 @@ $('#sectionSubmitBtn').addEventListener('click',async event=>{
   if(!id){
     toast('Please enter section id.','Missing information:',-1);
     return;
-  }else if(creatingNewSection && await getSection(semester,id)){
+  }else if(creatingNewSection && id.includes(SEMESTER_SECTION_SEPARATOR)){
+    toast('Specified section id includes an invalid character "'+SEMESTER_SECTION_SEPARATOR+'".','Invalid section id:',-1)
+    return;
+  }else if(creatingNewSection && await getSection(semester,id)){ //TODO: prevent cross-listed names too
     toast('Section '+id+' already exists.','Duplicate section id:',-1)
     return;
   }
