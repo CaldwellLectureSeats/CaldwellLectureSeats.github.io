@@ -43,6 +43,8 @@
     </table>
     <button onclick="signInButtonClick()">Sign In</button>
     <button onclick="registerButtonClick()">Register</button>
+    <p>
+    <a href="#" onclick="resetPassword()">Forgot password?</a>
     <!-- <button class="google-button" onclick="signIn()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="letter-size"> Sign in with Google</button> -->
     <!-- <div class="separator"></div> -->
     <!-- <div class="flexrow">
@@ -91,8 +93,10 @@
       <input id="sectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
       Room:
       <select id="sectionRoomSelect"><option disabled selected value></option></select>
-      Instructors (one instructor per line):
-      <textarea id="sectionInstructorInput"></textarea>
+      Instructor Email(s) (one email per line):
+      <textarea id="sectionInstructorEmailsInput"></textarea>
+      Instructor Name(s):
+      <textarea id="sectionInstructorNamesInput"></textarea>
       <div>
         <input type="checkbox" id="sectionLocRequiredCheckbox" checked="checked">
         <label for="sectionLocRequiredCheckbox">Location required</label>

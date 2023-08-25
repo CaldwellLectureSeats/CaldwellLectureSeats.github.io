@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 // import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithCredential, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 // import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 // import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendSignInLinkToEmail, signInWithEmailLink, isSignInWithEmailLink, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 // import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, applyActionCode, sendSignInLinkToEmail, signInWithEmailLink, isSignInWithEmailLink, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 import { getFirestore, Timestamp, collection, doc, addDoc, setDoc, getDocs, getDoc, updateDoc, arrayUnion, arrayRemove, query, where, deleteField } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
@@ -62,7 +62,9 @@ window.onAuth = f => onAuthStateChanged(window.auth, f);
 // window.GoogleAuthProvider=GoogleAuthProvider;
 // window.getRedirectResult=getRedirectResult;
 // window.signInWithCredential=signInWithCredential;
-
+window.passwordReset=function(email){
+  return sendPasswordResetEmail(window.auth, email+'@caldwell.edu');
+}
 
 window.signIn=function(email, password){
   return signInWithEmailAndPassword(window.auth, email+'@caldwell.edu', password);
