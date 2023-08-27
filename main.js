@@ -11,7 +11,6 @@ const DEFAULT_USER_IMG='user512.png';
 
 const fATTENDANCES='a';
 const fATTENDANCE_CODE='c';
-const fATTENDANCE_CODE_STUDENT='_c';
 const fATTENDANCE_EXPIRATION='e';
 const fDATETIME='dt';
 const fDATE='d';
@@ -32,7 +31,7 @@ const fSECTION_REQUIRED_FIELDS='rq';
 const fINSTRUCTOR_EMAILS='i';
 const fINSTRUCTOR_NAMES='in';
 
-const RESERVED_ATTEND_FIELDS=[fINSTRUCTOR_EMAILS,fATTENDANCE_CODE,fATTENDANCE_CODE_STUDENT,fATTENDANCE_EXPIRATION];
+const RESERVED_ATTEND_FIELDS=[fINSTRUCTOR_EMAILS,fATTENDANCE_CODE,fATTENDANCE_EXPIRATION];
 
 
 ////////////// Helper functions ////////////////////
@@ -527,7 +526,7 @@ async function markAttendance(semester,sectionId,code,seat,photoBlob,loc,date,ti
   let user=auth.currentUser.email.split('@')[0].replaceAll('.','_');
   let docField=`${user}.${fATTENDANCES}.${code}`, nameField=`${user}.${fNAME}`, photoField=`${user}.${fPHOTO}`;
   let attendDoc={[fDATE]:date,[fTIME]:time};
-  let data={[fATTENDANCE_CODE_STUDENT]:code, [nameField]:userDoc[fNAME], [docField]:attendDoc};
+  let data={[nameField]:userDoc[fNAME], [docField]:attendDoc};
   if(photoBlob?.size){
     photoId=photoStoragePath(user,semester,sectionId,code);
     // photoId=[user,semester,sectionId,date+'-'+time.split(':').join('-')+'.jpg'].join('/');
