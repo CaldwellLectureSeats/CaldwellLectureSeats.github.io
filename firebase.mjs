@@ -227,11 +227,9 @@ window.db.upsertOne = async function(collectionName, id, data){
     await updateDoc(doc(DATABASE, collectionName, id), data);
     return true;
   }catch(e){
-    if(e.code==='not-found'){
+    if(e.code==='not-found' || e.code==='permission-denied'){
       return await window.db.insertOne(collectionName,data,id);
     }
-    console.error('Upsert error',e);
-    // toast(e.code,'Error');
     return {error:e.code||'unknown error'};
   }
 }
