@@ -57,7 +57,7 @@ function pad0(i,len=2){
 }
 
 function getDateTime(){
-  let d=new Date(),
+  let d=new Date(db.now()*1000),
   date=d.getFullYear()+'-'+pad0(d.getMonth()+1)+'-'+pad0(d.getDate()),
   time=pad0(d.getHours())+':'+pad0(d.getMinutes());
   return [date,time];
