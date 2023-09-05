@@ -6,8 +6,6 @@
   <title>LectureSeats</title>
   <link rel="icon" type="image/x-icon" href="/lecture-seats-256.png">
   <!-- qr code generator amd scanner -->
-  <!-- <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script> -->
   <script type="text/javascript" src="https://unpkg.com/@zxing/library@0.20.0"></script>
   <!-- photo -->
   <script src="photo.js"></script>
@@ -174,8 +172,18 @@
       <!-- <button onclick="showAttendanceRecord()">Attendance Record</button> -->
       <div class="flexrow">
         <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
-        <button onclick="attendanceToday()"><i class="material-icons">today autorenew</i></button>
-        <button onclick="attendanceHistory()"><i class="material-icons">date_range autorenew</i></button>
+        <button onclick="attendanceToday()"><i class="material-icons">today</i></button>
+        <button onclick="attendanceHistory()"><i class="material-icons">date_range</i></button>
+        <button onclick="attendanceFiltered(true)"><i class="material-icons">autorenew</i></button>
+        <span class="spacer"></span>
+        <button onclick="addStudentExpandClick()"><i class="material-icons">person_add</i><i class="material-icons" id="addStudentExpand">expand_more</i><i class="material-icons hidden" id="addStudentUnexpand">expand_less</i></button>
+      </div>
+      <div id="addStudentForm" class="hidden">
+        <span class="spacer"></span><span class="spacer"></span><span class="spacer"></span><span class="spacer"></span><span class="spacer"></span>
+        <select id="addStudentSectionSelect" oninput="addStudentAvailableStudents()"></select>
+        <select id="addStudentUserSelect"></select>
+        <i class="material-icons" onclick="addStudent()">save</i>
+        <i class="material-icons" onclick="addStudentExpandClick()">cancel</i>
       </div>
       <div id="attendancesContainer" class="hidden">
         <div id="attendances"></div>
@@ -228,7 +236,7 @@
       <label for="selfieCanvas">Selfie:</label>
       <div class="flexrow vertical-center">
         <div class="selfieContainer">
-          <img id="defaultSelfieImg" class="full-size" src="user512.png" onclick="enableSelfieCamera()">
+          <img id="defaultSelfieImg" class="full-size" src="user-icon.png" onclick="enableSelfieCamera()">
           <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
           <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
         </div>
@@ -245,24 +253,19 @@
         <i class="material-symbols-outlined">location_off</i> Your location sharing is off
         <br>
         <small style="font-size:smaller">(turn on location-sharing and refresh page to enable)</small>
-        <!-- <i class="material-icons" onclick="checkMissingAttendanceInfo()" id="randomAttendanceClassCodeBtn">autorenew</i> -->
+        <i class="material-icons" onclick="checkMissingAttendanceInfo()" id="randomAttendanceClassCodeBtn">autorenew</i>
       </div>
       <div id="markAttendanceLocationOffButRequired" class="hidden">
         <i class="material-symbols-outlined">location_off</i> ❌
         Please turn on location sharing and refresh.
         <i class="material-icons spinOnClick" onclick="spinOnce(this);checkMissingAttendanceInfo();" id="randomAttendanceClassCodeBtn">autorenew</i>
       </div>
-      <!-- <div class="separator"></div> -->
       <button id="markAttendanceButton" disabled>Mark Attendance</button>
       <div  id="markAttendanceRequirements" class="w300 dashed-border">
-        <!-- <i class="material-symbols-outlined large-icon">warning</i>
-        Cannot mark attendance. -->
-        <!-- <p> -->
           Missing required information:
           <ul id="markAttendanceRequirementsList">
             <li>Attendance passcode</li>
           </ul>
-        <!-- </p> -->
         <div class="required footnote">indicates required field</div>
       </div>
       <div class="separator"></div>
@@ -271,23 +274,8 @@
       <br>
     </div>
 
-    <!-- <div id="takeSelfie">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      Take new selfie
-      <div class="w300 center">
-        <div class="selfieContainer">
-          <video id="selfieVideo" width="300" autoplay playsinline></video>
-          <canvas id="selfieCanvas" class="hidden"></canvas>
-        </div>
-      </div>
-      <button id="snapPhotoBtn"><span class="material-symbols-outlined">camera</span> Snap photo</button>
-      <div class="separator"></div>
-      <button id="saveSelfieBtn" onclick="savePhoto()" disabled><i class="material-symbols-outlined">save</i> Save to Google Drive<br>and Continue</button>
-    </div> -->
-  
     <div id="QRreader">
       <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <!-- <div id="QRreaderVideo"></div> -->
       <div class="w300 center">
         <video id="QRreaderVideo" class="full-size"></video>
         <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
@@ -306,6 +294,14 @@
   <div id="loading" class="hidden center">
     <div id="loader"></div>
     <div>Loading...</div>
+  </div>
+
+  <div id="prompt" class="hidden center">
+    <div>
+      <div id="promptFormTitle"></div>
+      <div id="promptForm"></div>
+      <div id="promptButtons"></div>
+    </div>
   </div>
 
   <div id="toast" class="hidden">

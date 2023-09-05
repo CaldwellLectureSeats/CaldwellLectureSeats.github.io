@@ -108,6 +108,7 @@ window.trySigningInWithLink=async function(){
 ////////////// storage operations ////////////////////////
 
 const storage = getStorage();
+const downloadURLs={};
 
 window.uploadFile = async function(filepath,file){
   try{
@@ -120,8 +121,10 @@ window.uploadFile = async function(filepath,file){
 window.getLinkFromStoragePath = async function(filepath){
   if(!filepath)return;
   try{
-    console.log(filepath);
-    return await getDownloadURL(ref(storage,filepath));
+    let r=downloadURLs[filepath];
+    if(r)return r;
+    else r=downloadURLs[filepath]=await getDownloadURL(ref(storage,filepath));
+    return r;
   }catch(e){
     return {error:e.code};
   }
