@@ -10,6 +10,9 @@
   <script type="text/javascript" src="https://unpkg.com/@zxing/library@0.20.0"></script>
   <!-- photo -->
   <script src="photo.js"></script>
+  <!-- geolocation map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <!-- firebase init -->
   <script src="firebase.mjs" type="module"></script>
   <!-- stylesheet and icons -->
@@ -23,32 +26,11 @@
   <div id="header">
     <a href="#" id="title">Lecture<span class="themeColor">Seats</span></a>
     <span id="user" onclick="showInMain('profile')">
-      <!-- <img id="userPhoto"> -->
       <span id="userDisplayName"></span>
     </span>
   </div>
   
   <div id="signin" class="hidden">
-    
-    <div id="signinSendEmail" class="flexcol">
-      <div>
-        Please enter your <span class="domainName"></span> username to sign in
-        <br>
-        (a link for signing in will be sent to your email).
-      </div>
-      <div>
-        <input id="signInSendEmailInput"><span class="domainName"></span>
-      </div>
-      <button onclick="signInSendButtonClick()">Send sign-in link</button>
-      <div class="separator"></div>
-      <div>
-        <small>Please delete the email with the sign-in link after you use it to sign in (that link will be disabled once it is used).</small>
-      </div>
-      <div>
-        Having trouble signing in via an email link?<br>
-        Click <a href="#" onclick="showInSignin('signInWithEmailPassword');">here</a> to use a password-based sign-in option.
-      </div>
-    </div>
     
     <div id="signInWithEmailPassword">
       <div>
@@ -74,6 +56,26 @@
       </div>
     </div>
     
+    <div id="signinSendEmail" class="flexcol">
+      <div>
+        Please enter your <span class="domainName"></span> username to sign in
+        <br>
+        (a link for signing in will be sent to your email).
+      </div>
+      <div>
+        <input id="signInSendEmailInput"><span class="domainName"></span>
+      </div>
+      <button onclick="signInSendButtonClick()">Send sign-in link</button>
+      <div class="separator"></div>
+      <div>
+        <small>Please delete the email with the sign-in link after you use it to sign in (that link will be disabled once it is used).</small>
+      </div>
+      <div>
+        Having trouble signing in via an email link?<br>
+        Click <a href="#" onclick="showInSignin('signInWithEmailPassword');">here</a> to use a password-based sign-in option.
+      </div>
+    </div>
+
     <div id="signinConfirmEmail" class="flexcol">
       <div>
         Please enter your <span class="domainName"></span> username to complete sign-in.
@@ -228,11 +230,13 @@
     <!-- <div id="QRcode" class="center" onclick="navigateBack()"></div> -->
     
     <div id="attendanceTableScreen">
+      <!-- navigation controls -->
       <div class="flexrow">
         <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
         <button onclick="navigateBack();showRoom()"><i class="material-icons">event_seat event_seat</i></button>
         <button onclick="spinOnce(this.firstChild);createAttendanceTable(true)"><i class="material-icons">autorenew</i></button>
       </div>
+      <!-- table action controls -->
       <div class="flexrow">
         <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()"><i class="material-symbols-outlined">download</i></button>
         <button onclick="attendanceHistory()"><i class="material-icons">date_range</i></button>
@@ -241,6 +245,7 @@
         <button onclick="addStudentBtnClick()"><i class="material-icons">person_add</i></button>
         <datalist id="addStudentUserSelectDataList"></datalist>
       </div>
+      <!-- tardy options -->
       <div>
         <small>
           +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="3" size="3" oninput="attendanceFiltered()">min
@@ -249,15 +254,20 @@
           Points (out of 100) for late attendance <input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="attendanceFiltered()">
         </small>
       </div>
+      <small id="classLocation" onclick="setClassLoc()">
+      </small>
+      <!-- attendance table -->
       <div id="attendances"></div>
     </div>
     
     <div id="room">
+      <!-- navigation controls -->
       <div class="flexrow">
         <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
         <button onclick="navigateBack();setTimeout(showAttendanceTable,100)"><i class="material-icons">group view_list</i></button>
         <button onclick="spinOnce(this.firstElementChild);showRoom(true)"><i class="material-icons">autorenew</i></button>
       </div>
+      <!-- room map options -->
       <div class="flexrow vertical-center">
         <span>
           Zoom: -
@@ -266,10 +276,10 @@
         </span>
         <span class="spacer"></span>
         <span>
-          <input type="checkbox" checked="true" id="showNamesOnMap" oninput="roomNames(this.checked)"><label for="showNamesOnMap">Show names</label>
+          <input type="checkbox" checked="true" id="showNamesOnRoomMap" oninput="roomNames(this.checked)"><label for="showNamesOnRoomMap">Show names</label>
         </span>
       </div>
-      <div id="mapHolder">
+      <div id="roomMapHolder">
         <div id="roomMap"></div>
         <div class="h200"></div>
       </div>
