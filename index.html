@@ -75,7 +75,7 @@
         Click <a href="#" onclick="showInSignin('signInWithEmailPassword');">here</a> to use a password-based sign-in option.
       </div>
     </div>
-
+    
     <div id="signinConfirmEmail" class="flexcol">
       <div>
         Please enter your <span class="domainName"></span> username to complete sign-in.
@@ -300,106 +300,110 @@
     
     <div id="learnNames">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div>
+      <div id="learnNamesMain">
         <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png">
         <div id="learnNamesName" onclick="learnNamesNameClick()" class="hideName"></div>
         <button id="learnNamesNextBtn" onclick="learnNamesNextBtnClick()">Next</button>
         <button id="learnNamesPrevBtn" onclick="learnNamesPrevBtnClick()" class="hidden">Previous</button>
-        <!-- <button id="learnNamesShowMoreBtn">Show this person more</button>
-          <button id="learnNamesShowLessBtn">Show this person less</button> -->
-        </div>
+        <button id="learnNamesRemoveBtn" onclick="learnNamesRemoveBtnClick()">I know them 🙂</button>
       </div>
-      
-      <!-- for students -->
-      <div id="markAttendance">
-        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <div id="markAttendanceSectionId"></div>
-        <div id="attendanceMarked"></div>
-        <label class="required" for="markAttendanceClassCodeInput">Attendance passcode:</label>
-        <div class="flexrow w300">
-          <input id="markAttendanceClassCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
-          <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceClassCodeInput')">qr_code_scanner</i>
+      <div id="learnNamesDone" class="hidden">
+        <p>All Done!</p>
+        <p>You have learned all student names in this section!</p>
+        <p>:)</p>
+      </div>
+    </div>
+    
+    <!-- for students -->
+    <div id="markAttendance">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div id="markAttendanceSectionId"></div>
+      <div id="attendanceMarked"></div>
+      <label class="required" for="markAttendanceClassCodeInput">Attendance passcode:</label>
+      <div class="flexrow w300">
+        <input id="markAttendanceClassCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
+        <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceClassCodeInput')">qr_code_scanner</i>
+      </div>
+      <label for="markAttendanceSeatCodeInput">Seat code:</label>
+      <div class="flexrow w300">
+        <input id="markAttendanceSeatCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
+        <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceSeatCodeInput')">barcode_scanner</i>
+      </div>
+      <label for="selfieCanvas">Selfie:</label>
+      <div class="flexrow vertical-center">
+        <div class="selfieContainer">
+          <img id="defaultSelfieImg" class="full-size" src="user-icon.png" onclick="enableSelfieCamera()">
+          <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
+          <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
         </div>
-        <label for="markAttendanceSeatCodeInput">Seat code:</label>
-        <div class="flexrow w300">
-          <input id="markAttendanceSeatCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
-          <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceSeatCodeInput')">barcode_scanner</i>
-        </div>
-        <label for="selfieCanvas">Selfie:</label>
-        <div class="flexrow vertical-center">
-          <div class="selfieContainer">
-            <img id="defaultSelfieImg" class="full-size" src="user-icon.png" onclick="enableSelfieCamera()">
-            <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
-            <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
-          </div>
-          <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
-          <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
-          <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="switchCamera()">cameraswitch</i>
-        </div>
-        <label for="markAttendanceLocation">Location:</label>
-        <span id="markAttendanceLocation" class="hidden">
-          &nbsp;
-          <i class="material-symbols-outlined">location_on</i> ✔️
-        </span>
-        <div id="markAttendanceLocationOff" class="hidden">
-          <i class="material-symbols-outlined">location_off</i> Your location sharing is off
-          <br>
-          <small>(turn on location-sharing and refresh page to enable)</small>
-          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
-        </div>
-        <div id="markAttendanceLocationOffButRequired" class="hidden">
-          <i class="material-symbols-outlined">location_off</i> ❌
-          Please turn on location sharing and refresh.
-          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
-        </div>
-        <button id="markAttendanceButton" disabled>Mark Attendance</button>
-        <div  id="markAttendanceRequirements" class="w300 dashed-border">
-          Missing required information:
-          <ul id="markAttendanceRequirementsList">
-            <li>Attendance passcode</li>
-          </ul>
-          <div class="required footnote">indicates required field</div>
-        </div>
-        <div class="separator"></div>
+        <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
+        <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
+        <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="switchCamera()">cameraswitch</i>
+      </div>
+      <label for="markAttendanceLocation">Location:</label>
+      <span id="markAttendanceLocation" class="hidden">
+        &nbsp;
+        <i class="material-symbols-outlined">location_on</i> ✔️
+      </span>
+      <div id="markAttendanceLocationOff" class="hidden">
+        <i class="material-symbols-outlined">location_off</i> Your location sharing is off
         <br>
-        <button id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
-        <br>
+        <small>(turn on location-sharing and refresh page to enable)</small>
+        <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
       </div>
-      
-      <div id="QRreader">
-        <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <div class="w300 center">
-          <video id="QRreaderVideo" class="full-size"></video>
-          <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
-        </div>
+      <div id="markAttendanceLocationOffButRequired" class="hidden">
+        <i class="material-symbols-outlined">location_off</i> ❌
+        Please turn on location sharing and refresh.
+        <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
       </div>
-      
+      <button id="markAttendanceButton" disabled>Mark Attendance</button>
+      <div  id="markAttendanceRequirements" class="w300 dashed-border">
+        Missing required information:
+        <ul id="markAttendanceRequirementsList">
+          <li>Attendance passcode</li>
+        </ul>
+        <div class="required footnote">indicates required field</div>
+      </div>
+      <div class="separator"></div>
+      <br>
+      <button id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
+      <br>
     </div>
     
-    
-    <div id="accessibility" class="flexcol">
-      <i class="material-icons" onclick="changeFontSize(1)">text_increase</i>
-      <i class="material-icons" onclick="changeFontSize(-1)">text_decrease</i>
-      <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()">light_mode</i>
-    </div>
-    
-    <div id="loading" class="hidden center">
-      <div id="loader"></div>
-      <div>Loading...</div>
-    </div>
-    
-    <div id="prompt" class="hidden center">
-      <div>
-        <div id="promptFormTitle"></div>
-        <div id="promptForm"></div>
-        <div id="promptButtons"></div>
+    <div id="QRreader">
+      <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="w300 center">
+        <video id="QRreaderVideo" class="full-size"></video>
+        <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
       </div>
     </div>
     
-    <div id="toast" class="hidden">
-      <span id="toastMessage"></span>
+  </div>
+  
+  
+  <div id="accessibility" class="flexcol">
+    <i class="material-icons" onclick="changeFontSize(1)">text_increase</i>
+    <i class="material-icons" onclick="changeFontSize(-1)">text_decrease</i>
+    <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()">light_mode</i>
+  </div>
+  
+  <div id="loading" class="hidden center">
+    <div id="loader"></div>
+    <div>Loading...</div>
+  </div>
+  
+  <div id="prompt" class="hidden center">
+    <div>
+      <div id="promptFormTitle"></div>
+      <div id="promptForm"></div>
+      <div id="promptButtons"></div>
     </div>
-    
-  </body>
-  <script src="main.js"></script>
-  </html>
+  </div>
+  
+  <div id="toast" class="hidden">
+    <span id="toastMessage"></span>
+  </div>
+  
+</body>
+<script src="main.js"></script>
+</html>
