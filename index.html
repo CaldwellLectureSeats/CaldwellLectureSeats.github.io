@@ -222,7 +222,7 @@
         <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
         <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
         <span class="spacer"></span>
-        <button onclick="showInMain('learnNames');learnNamesNextBtnClick();"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
+        <button onclick="showLearnNames()"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
       </div>
       <div id="QRcode" class="hidden"></div>
     </div>
@@ -238,26 +238,39 @@
       </div>
       <!-- table action controls -->
       <div class="flexrow">
-        <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()"><i class="material-symbols-outlined">download</i></button>
-        <button onclick="attendanceHistory()"><i class="material-icons">date_range</i></button>
-        <button onclick="attendanceToday()"><i class="material-icons">today</i></button>
-        <span class="spacer"></span>
-        <button onclick="addStudentBtnClick()"><i class="material-icons">person_add</i></button>
-        <datalist id="addStudentUserSelectDataList"></datalist>
+        <i onclick="attendanceTableSelectCols()" class="material-symbols-outlined">page_info</i>
+        <i onclick="attendanceTableFitToWidth()" class="material-symbols-outlined">fit_width</i>
+        <i onclick="attendanceColFirst()" class="material-icons">first_page</i>
+        <i onclick="attendanceColLeft()" class="material-icons">navigate_before</i>
+        <i class="material-icons" onclick="showAllAttendanceCols()">date_range</i>
+        <i onclick="attendanceColRight()" class="material-icons">navigate_next</i>
+        <i onclick="attendanceColLast()" class="material-icons">last_page</i>
+        <i onclick="showHide('attendanceTableOptions')" class="material-symbols-outlined">more_horiz</i>
       </div>
-      <!-- tardy options -->
-      <div>
-        <small>
-          +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="3" size="3" oninput="attendanceFiltered()">min
-          is considered late
-          <br>
-          Points (out of 100) for late attendance <input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="attendanceFiltered()">
-        </small>
+      <!-- attendance options -->
+      <div class="flexcol hidden" id="attendanceTableOptions">
+        <i class="closeBtn material-icons" onclick="hide('attendanceTableOptions')">close</i>
+        <div class="flexrow">
+          <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()"><i class="material-symbols-outlined">download</i></button>
+          <button onclick="addStudentBtnClick()"><i class="material-icons">person_add</i></button>
+          <datalist id="addStudentUserSelectDataList"></datalist>
+        </div>
+        <div>
+          <small>
+            +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="1" size="1" oninput="createAttendanceTable()"><label for="minLateInput">min is considered late</label>
+            <br>
+            <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="createAttendanceTable()">
+          </small>
+        </div>
+        <div onclick="classLocPrompt()">
+          <i class="material-icons">location_on</i>
+          <small id="classLocation"></small>
+        </div>
       </div>
-      <small id="classLocation" onclick="setClassLoc()">
-      </small>
       <!-- attendance table -->
-      <div id="attendances"></div>
+      <div id="attendancesHolder">
+        <div id="attendances"></div>
+      </div>
     </div>
     
     <div id="room">
@@ -291,6 +304,7 @@
         <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png">
         <div id="learnNamesName" onclick="learnNamesNameClick()" class="hideName"></div>
         <button id="learnNamesNextBtn" onclick="learnNamesNextBtnClick()">Next</button>
+        <button id="learnNamesPrevBtn" onclick="learnNamesPrevBtnClick()" class="hidden">Previous</button>
         <!-- <button id="learnNamesShowMoreBtn">Show this person more</button>
           <button id="learnNamesShowLessBtn">Show this person less</button> -->
         </div>
