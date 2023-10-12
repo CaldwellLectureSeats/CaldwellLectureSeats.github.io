@@ -25,6 +25,7 @@
   
   <div id="header">
     <a href="#" id="title">Lecture<span class="themeColor">Seats</span></a>
+    <span class="spacer"></span>
     <span id="user" onclick="showInMain('profile')">
       <span id="userDisplayName"></span>
     </span>
@@ -171,10 +172,23 @@
         <input id="nameInput" placeholder="Enter your name">
         <button id="saveNameBtn" class="hidden">Save Name</button>
       </div>
+      <div id="emailVerificationLink" class="hidden">
+        A link to verify your email was sent to you on <span id="emailVerificationLinkDate"></span>.
+        <br>
+        After you verify your email, click <a href="#" onclick="location.reload()">here</a> to refresh.
+        <br>
+        <br>
+        If you do not see an email with a verification link in your inbox:
+        <ol>
+          <li>Wait a few minutes and check your inbox again</li>
+          <li>Check your other email folders (e.g., Spam, Promotions)</li>
+          <li><a href="#" onclick="verifyEmail()">Resend email verification link.</a></li>
+        </ol>
+      </div>
       <button id="sectionsBtn" class="big" onclick="showInMain('sections')">My Sections</button>
       <!-- for instructors and admins -->
       <button id="allSectionsBtn" class="big hidden" onclick="showInMain('allSections')">All Sections</button>
-      <button id="roomsBtn" class="big hidden" onclick="showInMain('rooms')">Rooms</button>
+      <button id="roomsBtn" class="big hidden" onclick="showRooms()">Rooms</button>
       <div class="separator"></div>
       <!-- logout button -->
       <button id="logoutBtn" class="big" onclick="signOut()">Sign Out</button>
@@ -183,6 +197,30 @@
     <!-- for instructors and admins -->
     <div id="rooms">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div id="roomList">
+        <div id="addInstructorSectionBtn" class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
+      </div>
+    </div>
+
+    <div id="editRoom">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      Room Id: <input id="editRoomId" disabled>
+      Campus: <input id="editRoomCampus" list="editRoomCampusDataList"><datalist id="editRoomCampusDataList"></datalist>
+      Building: <input id="editRoomBuilding" list="editRoomBuildingDataList"><datalist id="editRoomBuildingDataList"></datalist>
+      Room name or number: <input id="editRoomName">
+      Room layout:
+      <div class="flexrow">
+        <span onclick="editRoomResetClick()" class="material-symbols-outlined" title="Reset">first_page</span>
+        <span onclick="editRoomUndoClick()" class="material-symbols-outlined" title="Undo">undo</span>
+        <span onclick="editRoomRedoClick()" class="material-symbols-outlined" title="Redo">redo</span>
+        <span onclick="editRoomGridClick()" class="material-symbols-outlined" title="New layout">background_grid_small</span>
+        <span onclick="editRoom123Click()" class="material-symbols-outlined" title="Assign seat codes (letter rows, number seats)">123</span>
+        <span onclick="editRoomAbcClick()" class="material-symbols-outlined" title="Assign seat codes (number rows, letter seats)">abc</span>
+      </div>
+      <div id="editRoomLayout" title="Click to edit cell. Right-click to add/remove cells."></div>
+      <button onclick="editRoomSaveClick()">Save</button>
+      <button id="editRoomDeleteBtn" onclick="editRoomDeleteClick()" class="hidden">Delete</button>
+      <div id="editRoomUsedIn" class="hidden"></div>
     </div>
     
     <div id="allSections">
@@ -218,7 +256,7 @@
         <i class="material-icons" onclick="spinOnce(this);refreshCurrentAttendance(true)">autorenew</i>
       </div>
       <div class="separator"></div>
-      <div class="flexrow vertical-center">
+      <div id="showStudentsOptions" class="flexrow vertical-center">
         <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
         <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
         <span class="spacer"></span>
@@ -280,17 +318,15 @@
         <button onclick="navigateBack();setTimeout(showAttendanceTable,100)"><i class="material-icons">group view_list</i></button>
         <button onclick="spinOnce(this.firstElementChild);showRoom(true)"><i class="material-icons">autorenew</i></button>
       </div>
-      <!-- room map options -->
-      <div class="flexrow vertical-center">
-        <span>
-          Zoom: -
-          <input id="roomMapZoom" type="range" min="0.5" max="4" value="1" step="0.1" oninput="changeRoomMapSize(this)">
-          +
-        </span>
-        <span class="spacer"></span>
-        <span>
-          <input type="checkbox" checked="true" id="showNamesOnRoomMap" oninput="roomNames(this.checked)"><label for="showNamesOnRoomMap">Show names</label>
-        </span>
+      <!-- room map controls -->
+      <div class="flexrow">
+        <i onclick="attendanceRoomViewLeft()" class="material-icons">navigate_before</i>
+        <span id="roomViewDate"></span>
+        <i onclick="attendanceRoomViewRight()" class="material-icons">navigate_next</i>
+        <i onclick="attendanceRoomViewLast()" class="material-icons">last_page</i>
+        <i onclick="attendanceRoomViewZoomOut()" class="material-symbols-outlined">zoom_out</i>
+        <i onclick="attendanceRoomViewZoomIn()" class="material-symbols-outlined">zoom_in</i>
+        <i onclick="roomNamesToggle()" class="material-symbols-outlined">title</i>
       </div>
       <div id="roomMapHolder">
         <div id="roomMap"></div>
@@ -399,7 +435,10 @@
       <div id="promptButtons"></div>
     </div>
   </div>
-  
+
+  <div id="contextMenu" class="hidden">
+  </div>
+
   <div id="toast" class="hidden">
     <span id="toastMessage"></span>
   </div>
