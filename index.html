@@ -122,40 +122,125 @@
       </div>
     </div>
     
-    <div id="addInstructorSection">
+    <div id="addOrEditSection">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Create New Section</div>
       Semester:
-      <select id="sectionSemesterSelect"><option disabled selected value></option></select>
+      <select id="editSectionSemesterSelect"><option disabled selected value></option></select>
       Section Id:
-      <input id="sectionIdInput" placeholder="e.g., CS-195-001">
+      <input id="editSectionIdInput" placeholder="e.g., CS-195-001">
       Additional Id's (i.e., cross-listed; one section id per line):
-      <textarea id="sectionCrosslistInput"></textarea>
+      <textarea id="editSectionCrosslistInput"></textarea>
       Pattern (days/times):
-      <input id="sectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
-      Room:
-      <select id="sectionRoomSelect"><option disabled selected value></option></select>
+      <input id="editSectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
+      <div>
+        Room:
+        <span id="editSectionRoom" onclick="editSectionAssignRoom()"></span>
+        <i class="material-icons" onclick="editSectionAssignRoom()">edit</i>
+        <i class="material-icons" onclick="editSectionResetRoom()">cancel</i>
+      </div>
       Instructor Email(s) (one email per line):
-      <textarea id="sectionInstructorEmailsInput"></textarea>
+      <textarea id="editSectionInstructorEmailsInput"></textarea>
       Instructor Name(s):
-      <textarea id="sectionInstructorNamesInput"></textarea>
-      <div>
-        <input type="checkbox" id="sectionLocRequiredCheckbox" checked="checked">
-        <label for="sectionLocRequiredCheckbox">Location required</label>
+      <textarea id="editSectionInstructorNamesInput"></textarea>
+      Observer Email(s) (one email per line):
+      <textarea id="editSectionObserverEmailsInput"></textarea>
+      <div>Collect seat information:
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">help</span>
+            <b>Seat information collection</b>
+            <p>
+              If this section has a room selected, the room will have a Seat Code assigned to each seat location.
+              Collecting Seat Code information will enable viewing student names/photos within a mapped room layout.
+              <li>Selecting "No" will not collect Seat Code information when attendance is marked.</li>
+              <li>Selecting "Yes" will present a text input for a student to enter their Seat Code.</li>
+              <li>Selecting "Request" will warn a student that Seat Code is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a Seat Code.</li>
+              <li>Selecting "Require" will require a student to enter their Seat Code.</li>
+            </p>
+          </div>
+        </span>
       </div>
       <div>
-        <input type="checkbox" id="sectionSeatRequiredCheckbox">
-        <label for="sectionSeatRequiredCheckbox">Seat code required</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatNo">
+        <label for="editSectionSeatNo">No</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatYes" checked="true">
+        <label for="editSectionSeatYes">Yes</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatWarn">
+        <label for="editSectionSeatWarn">Request</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatRequire">
+        <label for="editSectionSeatRequire">Require</label>
+      </div>
+      <div>Collect student photos:
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">help</span>
+            <b>Student photo collection</b>
+            <p>
+              Collecting student photos may be helpful for verifying attendance and for learning student names.
+              <li>Selecting "No" will not collect student photos when attendance is marked.</li>
+              <li>Selecting "Yes" will present an option for taking a selfie to each student.</li>
+              <li>Selecting "Request" will warn a student that a selfie is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a selfie.</li>
+              <li>Selecting "Require" will require a student to take a selfie for marking attendance.</li>
+            </p>
+          </div>
+        </span>
       </div>
       <div>
-        <input type="checkbox" id="sectionPhotoRequiredCheckbox">
-        <label for="sectionPhotoRequiredCheckbox">Photo required</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoNo">
+        <label for="editSectionPhotoNo">No</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoYes" checked="true">
+        <label for="editSectionPhotoYes">Yes</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoWarn">
+        <label for="editSectionPhotoWarn">Request</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoRequire">
+        <label for="editSectionPhotoRequire">Require</label>
       </div>
-      <!-- <div>
-        <input type="checkbox" id="allowEnroll"><label for="allowEnroll">Allow students to self-enroll</label>
-      </div> -->
-      <button id="sectionSubmitBtn">Save Section</button>
-      <button id="sectionDeleteBtn" class="hidden">Delete Section</button>
+      <div>Collect geolocation:
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">help</span>
+            <b>Geo-Location collection</b>
+            <p>
+              Collecting geolocation may be very helpful for verifying attendance.
+              However, many devices have location-sharing turned off, and some of the students may be uncomfortable turning on location-sharing due to privacy concerns or for some technical reasons.
+              <li>Selecting "No" will not collect student geolocation when attendance is marked.</li>
+              <li>Selecting "Yes" will collect student location when location-sharing is enabled.</li>
+              <li>Selecting "Request" will warn a student that location-sharing is requested by instructor, but will allow student to ignore the warning and mark attendance even if location-sharing is off.</li>
+              <li>Selecting "Require" will require a student to turn on location-sharing for marking attendance.</li>
+            </p>
+          </div>
+        </span>
+      </div>
+      <div>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationNo">
+        <label for="editSectionLocationNo">No</label>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationYes" checked="true">
+        <label for="editSectionLocationYes">Yes</label>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationWarn">
+        <label for="editSectionLocationWarn">Request</label>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationRequire">
+        <label for="editSectionLocationRequire">Require</label>
+      </div>
+      <div>
+        <input type="checkbox" id="editSectionAllowSelfEnroll"><label for="editSectionAllowSelfEnroll">Allow students to self-enroll</label>
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">help</span>
+            <b>Allow students to self-enroll</b>
+            <p>
+              <li>When this option is checked, any student will be able to add this section to their My Sections screen.</li>
+              <li>When this option is unchecked, this section will only appear in a student's My Sections screen if the instructor had enrolled the student in this section, or after a student used an attendance QR code to mark their attendance for this section.</li>
+            </p>
+          </div>
+        </span>
+      </div>
+      <button id="editSectionSubmitBtn" onclick="editSectionSaveSection()">Save Section</button>
+      <button id="editSectionDeleteBtn" class="hidden" onclick="editSectionDeleteSection()">Delete Section</button>
     </div>
     
     <div id="selectStudentSection">
@@ -166,7 +251,6 @@
     
     <div id="profile">
       <div>
-        <!-- <div id="displayEmail"></div> -->
         <br>
         Preferred Name:
         <input id="nameInput" placeholder="Enter your name">
@@ -198,7 +282,7 @@
     <div id="rooms">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="roomList">
-        <div id="addInstructorSectionBtn" class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
+        <div class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
       </div>
     </div>
 
@@ -260,12 +344,10 @@
         <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
         <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
         <span class="spacer"></span>
-        <button onclick="showLearnNames()"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
+        <button onclick="showLearnNames()" id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
       </div>
       <div id="QRcode" class="hidden"></div>
     </div>
-    
-    <!-- <div id="QRcode" class="center" onclick="navigateBack()"></div> -->
     
     <div id="attendanceTableScreen">
       <!-- navigation controls -->
@@ -337,7 +419,7 @@
     <div id="learnNames">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="learnNamesMain">
-        <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png">
+        <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png" onerror="this.src='user-icon.png'">
         <div id="learnNamesName" onclick="learnNamesNameClick()" class="hideName"></div>
         <button id="learnNamesNextBtn" onclick="learnNamesNextBtnClick()">Next</button>
         <button id="learnNamesPrevBtn" onclick="learnNamesPrevBtnClick()" class="hidden">Previous</button>
@@ -355,44 +437,56 @@
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="markAttendanceSectionId"></div>
       <div id="attendanceMarked"></div>
+      <!-- attendance passcode -->
       <label class="required" for="markAttendanceClassCodeInput">Attendance passcode:</label>
       <div class="flexrow w300">
         <input id="markAttendanceClassCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
         <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceClassCodeInput')">qr_code_scanner</i>
       </div>
-      <label for="markAttendanceSeatCodeInput">Seat code:</label>
-      <div class="flexrow w300">
-        <input id="markAttendanceSeatCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
-        <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceSeatCodeInput')">barcode_scanner</i>
-      </div>
-      <label for="selfieCanvas">Selfie:</label>
-      <div class="flexrow vertical-center">
-        <div class="selfieContainer">
-          <img id="defaultSelfieImg" class="full-size" src="user-icon.png" onclick="enableSelfieCamera()">
-          <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
-          <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
+      <!-- seat -->
+      <div class="nodisplay" id="markAttendanceSeatContainer">
+        <label for="markAttendanceSeatCodeInput">Seat code:</label>
+        <div class="flexrow w300">
+          <input id="markAttendanceSeatCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
+          <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceSeatCodeInput')">barcode_scanner</i>
         </div>
-        <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
-        <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
-        <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="switchCamera()">cameraswitch</i>
       </div>
-      <label for="markAttendanceLocation">Location:</label>
-      <span id="markAttendanceLocation" class="hidden">
-        &nbsp;
-        <i class="material-symbols-outlined">location_on</i> ✔️
-      </span>
-      <div id="markAttendanceLocationOff" class="hidden">
-        <i class="material-symbols-outlined">location_off</i> Your location sharing is off
-        <br>
-        <small>(turn on location-sharing and refresh page to enable)</small>
-        <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
+      <!-- selfie -->
+      <div class="nodisplay" id="markAttendancePhotoContainer">
+        <label for="selfieCanvas">Selfie:</label>
+        <div class="flexrow vertical-center">
+          <div class="selfieContainer">
+            <img id="defaultSelfieImg" class="full-size" src="user-icon.png" onclick="enableSelfieCamera()">
+            <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
+            <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
+          </div>
+          <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
+          <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
+          <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="switchCamera()">cameraswitch</i>
+        </div>
       </div>
-      <div id="markAttendanceLocationOffButRequired" class="hidden">
-        <i class="material-symbols-outlined">location_off</i> ❌
-        Please turn on location sharing and refresh.
-        <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
+      <!-- geolocation -->
+      <div class="nodisplay" id="markAttendanceLocationContainer">
+        <label for="markAttendanceLocation">Location:</label>
+        <span id="markAttendanceLocation" class="hidden">
+          &nbsp;
+          <i class="material-symbols-outlined">location_on</i> ✔️
+        </span>
+        <div id="markAttendanceLocationOff" class="hidden">
+          <i class="material-symbols-outlined">location_off</i> Your location sharing is off
+          <br>
+          <small>(turn on location-sharing and refresh page to enable)</small>
+          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
+        </div>
+        <div id="markAttendanceLocationOffButRequired" class="hidden">
+          <i class="material-symbols-outlined">location_off</i> ❌
+          Please turn on location sharing and refresh.
+          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
+        </div>
       </div>
-      <button id="markAttendanceButton" disabled>Mark Attendance</button>
+      <!-- submit button -->
+      <button id="markAttendanceButton" disabled onclick="checkInfoAndMarkAttendance()">Mark Attendance</button>
+      <!-- requirements warnings -->
       <div  id="markAttendanceRequirements" class="w300 dashed-border">
         Missing required information:
         <ul id="markAttendanceRequirementsList">
@@ -402,7 +496,8 @@
       </div>
       <div class="separator"></div>
       <br>
-      <button id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
+      <!-- remove section button -->
+      <button id="markAttendanceRemoveButton" onclick="removeSectionFromStudent()"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
       <br>
     </div>
     
