@@ -281,6 +281,12 @@
     <!-- for instructors and admins -->
     <div id="rooms">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="flexrow">
+        <select id="roomsCampusSelect" onchange="roomsCampusSelected()"></select>
+        <select id="roomsBuildingSelect" onchange="roomsBuildingSelected()">
+          <option>All buildings</option>
+        </select>
+      </div>
       <div id="roomList">
         <div class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
       </div>
@@ -322,22 +328,25 @@
         <div id="getAttendanceSectionInfo"></div>
         <i class="material-icons" id="getAttendanceEditBtn" onclick>edit</i>
       </div>
-      Attendance passcode:
-      <div class="flexrow">
-        <input id="getAttendanceClassCodeInput">
-        <i class="material-icons" onclick="randomAttendanceClassCodeClick()" id="randomAttendanceClassCodeBtn">autorenew</i>
-        <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
-      </div>
-      <div id="collectingAttendanceDiv">
-        <span id="collectingAttendance">Collect</span>
-        attendance for the next
-        <span id="minutesToCollectAttendance" contenteditable="true">75</span>
-        minutes
-      </div>
-      <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
-      <div id="currentAttendance" class="flexrow hidden">
-        <span class="pre"></span>
-        <i class="material-icons" onclick="spinOnce(this);refreshCurrentAttendance(true)">autorenew</i>
+      <!-- <div class="getAttendanceLoader"></div> -->
+      <div id="getAttendanceControls" class="nodisplay">
+        Attendance passcode:
+        <div class="flexrow">
+          <input id="getAttendanceClassCodeInput">
+          <i class="material-icons" onclick="randomAttendanceClassCode()" id="randomAttendanceClassCodeBtn">autorenew</i>
+          <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
+        </div>
+        <div id="collectingAttendanceDiv">
+          <span id="collectingAttendance">Collect</span>
+          attendance for the next
+          <span id="minutesToCollectAttendance" contenteditable="true">75</span>
+          minutes
+        </div>
+        <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
+        <div id="currentAttendanceStatus" class="flexrow hidden">
+          <span class="pre"></span>
+          <i class="material-icons" onclick="spinOnce(this);showCurrentAttendanceStatus(true)">autorenew</i>
+        </div>
       </div>
       <div class="separator"></div>
       <div id="showStudentsOptions" class="flexrow vertical-center">
@@ -346,14 +355,17 @@
         <span class="spacer"></span>
         <button onclick="showLearnNames()" id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
       </div>
-      <div id="QRcode" class="hidden"></div>
+      <div id="QRcodeContainer" class="hidden">
+        <div class="closeBtn material-symbols-outlined" onclick="hide('QRcodeContainer')">close</div>
+        <div id="QRcode"></div>
+      </div>
     </div>
     
     <div id="attendanceTableScreen">
       <!-- navigation controls -->
       <div class="flexrow">
         <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <button onclick="navigateBack();showRoom()"><i class="material-icons">event_seat event_seat</i></button>
+        <button onclick="navigateBack();setTimeout(showRoom,100)"><i class="material-icons">event_seat event_seat</i></button>
         <button onclick="spinOnce(this.firstChild);createAttendanceTable(true)"><i class="material-icons">autorenew</i></button>
       </div>
       <!-- table action controls -->
@@ -511,19 +523,38 @@
     
   </div>
   
-  
-  <div id="accessibility" class="flexcol">
-    <i class="material-icons" onclick="changeFontSize(1)">text_increase</i>
-    <i class="material-icons" onclick="changeFontSize(-1)">text_decrease</i>
-    <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()">light_mode</i>
+  <div id="helpScreen" class="hidden screen center" onclick="hide('helpScreen')">
+    <div id="help">
+      <div class="closeBtn material-symbols-outlined" onclick="hide('helpScreen')">close</div>
+      <div class="flexrow">
+        <img src="lecture-seats-256.png" style="width:75px;height:75px;border-radius:100%;margin-right:2em;">
+        <div id="versionInfo" style="white-space: pre-wrap;"></div>
+      </div>
+      <div class="separator"></div>
+      <div>
+        Issues and suggestions:
+        <br>
+        <br>
+        <li>Have you run into a bug?</li>
+        <li>Do you have a suggestion?</li>
+        <br>
+        Submit your issue here:
+        <br>
+        <a href="https://github.com/CaldwellLectureSeats/CaldwellLectureSeats.github.io/issues" target="_blank">https://github.com/CaldwellLectureSeats/CaldwellLectureSeats.github.io/issues</a>
+      </div>
+      <div class="separator"></div>
+      <div>
+        
+      </div>
+    </div>
   </div>
   
-  <div id="loading" class="hidden center">
-    <div id="loader"></div>
+  <div id="loading" class="hidden screen center">
+    <div class="loader"></div>
     <div>Loading...</div>
   </div>
   
-  <div id="prompt" class="hidden center">
+  <div id="prompt" class="hidden screen center">
     <div>
       <div id="promptFormTitle"></div>
       <form id="promptForm"></form>
@@ -534,10 +565,24 @@
   <div id="contextMenu" class="hidden">
   </div>
 
+  <div id="attendanceCollectionStatus" class="hidden" onclick="showGetAttendance()">
+    Collecting Attendance
+    <div></div>
+    <span></span>
+  </div>
+
   <div id="toast" class="hidden">
     <span id="toastMessage"></span>
   </div>
+
+  <div id="accessibility" class="flexcol">
+    <i class="material-icons" onclick="show('helpScreen')" title="About and help information">help</i>
+    <i class="material-icons" onclick="changeFontSize(1)" title="Increase font size">text_increase</i>
+    <i class="material-icons" onclick="changeFontSize(-1)" title="Decrease font size">text_decrease</i>
+    <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()" title="Toggle dark mode">light_mode</i>
+  </div>
   
+
 </body>
 <script src="main.js"></script>
 </html>
