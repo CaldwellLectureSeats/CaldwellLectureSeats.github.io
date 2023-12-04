@@ -122,138 +122,27 @@
       </div>
     </div>
     
-    <div id="addOrEditSection">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div class="menuTitle">Create New Section</div>
-      Semester:
-      <select id="editSectionSemesterSelect"><option disabled selected value></option></select>
-      Section Id:
-      <input id="editSectionIdInput" placeholder="e.g., CS-195-001">
-      Additional Id's (i.e., cross-listed; one section id per line):
-      <textarea id="editSectionCrosslistInput"></textarea>
-      Pattern (days/times):
-      <input id="editSectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
-      <div>
-        Room:
-        <span id="editSectionRoom" onclick="editSectionAssignRoom()"></span>
-        <i class="material-icons" onclick="editSectionAssignRoom()">edit</i>
-        <i class="material-icons" onclick="editSectionResetRoom()">cancel</i>
-      </div>
-      Instructor Email(s) (one email per line):
-      <textarea id="editSectionInstructorEmailsInput"></textarea>
-      Instructor Name(s):
-      <textarea id="editSectionInstructorNamesInput"></textarea>
-      Observer Email(s) (one email per line):
-      <textarea id="editSectionObserverEmailsInput"></textarea>
-      <div>Collect seat information:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">help</span>
-            <b>Seat information collection</b>
-            <p>
-              If this section has a room selected, the room will have a Seat Code assigned to each seat location.
-              Collecting Seat Code information will enable viewing student names/photos within a mapped room layout.
-              <li>Selecting "No" will not collect Seat Code information when attendance is marked.</li>
-              <li>Selecting "Yes" will present a text input for a student to enter their Seat Code.</li>
-              <li>Selecting "Request" will warn a student that Seat Code is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a Seat Code.</li>
-              <li>Selecting "Require" will require a student to enter their Seat Code.</li>
-            </p>
-          </div>
-        </span>
-      </div>
-      <div>
-        <input type="radio" name="editSectionSeat" id="editSectionSeatNo">
-        <label for="editSectionSeatNo">No</label>
-        <input type="radio" name="editSectionSeat" id="editSectionSeatYes" checked="true">
-        <label for="editSectionSeatYes">Yes</label>
-        <input type="radio" name="editSectionSeat" id="editSectionSeatWarn">
-        <label for="editSectionSeatWarn">Request</label>
-        <input type="radio" name="editSectionSeat" id="editSectionSeatRequire">
-        <label for="editSectionSeatRequire">Require</label>
-      </div>
-      <div>Collect student photos:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">help</span>
-            <b>Student photo collection</b>
-            <p>
-              Collecting student photos may be helpful for verifying attendance and for learning student names.
-              <li>Selecting "No" will not collect student photos when attendance is marked.</li>
-              <li>Selecting "Yes" will present an option for taking a selfie to each student.</li>
-              <li>Selecting "Request" will warn a student that a selfie is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a selfie.</li>
-              <li>Selecting "Require" will require a student to take a selfie for marking attendance.</li>
-            </p>
-          </div>
-        </span>
-      </div>
-      <div>
-        <input type="radio" name="editSectionPhoto" id="editSectionPhotoNo">
-        <label for="editSectionPhotoNo">No</label>
-        <input type="radio" name="editSectionPhoto" id="editSectionPhotoYes" checked="true">
-        <label for="editSectionPhotoYes">Yes</label>
-        <input type="radio" name="editSectionPhoto" id="editSectionPhotoWarn">
-        <label for="editSectionPhotoWarn">Request</label>
-        <input type="radio" name="editSectionPhoto" id="editSectionPhotoRequire">
-        <label for="editSectionPhotoRequire">Require</label>
-      </div>
-      <div>Collect geolocation:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">help</span>
-            <b>Geo-Location collection</b>
-            <p>
-              Collecting geolocation may be very helpful for verifying attendance.
-              However, many devices have location-sharing turned off, and some of the students may be uncomfortable turning on location-sharing due to privacy concerns or for some technical reasons.
-              <li>Selecting "No" will not collect student geolocation when attendance is marked.</li>
-              <li>Selecting "Yes" will collect student location when location-sharing is enabled.</li>
-              <li>Selecting "Request" will warn a student that location-sharing is requested by instructor, but will allow student to ignore the warning and mark attendance even if location-sharing is off.</li>
-              <li>Selecting "Require" will require a student to turn on location-sharing for marking attendance.</li>
-            </p>
-          </div>
-        </span>
-      </div>
-      <div>
-        <input type="radio" name="editSectionLocation" id="editSectionLocationNo">
-        <label for="editSectionLocationNo">No</label>
-        <input type="radio" name="editSectionLocation" id="editSectionLocationYes" checked="true">
-        <label for="editSectionLocationYes">Yes</label>
-        <input type="radio" name="editSectionLocation" id="editSectionLocationWarn">
-        <label for="editSectionLocationWarn">Request</label>
-        <input type="radio" name="editSectionLocation" id="editSectionLocationRequire">
-        <label for="editSectionLocationRequire">Require</label>
-      </div>
-      <div>
-        <input type="checkbox" id="editSectionAllowSelfEnroll"><label for="editSectionAllowSelfEnroll">Allow students to self-enroll</label>
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">help</span>
-            <b>Allow students to self-enroll</b>
-            <p>
-              <li>When this option is checked, any student will be able to add this section to their My Sections screen.</li>
-              <li>When this option is unchecked, this section will only appear in a student's My Sections screen if the instructor had enrolled the student in this section, or after a student used an attendance QR code to mark their attendance for this section.</li>
-            </p>
-          </div>
-        </span>
-      </div>
-      <button id="editSectionSubmitBtn" onclick="editSectionSaveSection()">Save Section</button>
-      <button id="editSectionDeleteBtn" class="hidden" onclick="editSectionDeleteSection()">Delete Section</button>
-    </div>
-    
-    <div id="selectStudentSection">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div class="menuTitle">Select section where you are a student</div>
-      <div id="availableStudentSections" class="sectionCards"></div>
-    </div>
-    
     <div id="profile">
       <div>
         <br>
+        Last Name:
+        <br>
+        <input id="lastNameInput" placeholder="Enter your last name">
+        <br>
         Preferred Name:
-        <input id="nameInput" placeholder="Enter your name">
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">info</span>
+            <b>Preferred Name</b>
+            <p>
+              What would you like to be called?
+            </p>
+          </div>
+        </span>
+        <br>
+        <input id="nameInput" placeholder="Enter your preferred name">
+        <br>
         <button id="saveNameBtn" class="hidden">Save Name</button>
       </div>
       <div id="emailVerificationLink" class="hidden">
@@ -269,186 +158,28 @@
           <li><a href="#" onclick="verifyEmail()">Resend email verification link.</a></li>
         </ol>
       </div>
-      <button id="sectionsBtn" class="big" onclick="showInMain('sections')">My Sections</button>
+      <button id="sectionsBtn" onclick="showInMain('sections')">My Sections</button>
       <!-- for instructors and admins -->
-      <button id="allSectionsBtn" class="big hidden" onclick="showInMain('allSections')">All Sections</button>
-      <button id="roomsBtn" class="big hidden" onclick="showRooms()">Rooms</button>
+      <button id="allSectionsBtn" class="hidden" onclick="showInMain('allSections')">All Sections</button>
+      <button id="roomsBtn" class="hidden" onclick="showRooms()">Rooms</button>
+      <button id="manageUsersBtn" class="hidden" onclick="showManageUsers()">Manage Users</button>
       <div class="separator"></div>
       <!-- logout button -->
-      <button id="logoutBtn" class="big" onclick="signOut()">Sign Out</button>
-    </div>
-    
-    <!-- for instructors and admins -->
-    <div id="rooms">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div class="flexrow">
-        <select id="roomsCampusSelect" onchange="roomsCampusSelected()"></select>
-        <select id="roomsBuildingSelect" onchange="roomsBuildingSelected()">
-          <option>All buildings</option>
-        </select>
-      </div>
-      <div id="roomList">
-        <div class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
-      </div>
-    </div>
-
-    <div id="editRoom">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      Room Id: <input id="editRoomId" disabled>
-      Campus: <input id="editRoomCampus" list="editRoomCampusDataList"><datalist id="editRoomCampusDataList"></datalist>
-      Building: <input id="editRoomBuilding" list="editRoomBuildingDataList"><datalist id="editRoomBuildingDataList"></datalist>
-      Room name or number: <input id="editRoomName">
-      Room layout:
-      <div class="flexrow">
-        <span onclick="editRoomResetClick()" class="material-symbols-outlined" title="Reset">first_page</span>
-        <span onclick="editRoomUndoClick()" class="material-symbols-outlined" title="Undo">undo</span>
-        <span onclick="editRoomRedoClick()" class="material-symbols-outlined" title="Redo">redo</span>
-        <span onclick="editRoomGridClick()" class="material-symbols-outlined" title="New layout">background_grid_small</span>
-        <span onclick="editRoom123Click()" class="material-symbols-outlined" title="Assign seat codes (letter rows, number seats)">123</span>
-        <span onclick="editRoomAbcClick()" class="material-symbols-outlined" title="Assign seat codes (number rows, letter seats)">abc</span>
-      </div>
-      <div id="editRoomLayout" title="Click to edit cell. Right-click to add/remove cells."></div>
-      <button onclick="editRoomSaveClick()">Save</button>
-      <button id="editRoomDeleteBtn" onclick="editRoomDeleteClick()" class="hidden">Delete</button>
-      <div id="editRoomUsedIn" class="hidden"></div>
-    </div>
-    
-    <div id="allSections">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-    </div>
-    
-    <!-- for instructors -->
-    <div id="getAttendance">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div>
-        <span id="getAttendanceSectionId"></span>
-        <span id="getAttendanceCrossListIds"></span>
-      </div>
-      <div class="flexrow">
-        <div id="getAttendanceSectionInfo"></div>
-        <i class="material-icons" id="getAttendanceEditBtn" onclick>edit</i>
-      </div>
-      <!-- <div class="getAttendanceLoader"></div> -->
-      <div id="getAttendanceControls" class="nodisplay">
-        Attendance passcode:
-        <div class="flexrow">
-          <input id="getAttendanceClassCodeInput">
-          <i class="material-icons" onclick="randomAttendanceClassCode()" id="randomAttendanceClassCodeBtn">autorenew</i>
-          <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
-        </div>
-        <div id="collectingAttendanceDiv">
-          <span id="collectingAttendance">Collect</span>
-          attendance for the next
-          <span id="minutesToCollectAttendance" contenteditable="true">75</span>
-          minutes
-        </div>
-        <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
-        <div id="currentAttendanceStatus" class="flexrow hidden">
-          <span class="pre"></span>
-          <i class="material-icons" onclick="spinOnce(this);showCurrentAttendanceStatus(true)">autorenew</i>
-        </div>
-      </div>
-      <div class="separator"></div>
-      <div id="showStudentsOptions" class="flexrow vertical-center">
-        <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
-        <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
-        <span class="spacer"></span>
-        <button onclick="showLearnNames()" id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
-      </div>
-      <div id="QRcodeContainer" class="hidden">
-        <div class="closeBtn material-symbols-outlined" onclick="hide('QRcodeContainer')">close</div>
-        <div id="QRcode"></div>
-      </div>
-    </div>
-    
-    <div id="attendanceTableScreen">
-      <!-- navigation controls -->
-      <div class="flexrow">
-        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <button onclick="navigateBack();setTimeout(showRoom,100)"><i class="material-icons">event_seat event_seat</i></button>
-        <button onclick="spinOnce(this.firstChild);createAttendanceTable(true)"><i class="material-icons">autorenew</i></button>
-      </div>
-      <!-- table action controls -->
-      <div class="flexrow">
-        <i onclick="attendanceTableSelectCols()" class="material-symbols-outlined">page_info</i>
-        <i onclick="attendanceTableFitToWidth()" class="material-symbols-outlined">fit_width</i>
-        <i onclick="attendanceColFirst()" class="material-icons">first_page</i>
-        <i onclick="attendanceColLeft()" class="material-icons">navigate_before</i>
-        <i class="material-icons" onclick="showAllAttendanceCols()">date_range</i>
-        <i onclick="attendanceColRight()" class="material-icons">navigate_next</i>
-        <i onclick="attendanceColLast()" class="material-icons">last_page</i>
-        <i onclick="showHide('attendanceTableOptions')" class="material-symbols-outlined">more_horiz</i>
-      </div>
-      <!-- attendance options -->
-      <div class="flexcol hidden" id="attendanceTableOptions">
-        <i class="closeBtn material-icons" onclick="hide('attendanceTableOptions')">close</i>
-        <div class="flexrow">
-          <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()"><i class="material-symbols-outlined">download</i></button>
-          <button onclick="addStudentBtnClick()"><i class="material-icons">person_add</i></button>
-          <datalist id="addStudentUserSelectDataList"></datalist>
-        </div>
-        <div>
-          <small>
-            +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="1" size="1" oninput="createAttendanceTable()"><label for="minLateInput">min is considered late</label>
-            <br>
-            <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="createAttendanceTable()">
-          </small>
-        </div>
-        <div onclick="classLocPrompt()">
-          <i class="material-icons">location_on</i>
-          <small id="classLocation"></small>
-        </div>
-      </div>
-      <!-- attendance table -->
-      <div id="attendancesHolder">
-        <div id="attendances"></div>
-      </div>
-    </div>
-    
-    <div id="room">
-      <!-- navigation controls -->
-      <div class="flexrow">
-        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <button onclick="navigateBack();setTimeout(showAttendanceTable,100)"><i class="material-icons">group view_list</i></button>
-        <button onclick="spinOnce(this.firstElementChild);showRoom(true)"><i class="material-icons">autorenew</i></button>
-      </div>
-      <!-- room map controls -->
-      <div class="flexrow">
-        <i onclick="attendanceRoomViewLeft()" class="material-icons">navigate_before</i>
-        <span id="roomViewDate"></span>
-        <i onclick="attendanceRoomViewRight()" class="material-icons">navigate_next</i>
-        <i onclick="attendanceRoomViewLast()" class="material-icons">last_page</i>
-        <i onclick="attendanceRoomViewZoomOut()" class="material-symbols-outlined">zoom_out</i>
-        <i onclick="attendanceRoomViewZoomIn()" class="material-symbols-outlined">zoom_in</i>
-        <i onclick="roomNamesToggle()" class="material-symbols-outlined">title</i>
-      </div>
-      <div id="roomMapHolder">
-        <div id="roomMap"></div>
-        <div class="h200"></div>
-      </div>
-    </div>
-    
-    <div id="learnNames">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-      <div id="learnNamesMain">
-        <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png" onerror="this.src='user-icon.png'">
-        <div id="learnNamesName" onclick="learnNamesNameClick()" class="hideName"></div>
-        <button id="learnNamesNextBtn" onclick="learnNamesNextBtnClick()">Next</button>
-        <button id="learnNamesPrevBtn" onclick="learnNamesPrevBtnClick()" class="hidden">Previous</button>
-        <button id="learnNamesRemoveBtn" onclick="learnNamesRemoveBtnClick()">I know them 🙂</button>
-      </div>
-      <div id="learnNamesDone" class="hidden">
-        <p>All Done!</p>
-        <p>You have learned all student names in this section!</p>
-        <p>:)</p>
-      </div>
+      <button id="logoutBtn" onclick="signOut()">Sign Out</button>
     </div>
     
     <!-- for students -->
+
+    <div id="selectStudentSection">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="menuTitle">Select section where you are a student</div>
+      <div id="availableStudentSections" class="sectionCards"></div>
+    </div>
+    
     <div id="markAttendance">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="markAttendanceSectionId"></div>
-      <div id="attendanceMarked"></div>
+      <details id="attendanceMarked"></details>
       <!-- attendance passcode -->
       <label class="required" for="markAttendanceClassCodeInput">Attendance passcode:</label>
       <div class="flexrow w300">
@@ -521,6 +252,419 @@
       </div>
     </div>
     
+    <!-- for instructors and admins -->
+
+    <div id="addOrEditSection">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="menuTitle">Create New Section</div>
+      Semester:
+      <select id="editSectionSemesterSelect"><option disabled selected value></option></select>
+      Section Id:
+      <input id="editSectionIdInput" placeholder="e.g., CS-195-001">
+      Additional Id's (i.e., cross-listed; one section id per line):
+      <textarea id="editSectionCrosslistInput"></textarea>
+      Pattern (days/times):
+      <input id="editSectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
+      <div>
+        Room:
+        <span id="editSectionRoom" onclick="editSectionAssignRoom()"></span>
+        <i class="material-icons" onclick="editSectionAssignRoom()">edit</i>
+        <i class="material-icons" onclick="editSectionResetRoom()">cancel</i>
+      </div>
+      Instructor Email(s) (one email per line):
+      <textarea id="editSectionInstructorEmailsInput"></textarea>
+      Instructor Name(s):
+      <textarea id="editSectionInstructorNamesInput"></textarea>
+      Observer Email(s) (one email per line):
+      <textarea id="editSectionObserverEmailsInput"></textarea>
+      <div>Collect seat information:
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">info</span>
+            <b>Seat information collection</b>
+            <br><br>
+            If this section has a room selected, the room will have a Seat Code assigned to each seat location.
+            Collecting Seat Code information will enable viewing student names/photos within a mapped room layout.
+            <li>Selecting "No" will not collect Seat Code information when attendance is marked.</li>
+            <li>Selecting "Yes" will present a text input for a student to enter their Seat Code.</li>
+            <li>Selecting "Request" will warn a student that Seat Code is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a Seat Code.</li>
+            <li>Selecting "Require" will require a student to enter their Seat Code.</li>
+          </div>
+        </span>
+      </div>
+      <div>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatNo">
+        <label for="editSectionSeatNo">No</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatYes" checked="true">
+        <label for="editSectionSeatYes">Yes</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatWarn">
+        <label for="editSectionSeatWarn">Request</label>
+        <input type="radio" name="editSectionSeat" id="editSectionSeatRequire">
+        <label for="editSectionSeatRequire">Require</label>
+      </div>
+      <div>Collect student photos:
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">info</span>
+            <b>Student photo collection</b>
+            <br><br>
+            Collecting student photos may be helpful for verifying attendance and for learning student names.
+            <li>Selecting "No" will not collect student photos when attendance is marked.</li>
+            <li>Selecting "Yes" will present an option for taking a selfie to each student.</li>
+            <li>Selecting "Request" will warn a student that a selfie is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a selfie.</li>
+            <li>Selecting "Require" will require a student to take a selfie for marking attendance.</li>
+          </div>
+        </span>
+      </div>
+      <div>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoNo">
+        <label for="editSectionPhotoNo">No</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoYes" checked="true">
+        <label for="editSectionPhotoYes">Yes</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoWarn">
+        <label for="editSectionPhotoWarn">Request</label>
+        <input type="radio" name="editSectionPhoto" id="editSectionPhotoRequire">
+        <label for="editSectionPhotoRequire">Require</label>
+      </div>
+      <div>Collect geolocation:
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">info</span>
+            <b>Geo-Location collection</b>
+            <br><br>
+            Collecting geolocation may be very helpful for verifying attendance.
+            However, many devices have location-sharing turned off, and some of the students may be uncomfortable turning on location-sharing due to privacy concerns or for some technical reasons.
+            <li>Selecting "No" will not collect student geolocation when attendance is marked.</li>
+            <li>Selecting "Yes" will collect student location when location-sharing is enabled.</li>
+            <li>Selecting "Request" will warn a student that location-sharing is requested by instructor, but will allow student to ignore the warning and mark attendance even if location-sharing is off.</li>
+            <li>Selecting "Require" will require a student to turn on location-sharing for marking attendance.</li>
+          </div>
+        </span>
+      </div>
+      <div>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationNo">
+        <label for="editSectionLocationNo">No</label>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationYes" checked="true">
+        <label for="editSectionLocationYes">Yes</label>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationWarn">
+        <label for="editSectionLocationWarn">Request</label>
+        <input type="radio" name="editSectionLocation" id="editSectionLocationRequire">
+        <label for="editSectionLocationRequire">Require</label>
+      </div>
+      <div>
+        <input type="checkbox" id="editSectionAllowSelfEnroll"><label for="editSectionAllowSelfEnroll">Allow students to self-enroll</label>
+        <span class="hoverHelp">
+          <span class="material-symbols-outlined">help</span>
+          <div class="hoverHelpText">
+            <span class="material-symbols-outlined">info</span>
+            <b>Allow students to self-enroll</b>
+            <br><br>
+            <li>When this option is checked, any student will be able to add this section to their My Sections screen.</li>
+            <li>When this option is unchecked, this section will only appear in a student's My Sections screen if the instructor had enrolled the student in this section, or after a student used an attendance QR code to mark their attendance for this section.</li>
+          </div>
+        </span>
+      </div>
+      <button id="editSectionSubmitBtn" onclick="editSectionSaveSection()">Save Section</button>
+      <button id="editSectionDeleteBtn" class="hidden" onclick="editSectionDeleteSection()">Delete Section</button>
+    </div>
+    
+    <div id="rooms">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="flexrow">
+        <select id="roomsCampusSelect" onchange="roomsCampusSelected()"></select>
+        <select id="roomsBuildingSelect" onchange="roomsBuildingSelected()">
+          <option>All buildings</option>
+        </select>
+      </div>
+      <div id="roomList">
+        <div class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
+      </div>
+    </div>
+    
+    <div id="editRoom">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      Room Id: <input id="editRoomId" disabled>
+      Campus: <input id="editRoomCampus" list="editRoomCampusDataList"><datalist id="editRoomCampusDataList"></datalist>
+      Building: <input id="editRoomBuilding" list="editRoomBuildingDataList"><datalist id="editRoomBuildingDataList"></datalist>
+      Room name or number: <input id="editRoomName">
+      Room layout:
+      <div class="flexrow">
+        <span onclick="editRoomResetClick()" class="material-symbols-outlined" title="Reset">first_page</span>
+        <span onclick="editRoomUndoClick()" class="material-symbols-outlined" title="Undo">undo</span>
+        <span onclick="editRoomRedoClick()" class="material-symbols-outlined" title="Redo">redo</span>
+        <span onclick="editRoomGridClick()" class="material-symbols-outlined" title="New layout">background_grid_small</span>
+        <span onclick="editRoom123Click()" class="material-symbols-outlined" title="Assign seat codes (letter rows, number seats)">123</span>
+        <span onclick="editRoomAbcClick()" class="material-symbols-outlined" title="Assign seat codes (number rows, letter seats)">abc</span>
+      </div>
+      <div id="editRoomLayout" title="Click to edit cell. Right-click to add/remove cells."></div>
+      <button onclick="editRoomSaveClick()">Save</button>
+      <button id="editRoomDeleteBtn" onclick="editRoomDeleteClick()" class="hidden">Delete</button>
+      <div id="editRoomUsedIn" class="hidden"></div>
+    </div>
+    
+    <div id="allSections">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+    </div>
+    
+    <div id="manageUsers">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div id="manageUsersTitle" class="pre"></div>
+      <small>
+        <div id="manageUsersAddUserButtons">
+          <button onclick="addUser()"><span class="material-symbols-outlined">person_add</span> Add User</button>
+          <button onclick="showAddUsers()"><span class="material-symbols-outlined">group_add</span> Add Users</button>
+          <br><br>
+        </div>
+        <div class="flexrow">
+          <span>
+            <label for="manageUsersEmailInput">Email:</label>
+            <br><input id="manageUsersEmailInput" size="10" onfocus="manageUsersSelectFilter(this)" oninput="findUsers()">
+          </span>
+          <span>
+            <label for="manageUsersLastNameInput">Last name:</label>
+            <br><input id="manageUsersLastNameInput" size="10" class="manageUsersSelectedFilter" onfocus="manageUsersSelectFilter(this)" oninput="findUsers()">
+          </span>
+          <span>
+            <label for="manageUsersNameInput">Preferred name:</label>
+            <br><input id="manageUsersNameInput" size="10" onfocus="manageUsersSelectFilter(this)" oninput="findUsers()">
+          </span>
+        </div>
+        <div id="manageUsersPages"></div>
+        <div class="flexrow">
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleAny" checked="true" onchange="findUsers()">
+          <label for="manageUsersSelectRoleAny">Any role</label>
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleStudent" onchange="findUsers()">
+          <label for="manageUsersSelectRoleStudent">Students only</label>
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleInstructor" onchange="findUsers()">
+          <label for="manageUsersSelectRoleInstructor">Instructors only</label>
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleAdmin" onchange="findUsers()">
+          <label for="manageUsersSelectRoleAdmin">Admins only</label>
+        </div>
+      </small>
+      <div id="manageUsersList" class="table"></div>
+    </div>
+
+    <div id="addUsers">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="flexrow flexwrap small">
+        <div>
+          <label for="addUsersEmails" class="required">Emails or usernames (one per line):</label> 
+          <span class="hoverHelp">
+            <span class="material-symbols-outlined">help</span>
+            <div class="hoverHelpText">
+              <span class="material-symbols-outlined">info</span>
+              <b>Enter emails or usernames</b>
+              <br><br>
+              Enter each user's email or username on its own line.<br>
+              WARNING: Blank lines will be ignored.
+              <br><br>
+              If entering emails, each email must be in the format <i>username<span class="domainName"></span></i>.
+              <br><br>
+              If entering usernames, <i><span class="domainName"></span></i> will be automatically added at the end of each username to get user's email addresses.
+            </div>
+          </span>
+          <br>
+          <textarea id="addUsersEmails" cols="30" rows="10" wrap="off" oninput="addUsersTextChanged()"></textarea>
+        </div>
+        <div>
+          <label for="addUsersNames">Names (one per line):</label>
+          <span class="hoverHelp">
+            <span class="material-symbols-outlined">help</span>
+            <div class="hoverHelpText">
+              <span class="material-symbols-outlined">info</span>
+              <b>Enter user's names</b>
+              <br><br>
+              Enter each user's name on their own line.
+              <br><br>
+              If the "Last name first" checkbox is checked, enter names in one of the following formats:
+              <li>Last Name</li>
+              <li>Last Name, First Name</li>
+              <li>Last Name &nbsp; First Name</li>
+              <br>
+              If the "Last name first" checkbox is unchecked, enter names in one of the following formats:
+              <li>First Name</li>
+              <li>First Name, Last Name</li>
+              <li>First Name &nbsp; Last Name</li>
+            </div>
+          </span>
+          <br>
+          <textarea id="addUsersNames" cols="30" rows="10" wrap="off" oninput="addUsersTextChanged()"></textarea>
+          <br>
+          <input type="checkbox" id="addUsersLastNameFirst" checked="true" oninput="addUsersTextChanged()"><label for="addUsersLastNameFirst">Last name first</label>
+        </div>
+      </div>
+      <div id="addUsersRoleOptions">
+        <input type="checkbox" id="addUsersInstructors">
+        <label for="addUsersInstructors">All users above are instructors</label>
+        <br>
+        <input type="checkbox" id="addUsersAdmins">
+        <label for="addUsersAdmins">All users above are admins</label>
+      </div>
+      <div id="addUsersSummary" class="pre"></div>
+      <button id="addUsersBtn" disabled onclick="addUsers()">Add users</button>
+      <div id="addUsersList" class="table"></div>
+    </div>
+    
+    <!-- for instructors -->
+
+    <div id="getAttendance">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div>
+        <span id="getAttendanceSectionId"></span>
+        <span id="getAttendanceCrossListIds"></span>
+      </div>
+      <div class="flexrow">
+        <div id="getAttendanceSectionInfo"></div>
+        <i class="material-icons" id="getAttendanceEditBtn" onclick>edit</i>
+      </div>
+      <!-- <div class="getAttendanceLoader"></div> -->
+      <div id="getAttendanceControls" class="nodisplay">
+        Attendance passcode:
+        <div class="flexrow">
+          <input id="getAttendanceClassCodeInput">
+          <i class="material-icons" onclick="randomAttendanceClassCode()" id="randomAttendanceClassCodeBtn">autorenew</i>
+          <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
+        </div>
+        <div id="collectingAttendanceDiv">
+          <span id="collectingAttendance">Collect</span>
+          attendance for the next
+          <span id="minutesToCollectAttendance" contenteditable="true">75</span>
+          minutes
+        </div>
+        <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
+        <div id="currentAttendanceStatus" class="flexrow hidden">
+          <span class="pre"></span>
+          <i class="material-icons" onclick="spinOnce(this);showCurrentAttendanceStatus(true)">autorenew</i>
+        </div>
+      </div>
+      <div class="separator"></div>
+      <div id="showStudentsAddBtn" class="hidden">
+        <button onclick="addStudentsBtnClick()"><i class="material-icons">group_add</i> Add students</button>
+      </div>
+      <div id="showStudentsOptions" class="flexrow vertical-center">
+        <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
+        <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
+        <span class="spacer"></span>
+        <button onclick="showLearnNames()" id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
+      </div>
+      <div id="QRcodeContainer" class="hidden">
+        <div class="closeBtn material-symbols-outlined" onclick="hide('QRcodeContainer')">close</div>
+        <div id="QRcode"></div>
+      </div>
+    </div>
+    
+    <div id="attendanceTableScreen">
+      <!-- navigation controls -->
+      <div class="flexrow">
+        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+        <button onclick="navigateBack();setTimeout(showRoom,100)"><i class="material-icons">event_seat event_seat</i></button>
+        <button onclick="spinOnce(this.firstChild);createAttendanceTable(true)"><i class="material-icons">autorenew</i></button>
+      </div>
+      <!-- table action controls -->
+      <div class="flexrow">
+        <i onclick="attendanceTableSelectCols()" class="material-symbols-outlined">page_info</i>
+        <i onclick="attendanceTableFitToWidth()" class="material-symbols-outlined">fit_width</i>
+        <i onclick="attendanceColFirst()" class="material-icons">first_page</i>
+        <i onclick="attendanceColLeft()" class="material-icons">navigate_before</i>
+        <i class="material-icons" onclick="showAllAttendanceCols()">date_range</i>
+        <i onclick="attendanceColRight()" class="material-icons">navigate_next</i>
+        <i onclick="attendanceColLast()" class="material-icons">last_page</i>
+        <i onclick="showHide('attendanceTableOptions')" class="material-symbols-outlined">more_horiz</i>
+      </div>
+      <!-- attendance options -->
+      <div class="flexcol hidden" id="attendanceTableOptions">
+        <i class="closeBtn material-icons" onclick="hide('attendanceTableOptions')">close</i>
+        <div class="flexrow">
+          <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()"><i class="material-symbols-outlined">download</i></button>
+          <button onclick="addAttendanceColBtnClick()" class="hoverHelp">
+            <i class="material-symbols-outlined">calendar_add_on</i>
+            <div class="hoverHelpText">
+              <span class="material-symbols-outlined">info</span>
+              <b>Add new attendance column</b>
+            </div>
+          </button>
+          <button onclick="addStudentBtnClick()" class="hoverHelp">
+            <i class="material-symbols-outlined">person_add_alt</i> <i class="material-icons">search</i>
+            <div class="hoverHelpText">
+              <span class="material-symbols-outlined">info</span>
+              <b>Add existing user as a student for this section</b>
+            </div>
+          </button>
+          <button onclick="addStudentsBtnClick()" class="hoverHelp">
+            <i class="material-symbols-outlined">group_add</i> <i class="material-icons">alternate_email</i>
+            <div class="hoverHelpText">
+              <span class="material-symbols-outlined">info</span>
+              <b>Add students by emails or usernames</b>
+            </div>
+          </button>
+          <datalist id="addStudentUserSelectDataList"></datalist>
+        </div>
+        <div>
+          <small>
+            +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="1" size="1" oninput="createAttendanceTable()"><label for="minLateInput">min is considered late</label>
+            <br>
+            <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="createAttendanceTable()">
+          </small>
+        </div>
+        <div onclick="classLocPrompt()">
+          <i class="material-icons">location_on</i>
+          <small id="classLocation"></small>
+        </div>
+      </div>
+      <!-- attendance table -->
+      <div id="attendancesHolder">
+        <div id="attendances" class="table"></div>
+      </div>
+    </div>
+    
+    <div id="room">
+      <!-- navigation controls -->
+      <div class="flexrow">
+        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+        <button onclick="navigateBack();setTimeout(showAttendanceTable,100)"><i class="material-icons">group view_list</i></button>
+        <button onclick="spinOnce(this.firstElementChild);showRoom(true)"><i class="material-icons">autorenew</i></button>
+      </div>
+      <!-- room map controls -->
+      <div class="flexrow">
+        <i onclick="attendanceRoomViewLeft()" class="material-icons">navigate_before</i>
+        <span id="roomViewDate"></span>
+        <i onclick="attendanceRoomViewRight()" class="material-icons">navigate_next</i>
+        <i onclick="attendanceRoomViewLast()" class="material-icons" id="attendanceRoomViewLastBtn">last_page</i>
+        <i onclick="attendanceRoomViewZoomOut()" class="material-symbols-outlined">zoom_out</i>
+        <i onclick="attendanceRoomViewZoomIn()" class="material-symbols-outlined">zoom_in</i>
+        <i onclick="roomNamesToggle()" class="material-symbols-outlined">title</i>
+      </div>
+      <div id="roomMapHolder">
+        <div id="roomMap"></div>
+        <div class="h200"></div>
+      </div>
+    </div>
+    
+    <div id="learnNames">
+      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div id="learnNamesMain">
+        <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png" onerror="this.src='user-icon.png'">
+        <div id="learnNamesName" onclick="learnNamesNameClick()" class="hideName"></div>
+        <button id="learnNamesNextBtn" onclick="learnNamesNextBtnClick()">Next</button>
+        <button id="learnNamesPrevBtn" onclick="learnNamesPrevBtnClick()" class="hidden">Previous</button>
+        <button id="learnNamesRemoveBtn" onclick="learnNamesRemoveBtnClick()">I know them 🙂</button>
+      </div>
+      <div id="learnNamesDone" class="hidden">
+        <p>All Done!</p>
+        <p>You have learned all student names in this section!</p>
+        <p>:)</p>
+      </div>
+    </div>
+    
+  </div>
+  
+  <div id="attendanceCollectionStatus" class="hidden" onclick="showGetAttendance()">
+    Collecting Attendance
+    <div></div>
+    <span></span>
   </div>
   
   <div id="helpScreen" class="hidden screen center" onclick="hide('helpScreen')">
@@ -561,28 +705,20 @@
       <div id="promptButtons"></div>
     </div>
   </div>
-
-  <div id="contextMenu" class="hidden">
-  </div>
-
-  <div id="attendanceCollectionStatus" class="hidden" onclick="showGetAttendance()">
-    Collecting Attendance
-    <div></div>
-    <span></span>
-  </div>
-
+  
+  <div id="contextMenu" class="hidden"></div>
+  
   <div id="toast" class="hidden">
     <span id="toastMessage"></span>
   </div>
-
+  
   <div id="accessibility" class="flexcol">
-    <i class="material-icons" onclick="show('helpScreen')" title="About and help information">help</i>
+    <i class="material-icons" onclick="show('helpScreen')" title="About and help information">info</i>
     <i class="material-icons" onclick="changeFontSize(1)" title="Increase font size">text_increase</i>
     <i class="material-icons" onclick="changeFontSize(-1)" title="Decrease font size">text_decrease</i>
     <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()" title="Toggle dark mode">light_mode</i>
   </div>
   
-
 </body>
 <script src="main.js"></script>
 </html>
