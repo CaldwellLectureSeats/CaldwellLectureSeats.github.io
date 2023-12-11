@@ -167,6 +167,19 @@
       <!-- logout button -->
       <button id="logoutBtn" onclick="signOut()">Sign Out</button>
     </div>
+
+    <div id="dbError">
+      <div>Failed to search database.</div>
+      <div>
+        This may be an issue with your browser.
+        <br>Please use Chrome or Safari for best experience.
+        <br>If you are using Chrome or Safari, please report this issue <a href="https://github.com/CaldwellLectureSeats/CaldwellLectureSeats.github.io/issues">here</a>.
+      </div>
+      <div>
+        Alternatively, you can try signing out and then signing in again:
+        <p><button onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
     
     <!-- for students -->
 
@@ -563,13 +576,14 @@
         <button onclick="navigateBack();setTimeout(showRoom,100)"><i class="material-icons">event_seat event_seat</i></button>
         <button onclick="spinOnce(this.firstChild);createAttendanceTable(true)"><i class="material-icons">autorenew</i></button>
       </div>
+      <div id="attendanceTableSectionId"></div>
       <!-- table action controls -->
       <div class="flexrow">
         <i onclick="attendanceTableSelectCols()" class="material-symbols-outlined">page_info</i>
         <i onclick="attendanceTableFitToWidth()" class="material-symbols-outlined">fit_width</i>
         <i onclick="attendanceColFirst()" class="material-icons">first_page</i>
         <i onclick="attendanceColLeft()" class="material-icons">navigate_before</i>
-        <i class="material-icons" onclick="showAllAttendanceCols()">date_range</i>
+        <i onclick="attendanceTableShowAllCols()" class="material-icons">date_range</i>
         <i onclick="attendanceColRight()" class="material-icons">navigate_next</i>
         <i onclick="attendanceColLast()" class="material-icons">last_page</i>
         <i onclick="showHide('attendanceTableOptions')" class="material-symbols-outlined">more_horiz</i>
@@ -627,6 +641,7 @@
         <button onclick="navigateBack();setTimeout(showAttendanceTable,100)"><i class="material-icons">group view_list</i></button>
         <button onclick="spinOnce(this.firstElementChild);showRoom(true)"><i class="material-icons">autorenew</i></button>
       </div>
+      <div id="attendanceRoomSectionId"></div>
       <!-- room map controls -->
       <div class="flexrow">
         <i onclick="attendanceRoomViewLeft()" class="material-icons">navigate_before</i>
