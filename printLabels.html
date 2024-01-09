@@ -1,0 +1,331 @@
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Libre Barcode 39' rel='stylesheet'>
+  <style>
+    :root {
+      --page-width: 8.5in;
+      --page-height: 11in;
+      --margin-left: 0.25in;
+      --margin-top: 0.5in;
+      --cols: 3;
+      --rows: 10;
+      --cell-width: 2.625in;
+      --cell-height: 1in;
+      --gap-row: 0in;
+      --gap-col: 0.12in;
+      --size-text: 0.25in;
+      --size-barcode: 0.75in;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #f8f0e8;
+    }
+    
+    /******** labels **********/
+    #printArea {
+      display: flex;
+      flex-direction: column;
+    }
+    .page {
+      background-color: white;
+      /* width: var(--page-width);
+      height: var(--page-height); */
+      /* padding-top: var(--margin-top);
+      padding-bottom: var(--margin-bottom);
+      padding-left: var(--margin-left);
+      padding-right: var(--margin-right); */
+      width: fit-content;
+      height: fit-content;
+      margin: 0.5em;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), var(--cell-width));
+      grid-template-rows: repeat(var(--rows), var(--cell-height));
+      grid-row-gap: var(--gap-row);
+      grid-column-gap: var(--gap-col);
+      page-break-inside: avoid;
+      page-break-after: always;
+    }
+    .page > span {
+      font-size: var(--size-text);
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview > .page {
+      width: var(--page-width);
+      height: var(--page-height);
+      padding-top: var(--margin-top);
+      padding-left: var(--margin-left);
+      /* padding-bottom: var(--margin-bottom);
+      padding-right: var(--margin-right); */
+    }
+    .preview > .page > span {
+      border-radius: 5px;
+      border: solid 0.5px gray;
+    }
+    .barcode {
+      font-size: var(--size-barcode);
+      font-family: 'Libre Barcode 39';
+      padding-top: 0.25in;
+      padding-left: 0.1in;
+    }
+    
+    /******** controls **********/
+    #controls {
+      display: flex;
+      gap: 25px;
+      margin-bottom: 20px;
+    }
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .grid-2rows {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: 1fr 1fr;
+    }
+    input {
+      font-family: monospace;
+    }
+    input[type='number']{
+      width: 5em;
+    }
+    button {
+      width: 5em;
+      height: 5em;
+      border-radius: 5px;
+    }
+    button:hover {
+      filter: brightness(0.9);
+    }
+    button:active {
+      filter: brightness(0.8);
+    }
+    
+    /******** work area **********/
+    canvas , .hidden {display:none !important;}
+    #working {
+      padding: 1em;
+      position: fixed;
+      left:0;
+      top:0;
+      width:100%;
+      height:100%;
+      z-index: 100;
+      background-color: rgba(128,128,128,.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 1em;
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: large;
+    }
+    #loader {
+      border: 16px solid white;
+      border-top: 16px solid #03f;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /******** print area **********/
+    @page {
+      size: var(--page-width) var(--page-height);
+      margin-top: var(--margin-top);
+      margin-bottom: var(--margin-bottom);
+      margin-left: var(--margin-left);
+      margin-right: var(--margin-right);
+      margin: 0in;
+    }
+    @media print {
+      body {
+        visibility: hidden;
+      }
+      #printArea {
+        visibility: visible;
+        position: absolute;
+        left: 0;
+        top: 0;
+        zoom: 100%;
+        width: var(--page-width);
+      }
+      .page {
+        break-inside: avoid;
+        border: none !important;
+      }
+      .span {
+        border: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <div>
+      <button onClick="createPDF()">Save PDF</button>
+    </div>
+    <div class="flex-col">
+      Units
+      <div><input type="radio" name="units" id="units-in" checked="true"><label for="units-in">in</label></div>
+      <div><input type="radio" name="units" id="units-cm"><label for="units-cm">cm</label></div>
+    </div>
+    <div class="flex-col">
+      Sizes
+      <div class="grid-2rows">
+        <label for="size-text">Text:</label> <input type="number" id="size-text" value="0.25" step="0.01" min="0">
+        <label for="size-barcode">Barcodes:</label> <input type="number" id="size-barcode" value="0.75" step="0.01" min="0">
+      </div>
+    </div>
+    <div class="flex-col">
+      Page
+      <div class="grid-2rows">
+        <label for="page-width">Width:</label> <input type="number" id="page-width" value="8.5" step="0.1" min="1">
+        <label for="page-height">Height:</label> <input type="number" id="page-height" value="11" step="0.1" min="1">
+      </div>
+    </div>
+    <div class="flex-col">
+      Margins
+      <div class="grid-2rows">
+        <label for="margin-top">Top:</label> <input type="number" id="margin-top" value="0.5" step="0.001" min="0">
+        <!-- <label for="margin-bottom">Bottom:</label> <input type="number" id="margin-bottom" value="0.5" step="0.001" min="0"> -->
+        <label for="margin-left">Left:</label> <input type="number" id="margin-left" value="0.25" step="0.001" min="0">
+        <!-- <label for="margin-right">Right:</label> <input type="number" id="margin-right" value="0.31" step="0.001" min="0"> -->
+      </div>
+    </div>
+    <div class="flex-col">
+      Labels
+      <div class="grid-2rows">
+        <label for="cell-width">Width:</label> <input type="number" id="cell-width" value="2.625" step="0.001" min="0">
+        <label for="cell-height">Height:</label> <input type="number" id="cell-height" value="1" step="0.001" min="0">
+      </div>
+    </div>
+    <div class="flex-col">
+      Gap between
+      <div class="grid-2rows">
+        <label for="gap-col">Cols:</label> <input type="number" id="gap-col" value="0.12" step="0.001" min="0">
+        <label for="gap-row">Rows:</label> <input type="number" id="gap-row" value="0" step="0.001" min="0">
+      </div>
+    </div>
+    <div class="flex-col">
+      Labels per page
+      <div class="grid-2rows">
+        <label for="cols">Across:</label> <input type="number" id="cols" value="3" min="1" step="1">
+        <label for="rows">Down:</label> <input type="number" id="rows" value="10" min="1" step="1">
+      </div>
+    </div>
+  </div>
+  <div id="printArea" class="preview"></div>
+  <div id="working" class="hidden">Creating pdf...<div id="loader"></div></div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  const $=document.querySelector.bind(document);
+  const printArea=$('#printArea');
+  const codes=location.search.slice(1).split(',');
+  var units='in';
+  var options={};
+  
+  function getOptions(){
+    options.pageWidth=parseFloat($('#page-width').value);
+    options.pageHeight=parseFloat($('#page-height').value);
+    options.marginLeft=parseFloat($('#margin-left').value);
+    options.marginTop=parseFloat($('#margin-top').value);
+    options.cellWidth=parseFloat($('#cell-width').value);
+    options.cellHeight=parseFloat($('#cell-height').value);
+    options.gapCol=parseFloat($('#gap-col').value);
+    options.gapRow=parseFloat($('#gap-row').value);
+    options.rows=parseInt($('#rows').value);
+    options.cols=parseInt($('#cols').value);
+    let maxCols=Math.floor((options.pageWidth-options.marginLeft+options.gapCol)/(options.cellWidth+options.gapCol));
+    $('#cols').max=maxCols;
+    if(options.cols>maxCols){
+      $('#cols').value=options.cols=maxCols;
+      document.documentElement.style.setProperty('--cols', options.cols);
+    }
+    let maxRows=Math.floor((options.pageHeight-options.marginTop+options.gapRow)/(options.cellHeight+options.gapRow));
+    $('#rows').max=maxRows;
+    if(options.rows>maxRows){
+      $('#rows').value=options.rows=maxRows;
+      document.documentElement.style.setProperty('--rows', options.rows);
+    }
+  }
+  
+  async function createPDF(){
+    $('#working').classList.remove('hidden');
+    printArea.classList.remove('preview');
+    getOptions();
+    const pdf=new jspdf.jsPDF('p', units, [options.pageWidth,options.pageHeight]);
+    for (let i=0;i<printArea.children.length;i++){
+      let canvas=await html2canvas(printArea.children[i]);
+      let imgData=canvas.toDataURL("image/png",1.0);
+      if(i>0)pdf.addPage();
+      pdf.addImage(imgData, 'PNG', options.marginLeft, options.marginTop,
+      options.cols*options.cellWidth+(options.cols-1)*options.gapCol,
+      options.rows*options.cellHeight+(options.rows-1)*options.gapRow);
+    }
+    pdf.save("labels.pdf");
+    printArea.classList.add('preview');
+    $('#working').classList.add('hidden');
+  }
+  
+  function addPage(codes){
+    const currentPage=printArea.appendChild(document.createElement('div'));
+    currentPage.className='page';
+    for(let code of codes){
+      currentPage.appendChild(document.createElement('span')).innerHTML=code+`<span class="barcode">*${code}*</span>`;
+    }
+  }
+  function displayAllCodes(){
+    printArea.innerHTML='';
+    const codesPerPage=options.rows*options.cols;
+    for(let i=0;i<codes.length;i+=codesPerPage){
+      addPage(codes.slice(i,i+codesPerPage));
+    }
+  }
+  
+  getOptions();
+  displayAllCodes();
+  
+  // input functionality
+  function inputChange(e){
+    const id=e.target.id;
+    if(id==='units-cm'){
+      if(units==='in'){
+        document.querySelectorAll('input[type="number"]').forEach(i=>{
+          i.value*=2.54;
+        });
+        units='cm';
+      }
+    }else if(id==='units-in'){
+      if(units==='cm'){
+        document.querySelectorAll('input[type="number"]').forEach(i=>{
+          i.value/=2.54;
+        });
+        units='in';
+      }
+    }else{
+      const val=e.target.value;
+      document.documentElement.style.setProperty('--'+id, id==='cols'||id==='rows'?val:val+units);
+      getOptions();
+      displayAllCodes();
+    }
+  }
+  document.querySelectorAll('input').forEach(i=>{
+    i.oninput=inputChange;
+  });
+  
+</script>
+</html>
