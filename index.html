@@ -55,6 +55,12 @@
         <li><a href="#" onclick="resetPassword()">Reset password</a></li>
         <li><a href="#" onclick="showPasswordlessSignin();">Sign in without a password</a> (we'll email you a sign-in link)</li>
       </div>
+      <div class="separator"></div>
+      <small>
+        🔒 Information security: We use Google cloud to secure your information.
+        <li>your password is hashed using Google Auth, and it is never readable in our database</li>
+        <li>your information is sent encrypted (using https), and stored in a secure Google database</li>
+      </small>
     </div>
     
     <div id="signinSendEmail" class="flexcol">
@@ -120,6 +126,7 @@
       <div id="studentSections" class="sectionCards hidden" name="Sections I'm enrolled in">
         <div id="addStudentSectionBtn" class="sectionCard center" onclick="showAvailableStudentSections()"><i class="material-icons">add_circle</i></div>
       </div>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="profile">
@@ -166,6 +173,7 @@
       <div class="separator"></div>
       <!-- logout button -->
       <button id="logoutBtn" onclick="signOut()">Sign Out</button>
+      <div class="spacer-v"></div>
     </div>
 
     <div id="dbError">
@@ -187,6 +195,7 @@
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Select section where you are a student</div>
       <div id="availableStudentSections" class="sectionCards"></div>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="markAttendance">
@@ -254,7 +263,7 @@
       <br>
       <!-- remove section button -->
       <button id="markAttendanceRemoveButton" onclick="removeSectionFromStudent()"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
-      <br>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="QRreader">
@@ -288,8 +297,8 @@
       <textarea id="editSectionInstructorEmailsInput"></textarea>
       Instructor Name(s):
       <textarea id="editSectionInstructorNamesInput"></textarea>
-      Observer Email(s) (one email per line):
-      <textarea id="editSectionObserverEmailsInput"></textarea>
+      <!-- Observer Email(s) (one email per line):
+      <textarea id="editSectionObserverEmailsInput"></textarea> -->
       <div>Collect seat information:
         <span class="hoverHelp">
           <span class="material-symbols-outlined">help</span>
@@ -382,6 +391,7 @@
       </div>
       <button id="editSectionSubmitBtn" onclick="editSectionSaveSection()">Save Section</button>
       <button id="editSectionDeleteBtn" class="hidden" onclick="editSectionDeleteSection()">Delete Section</button>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="rooms">
@@ -395,6 +405,7 @@
       <div id="roomList">
         <div class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
       </div>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="editRoom">
@@ -417,10 +428,12 @@
       <button onclick="printLabelsClick()">Print seat labels</button>
       <button id="editRoomDeleteBtn" onclick="editRoomDeleteClick()" class="hidden">Delete</button>
       <div id="editRoomUsedIn" class="hidden"></div>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="allSections">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="manageUsers">
@@ -459,6 +472,7 @@
         </div>
       </small>
       <div id="manageUsersList" class="table"></div>
+      <div class="spacer-v"></div>
     </div>
 
     <div id="addUsers">
@@ -520,6 +534,7 @@
       <div id="addUsersSummary" class="pre"></div>
       <button id="addUsersBtn" disabled onclick="addUsers()">Add users</button>
       <div id="addUsersList" class="table"></div>
+      <div class="spacer-v"></div>
     </div>
     
     <!-- for instructors -->
@@ -568,6 +583,7 @@
         <div class="closeBtn material-symbols-outlined" onclick="hide('QRcodeContainer')">close</div>
         <div id="QRcode"></div>
       </div>
+      <div class="spacer-v"></div>
     </div>
     
     <div id="attendanceTableScreen">
