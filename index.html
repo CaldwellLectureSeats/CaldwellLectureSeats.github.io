@@ -124,6 +124,7 @@
         <div id="addInstructorSectionBtn" class="sectionCard center" onclick="createNewSection()"><i class="material-icons">add_circle</i></div>
       </div>
       <div id="studentSections" class="sectionCards hidden" name="Sections I'm enrolled in">
+        <div class="sectionCard center" onclick="openQRreader()"><i class="material-symbols-outlined">qr_code_scanner</i></div>
         <div id="addStudentSectionBtn" class="sectionCard center" onclick="showAvailableStudentSections()"><i class="material-icons">add_circle</i></div>
       </div>
       <div class="spacer-v"></div>
@@ -194,7 +195,9 @@
     <div id="selectStudentSection">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Select section where you are a student</div>
-      <div id="availableStudentSections" class="sectionCards"></div>
+      <div id="availableStudentSections" class="sectionCards">
+        <span></span>
+      </div>
       <div class="spacer-v"></div>
     </div>
     
