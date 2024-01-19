@@ -53,7 +53,7 @@
       <div>
         Forgot password?
         <li><a href="#" onclick="resetPassword()">Reset password</a></li>
-        <li><a href="#" onclick="showPasswordlessSignin();">Sign in without a password</a> (we'll email you a sign-in link)</li>
+        <li><a href="#" onclick="showPasswordlessSignin()">Sign in without a password</a> (we'll email you a sign-in link)</li>
       </div>
       <div class="separator"></div>
       <small>
@@ -79,7 +79,7 @@
       </div>
       <div>
         Having trouble signing in via an email link?<br>
-        Click <a href="#" onclick="showInSignin('signInWithEmailPassword');">here</a> to use a password-based sign-in option.
+        Click <a href="#" onclick="showInSignin('signInWithEmailPassword')">here</a> to use a password-based sign-in option.
       </div>
     </div>
     
@@ -109,7 +109,7 @@
         <div class="separator"></div>
         <div>
           Having trouble signing in via an email link?<br>
-          Click <a href="#" onclick="showInSignin('signInWithEmailPassword');">here</a> to use a password-based sign-in option.
+          Click <a href="#" onclick="showInSignin('signInWithEmailPassword')">here</a> to use a password-based sign-in option.
         </div>
       </div>
     </div>
@@ -168,7 +168,7 @@
       </div>
       <button id="sectionsBtn" onclick="showInMain('sections')">My Sections</button>
       <!-- for instructors and admins -->
-      <button id="allSectionsBtn" class="hidden" onclick="showInMain('allSections')">All Sections</button>
+      <button id="allSectionsBtn" class="hidden" onclick="showAllSections()">All Sections</button>
       <button id="roomsBtn" class="hidden" onclick="showRooms()">Rooms</button>
       <button id="manageUsersBtn" class="hidden" onclick="showManageUsers()">Manage Users</button>
       <div class="separator"></div>
@@ -244,12 +244,12 @@
           <i class="material-symbols-outlined">location_off</i> Your location sharing is off
           <br>
           <small>(turn on location-sharing and refresh page to enable)</small>
-          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
+          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo()">autorenew</i>
         </div>
         <div id="markAttendanceLocationOffButRequired" class="hidden">
           <i class="material-symbols-outlined">location_off</i> ❌
           Please turn on location sharing and refresh.
-          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo();">autorenew</i>
+          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo()">autorenew</i>
         </div>
       </div>
       <!-- submit button -->
@@ -282,13 +282,13 @@
     <div id="addOrEditSection">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Create New Section</div>
-      Semester:
+      <label for="editSectionSemesterSelect" class="required">Semester:</label>
       <select id="editSectionSemesterSelect"><option disabled selected value></option></select>
-      Section Id:
+      <label for="editSectionIdInput" class="required">Section Id:</label>
       <input id="editSectionIdInput" placeholder="e.g., CS-195-001">
       Additional Id's (i.e., cross-listed; one section id per line):
       <textarea id="editSectionCrosslistInput"></textarea>
-      Pattern (days/times):
+      <label for="editSectionPatternInput" class="required">Pattern (days/times):</label>
       <input id="editSectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
       <div>
         Room:
@@ -296,9 +296,9 @@
         <i class="material-icons" onclick="editSectionAssignRoom()">edit</i>
         <i class="material-icons" onclick="editSectionResetRoom()">cancel</i>
       </div>
-      Instructor Email(s) (one email per line):
+      <label for="editSectionInstructorEmailsInput" class="required">Instructor Email(s) (one email per line):</label>
       <textarea id="editSectionInstructorEmailsInput"></textarea>
-      Instructor Name(s):
+      <label for="editSectionInstructorNamesInput" class="required">Instructor Name(s):</label>
       <textarea id="editSectionInstructorNamesInput"></textarea>
       <!-- Observer Email(s) (one email per line):
       <textarea id="editSectionObserverEmailsInput"></textarea> -->
@@ -436,6 +436,8 @@
     
     <div id="allSections">
       <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <select id="allSectionsSemesterSelect"><option disabled selected value>Select Semester</option></select>
+      <div id="allSectionsList" class="sectionCards"></div>
       <div class="spacer-v"></div>
     </div>
     
@@ -578,7 +580,7 @@
       </div>
       <div id="showStudentsOptions" class="flexrow vertical-center">
         <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
-        <button onclick="showRoom()"><i class="material-icons">event_seat event_seat</i></button>
+        <button onclick="showRoom()" id="getAttendanceShowRoomBtn"><i class="material-icons">event_seat event_seat</i></button>
         <span class="spacer"></span>
         <button onclick="showLearnNames()" id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
       </div>
