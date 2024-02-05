@@ -26,7 +26,7 @@
   <div id="header">
     <a href="#" id="title">Lecture<span class="themeColor">Seats</span></a>
     <span class="spacer"></span>
-    <span id="user" onclick="showInMain('profile')">
+    <span id="user">
       <span id="userDisplayName"></span>
     </span>
   </div>
@@ -45,15 +45,15 @@
             <td><input type="password" id="signInPasswordInput"></td>
           </tr>
         </table>
-        <button onclick="signInButtonClick()">Sign In</button>
+        <button id="signInBtn">Sign In</button>
         <span class="spacer"></span>
-        <button onclick="registerButtonClick()">Register</button>
+        <button id="registerBtn">Register</button>
       </div>
       <div class="separator"></div>
       <div>
         Forgot password?
-        <li><a href="#" onclick="resetPassword()">Reset password</a></li>
-        <li><a href="#" onclick="showPasswordlessSignin()">Sign in without a password</a> (we'll email you a sign-in link)</li>
+        <li><a href="#" id="resetPwdBtn">Reset password</a></li>
+        <li><a href="#" id="showNoPwdBtn">Sign in without a password</a> (we'll email you a sign-in link)</li>
       </div>
       <div class="separator"></div>
       <small>
@@ -72,14 +72,14 @@
       <div>
         <input id="signInSendEmailInput"><span class="domainName"></span>
       </div>
-      <button onclick="signInSendButtonClick()">Send sign-in link</button>
+      <button id="signInSendBtn">Send sign-in link</button>
       <div class="separator"></div>
       <div>
         <small>Please delete the email with the sign-in link after you use it to sign in (that link will be disabled once it is used).</small>
       </div>
       <div>
         Having trouble signing in via an email link?<br>
-        Click <a href="#" onclick="showInSignin('signInWithEmailPassword')">here</a> to use a password-based sign-in option.
+        Click <a href="#" id="signInWithEmailPasswordBtn">here</a> to use a password-based sign-in option.
       </div>
     </div>
     
@@ -90,12 +90,12 @@
       <div>
         <input id="signInConfirmEmailInput"><span class="domainName"></span>
       </div>
-      <button onclick="signInCompleteButtonClick()">Sign in</button>
+      <button id="signInCompleteBtn">Sign in</button>
       <div class="separator"></div>
       <div>
         If you did got to this page by error (rather than by clicking a sign-in link from your email), or if you are having another issue, please choose one of the links below to get back to a sign-in screen:
-        <li><a href="#" onclick="showInSignin('signInWithEmailPassword')">Sign in using email/password</a></li>
-        <li><a href="#" onclick="showInSignin('signinSendEmail')">Sign in without a password</a> (we'll email you a sign-in link)</li>
+        <li><a href="#" id="signInWithEmailPasswordBtn2">Sign in using email/password</a></li>
+        <li><a href="#" id="signIngSendEmailBtn">Sign in without a password</a> (we'll email you a sign-in link)</li>
       </div>
     </div>
     
@@ -105,11 +105,11 @@
       <div class="flexcol">
         <div>If you did not receive an email with the sign-in link, please wait a few minutes before trying to send another one.</div>
         <div>If the email was sent to the wrong email address or the sign-in link is not working click the button below to try again.</div>
-        <button onclick="hideSigninLinkSent()">Send another sign-in email...</button>
+        <button id="hideSigninLinkSentBtn">Send another sign-in email...</button>
         <div class="separator"></div>
         <div>
           Having trouble signing in via an email link?<br>
-          Click <a href="#" onclick="showInSignin('signInWithEmailPassword')">here</a> to use a password-based sign-in option.
+          Click <a href="#" id="signInWithEmailPasswordBtn3">here</a> to use a password-based sign-in option.
         </div>
       </div>
     </div>
@@ -121,11 +121,11 @@
     <div id="sections">
       <select id="semesterSelect"><option disabled selected value>Select Semester</option></select>
       <div id="instructorSections" class="sectionCards hidden" name="Sections I'm teaching">
-        <div id="addInstructorSectionBtn" class="sectionCard center" onclick="createNewSection()"><i class="material-icons">add_circle</i></div>
+        <div id="addInstructorSectionBtn" class="sectionCard center"><i class="material-icons">add_circle</i></div>
       </div>
       <div id="studentSections" class="sectionCards hidden" name="Sections I'm enrolled in">
-        <div class="sectionCard center" onclick="openQRreader()"><i class="material-symbols-outlined">qr_code_scanner</i></div>
-        <div id="addStudentSectionBtn" class="sectionCard center" onclick="showAvailableStudentSections()"><i class="material-icons">add_circle</i></div>
+        <div id="sectionsQRreaderBtn" class="sectionCard center"><i class="material-symbols-outlined">qr_code_scanner</i></div>
+        <div id="addStudentSectionBtn" class="sectionCard center"><i class="material-icons">add_circle</i></div>
       </div>
       <div class="spacer-v"></div>
     </div>
@@ -163,18 +163,27 @@
         <ol>
           <li>Wait a few minutes and check your inbox again</li>
           <li>Check your other email folders (e.g., Spam, Promotions)</li>
-          <li><a href="#" onclick="verifyEmail()">Resend email verification link.</a></li>
+          <li><a href="#" id="verifyEmailBtn">Resend email verification link.</a></li>
         </ol>
       </div>
-      <button id="sectionsBtn" onclick="showInMain('sections')">My Sections</button>
+      <button id="sectionsBtn">My Sections</button>
       <!-- for instructors and admins -->
-      <button id="allSectionsBtn" class="hidden" onclick="showAllSections()">All Sections</button>
-      <button id="roomsBtn" class="hidden" onclick="showRooms()">Rooms</button>
-      <button id="manageUsersBtn" class="hidden" onclick="showManageUsers()">Manage Users</button>
+      <button id="allSectionsBtn" class="hidden">All Sections</button>
+      <button id="roomsBtn" class="hidden">Rooms</button>
+      <button id="manageUsersBtn" class="hidden">Manage Users</button>
       <div class="separator"></div>
       <!-- logout button -->
-      <button id="logoutBtn" onclick="signOut()">Sign Out</button>
+      <button id="logoutBtn">Sign Out</button>
       <div class="spacer-v"></div>
+    </div>
+
+    <div id="offlineError">
+      <div>You are offline.</div>
+      <div>
+        Sorry, you cannot use this app while you have no connection to the internet.
+        <br>
+        This app will automatically refresh once you are back online.
+      </div>
     </div>
 
     <div id="dbError">
@@ -186,14 +195,14 @@
       </div>
       <div>
         Alternatively, you can try signing out and then signing in again:
-        <p><button onclick="signOut()">Sign Out</button>
+        <p><button id="logoutBtn2">Sign Out</button>
       </div>
     </div>
     
     <!-- for students -->
 
     <div id="selectStudentSection">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Select section where you are a student</div>
       <div id="availableStudentSections" class="sectionCards">
         <span></span>
@@ -202,21 +211,21 @@
     </div>
     
     <div id="markAttendance">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="markAttendanceSectionId"></div>
       <details id="attendanceMarked"></details>
       <!-- attendance passcode -->
       <label class="required" for="markAttendanceClassCodeInput">Attendance passcode:</label>
       <div class="flexrow w300">
-        <input id="markAttendanceClassCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
-        <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceClassCodeInput')">qr_code_scanner</i>
+        <input id="markAttendanceClassCodeInput" class="grow">
+        <i class="material-symbols-outlined" id="markAttendanceScanPasscodeBtn">qr_code_scanner</i>
       </div>
       <!-- seat -->
       <div class="nodisplay" id="markAttendanceSeatContainer">
         <label for="markAttendanceSeatCodeInput">Seat code:</label>
         <div class="flexrow w300">
-          <input id="markAttendanceSeatCodeInput" class="grow" oninput="checkMissingAttendanceInfo()">
-          <i class="material-symbols-outlined" onclick="openQRreader('markAttendanceSeatCodeInput')">barcode_scanner</i>
+          <input id="markAttendanceSeatCodeInput" class="grow">
+          <i class="material-symbols-outlined" id="markAttendanceScanSeatCodeBtn">barcode_scanner</i>
         </div>
       </div>
       <!-- selfie -->
@@ -224,13 +233,13 @@
         <label for="selfieCanvas">Selfie:</label>
         <div class="flexrow vertical-center">
           <div class="selfieContainer">
-            <img id="defaultSelfieImg" class="full-size" src="user-icon.png" onclick="enableSelfieCamera()">
-            <canvas id="selfieCanvas" class="hidden" onclick="enableSelfieCamera()"></canvas>
-            <video id="selfieVideo" class="hidden" width="300" autoplay playsinline onclick="snapPhoto()"></video>
+            <img id="defaultSelfieImg" class="full-size" src="user-icon.png">
+            <canvas id="selfieCanvas" class="hidden"></canvas>
+            <video id="selfieVideo" class="hidden" width="300" autoplay playsinline></video>
           </div>
-          <i id="addPhotoBtn" class="material-icons large-icon" onclick="enableSelfieCamera()">add_a_photo</i>
-          <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="snapPhoto()">camera</i>
-          <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden" onclick="switchCamera()">cameraswitch</i>
+          <i id="addPhotoBtn" class="material-icons large-icon">add_a_photo</i>
+          <i id="snapPhotoBtn" class="material-symbols-outlined large-icon hidden">camera</i>
+          <i id="switchPhotoBtn" class="material-symbols-outlined large-icon hidden">cameraswitch</i>
         </div>
       </div>
       <!-- geolocation -->
@@ -244,16 +253,16 @@
           <i class="material-symbols-outlined">location_off</i> Your location sharing is off
           <br>
           <small>(turn on location-sharing and refresh page to enable)</small>
-          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo()">autorenew</i>
+          <i class="material-icons spinner" id="locationMissingBtn">autorenew</i>
         </div>
         <div id="markAttendanceLocationOffButRequired" class="hidden">
           <i class="material-symbols-outlined">location_off</i> ❌
           Please turn on location sharing and refresh.
-          <i class="material-icons" onclick="spinOnce(this);checkMissingAttendanceInfo()">autorenew</i>
+          <i class="material-icons spinner" id="locationMissingBtn2">autorenew</i>
         </div>
       </div>
       <!-- submit button -->
-      <button id="markAttendanceButton" disabled onclick="checkInfoAndMarkAttendance()">Mark Attendance</button>
+      <button id="markAttendanceButton" disabled>Mark Attendance</button>
       <!-- requirements warnings -->
       <div  id="markAttendanceRequirements" class="w300 dashed-border">
         Missing required information:
@@ -265,22 +274,22 @@
       <div class="separator"></div>
       <br>
       <!-- remove section button -->
-      <button id="markAttendanceRemoveButton" onclick="removeSectionFromStudent()"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
+      <button id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
       <div class="spacer-v"></div>
     </div>
     
     <div id="QRreader">
-      <button onclick="navigateBack()" id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button id="QRReaderBackButton" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="w300 center">
         <video id="QRreaderVideo" class="full-size"></video>
-        <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon" onclick="switchQRCamera()">cameraswitch</i>
+        <i id="switchQrCameraBtn" class="material-symbols-outlined large-icon">cameraswitch</i>
       </div>
     </div>
     
     <!-- for instructors and admins -->
 
     <div id="addOrEditSection">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="menuTitle">Create New Section</div>
       <label for="editSectionSemesterSelect" class="required">Semester:</label>
       <select id="editSectionSemesterSelect"><option disabled selected value></option></select>
@@ -292,9 +301,9 @@
       <input id="editSectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
       <div>
         Room:
-        <span id="editSectionRoom" onclick="editSectionAssignRoom()"></span>
-        <i class="material-icons" onclick="editSectionAssignRoom()">edit</i>
-        <i class="material-icons" onclick="editSectionResetRoom()">cancel</i>
+        <span id="editSectionRoom"></span>
+        <i class="material-icons" id="editSectionRoomBtn">edit</i>
+        <i class="material-icons" id="editSectionResetRoomBtn">cancel</i>
       </div>
       <label for="editSectionInstructorEmailsInput" class="required">Instructor Email(s) (one email per line):</label>
       <textarea id="editSectionInstructorEmailsInput"></textarea>
@@ -392,87 +401,87 @@
           </div>
         </span>
       </div>
-      <button id="editSectionSubmitBtn" onclick="editSectionSaveSection()">Save Section</button>
-      <button id="editSectionDeleteBtn" class="hidden" onclick="editSectionDeleteSection()">Delete Section</button>
+      <button id="editSectionSubmitBtn">Save Section</button>
+      <button id="editSectionDeleteBtn" class="hidden">Delete Section</button>
       <div class="spacer-v"></div>
     </div>
     
     <div id="rooms">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="flexrow">
-        <select id="roomsCampusSelect" onchange="roomsCampusSelected()"></select>
-        <select id="roomsBuildingSelect" onchange="roomsBuildingSelected()">
+        <select id="roomsCampusSelect"></select>
+        <select id="roomsBuildingSelect">
           <option>All buildings</option>
         </select>
       </div>
       <div id="roomList">
-        <div class="sectionCard center" onclick="createNewRoom()"><i class="material-icons">add_circle</i></div>
+        <div class="sectionCard center" id="createNewRoomBtn"><i class="material-icons">add_circle</i></div>
       </div>
       <div class="spacer-v"></div>
     </div>
     
     <div id="editRoom">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       Room Id: <input id="editRoomId" disabled>
       Campus: <input id="editRoomCampus" list="editRoomCampusDataList"><datalist id="editRoomCampusDataList"></datalist>
       Building: <input id="editRoomBuilding" list="editRoomBuildingDataList"><datalist id="editRoomBuildingDataList"></datalist>
       Room name or number: <input id="editRoomName">
       Room layout:
       <div class="flexrow">
-        <span onclick="editRoomResetClick()" class="material-symbols-outlined" title="Reset">first_page</span>
-        <span onclick="editRoomUndoClick()" class="material-symbols-outlined" title="Undo">undo</span>
-        <span onclick="editRoomRedoClick()" class="material-symbols-outlined" title="Redo">redo</span>
-        <span onclick="editRoomGridClick()" class="material-symbols-outlined" title="New layout">background_grid_small</span>
-        <span onclick="editRoom123Click()" class="material-symbols-outlined" title="Assign seat codes (letter rows, number seats)">123</span>
-        <span onclick="editRoomAbcClick()" class="material-symbols-outlined" title="Assign seat codes (number rows, letter seats)">abc</span>
+        <span id="editRoomResetBtn" class="material-symbols-outlined" title="Reset">first_page</span>
+        <span id="editRoomUndoBtn" class="material-symbols-outlined" title="Undo">undo</span>
+        <span id="editRoomRedoBtn" class="material-symbols-outlined" title="Redo">redo</span>
+        <span id="editRoomGridBtn" class="material-symbols-outlined" title="New layout">background_grid_small</span>
+        <span id="editRoom123Btn" class="material-symbols-outlined" title="Assign seat codes (letter rows, number seats)">123</span>
+        <span id="editRoomAbcBtn" class="material-symbols-outlined" title="Assign seat codes (number rows, letter seats)">abc</span>
       </div>
       <div id="editRoomLayout" title="Click to edit cell. Right-click to add/remove cells."></div>
-      <button onclick="editRoomSaveClick()">Save</button>
-      <button onclick="printLabelsClick()">Print seat labels</button>
-      <button id="editRoomDeleteBtn" onclick="editRoomDeleteClick()" class="hidden">Delete</button>
+      <button id="editRoomSaveBtn">Save</button>
+      <button id="editRoomLabelsBtn">Print seat labels</button>
+      <button id="editRoomDeleteBtn" class="hidden">Delete</button>
       <div id="editRoomUsedIn" class="hidden"></div>
       <div class="spacer-v"></div>
     </div>
     
     <div id="allSections">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <select id="allSectionsSemesterSelect"><option disabled selected value>Select Semester</option></select>
       <div id="allSectionsList" class="sectionCards"></div>
       <div class="spacer-v"></div>
     </div>
     
     <div id="manageUsers">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="manageUsersTitle" class="pre"></div>
       <small>
         <div id="manageUsersAddUserButtons">
-          <button onclick="addUser()"><span class="material-symbols-outlined">person_add</span> Add User</button>
-          <button onclick="showAddUsers()"><span class="material-symbols-outlined">group_add</span> Add Users</button>
+          <button id="addUserBtn"><span class="material-symbols-outlined">person_add</span> Add User</button>
+          <button id="showAddUsersBtn"><span class="material-symbols-outlined">group_add</span> Add Users</button>
           <br><br>
         </div>
         <div class="flexrow">
           <span>
             <label for="manageUsersEmailInput">Email:</label>
-            <br><input id="manageUsersEmailInput" size="10" onfocus="manageUsersSelectFilter(this)" oninput="findUsers()">
+            <br><input id="manageUsersEmailInput" size="10">
           </span>
           <span>
             <label for="manageUsersLastNameInput">Last name:</label>
-            <br><input id="manageUsersLastNameInput" size="10" class="manageUsersSelectedFilter" onfocus="manageUsersSelectFilter(this)" oninput="findUsers()">
+            <br><input id="manageUsersLastNameInput" size="10" class="manageUsersSelectedFilter">
           </span>
           <span>
             <label for="manageUsersNameInput">Preferred name:</label>
-            <br><input id="manageUsersNameInput" size="10" onfocus="manageUsersSelectFilter(this)" oninput="findUsers()">
+            <br><input id="manageUsersNameInput" size="10">
           </span>
         </div>
         <div id="manageUsersPages"></div>
         <div class="flexrow">
-          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleAny" checked="true" onchange="findUsers()">
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleAny" checked="true">
           <label for="manageUsersSelectRoleAny">Any role</label>
-          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleStudent" onchange="findUsers()">
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleStudent">
           <label for="manageUsersSelectRoleStudent">Students only</label>
-          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleInstructor" onchange="findUsers()">
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleInstructor">
           <label for="manageUsersSelectRoleInstructor">Instructors only</label>
-          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleAdmin" onchange="findUsers()">
+          <input type="radio" name="manageUsersSelectRole" id="manageUsersSelectRoleAdmin">
           <label for="manageUsersSelectRoleAdmin">Admins only</label>
         </div>
       </small>
@@ -481,7 +490,7 @@
     </div>
 
     <div id="addUsers">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="flexrow flexwrap small">
         <div>
           <label for="addUsersEmails" class="required">Emails or usernames (one per line):</label> 
@@ -500,7 +509,7 @@
             </div>
           </span>
           <br>
-          <textarea id="addUsersEmails" cols="30" rows="10" wrap="off" oninput="addUsersTextChanged()"></textarea>
+          <textarea id="addUsersEmails" cols="30" rows="10" wrap="off"></textarea>
         </div>
         <div>
           <label for="addUsersNames">Names (one per line):</label>
@@ -524,9 +533,9 @@
             </div>
           </span>
           <br>
-          <textarea id="addUsersNames" cols="30" rows="10" wrap="off" oninput="addUsersTextChanged()"></textarea>
+          <textarea id="addUsersNames" cols="30" rows="10" wrap="off"></textarea>
           <br>
-          <input type="checkbox" id="addUsersLastNameFirst" checked="true" oninput="addUsersTextChanged()"><label for="addUsersLastNameFirst">Last name first</label>
+          <input type="checkbox" id="addUsersLastNameFirst" checked="true"><label for="addUsersLastNameFirst">Last name first</label>
         </div>
       </div>
       <div id="addUsersRoleOptions">
@@ -537,7 +546,7 @@
         <label for="addUsersAdmins">All users above are admins</label>
       </div>
       <div id="addUsersSummary" class="pre"></div>
-      <button id="addUsersBtn" disabled onclick="addUsers()">Add users</button>
+      <button id="addUsersBtn" disabled>Add users</button>
       <div id="addUsersList" class="table"></div>
       <div class="spacer-v"></div>
     </div>
@@ -545,22 +554,24 @@
     <!-- for instructors -->
 
     <div id="getAttendance">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div>
         <span id="getAttendanceSectionId"></span>
         <span id="getAttendanceCrossListIds"></span>
+        <i class="material-icons" id="createSectionURLBtn" title="Get link that students can use to access this section">link</i>
       </div>
       <div class="flexrow">
         <div id="getAttendanceSectionInfo"></div>
-        <i class="material-icons" id="getAttendanceEditBtn" onclick>edit</i>
+        <i class="material-icons" id="getAttendanceEditBtn" title="Edit section information and settings">edit</i>
       </div>
       <!-- <div class="getAttendanceLoader"></div> -->
       <div id="getAttendanceControls" class="nodisplay">
         Attendance passcode:
         <div class="flexrow">
           <input id="getAttendanceClassCodeInput">
-          <i class="material-icons" onclick="randomAttendanceClassCode()" id="randomAttendanceClassCodeBtn">autorenew</i>
-          <i class="material-icons hidden" onclick="createQRClick()" id="createQRCodeBtn">qr_code</i>
+          <i class="material-icons" id="randomAttendanceClassCodeBtn" title="New random passcode">repeat_one</i>
+          <i class="material-icons hidden" id="createQRCodeBtn" title="Show/hide attendance QR code">qr_code</i>
+          <i class="material-icons hidden" id="createURLBtn" title="Get link that students can use to mark attendance">link</i>
         </div>
         <div id="collectingAttendanceDiv">
           <span id="collectingAttendance">Collect</span>
@@ -568,24 +579,25 @@
           <span id="minutesToCollectAttendance" contenteditable="true">75</span>
           minutes
         </div>
-        <button id="collectAttendanceBtn" onclick="collectAttendanceBtnClick()">Start</button>
+        <button id="collectAttendanceBtn">Start</button>
         <div id="currentAttendanceStatus" class="flexrow hidden">
           <span class="pre"></span>
-          <i class="material-icons" onclick="spinOnce(this);showCurrentAttendanceStatus(true)">autorenew</i>
+          <i class="material-icons spinner" id="refreshAttendanceBtn">autorenew</i>
         </div>
       </div>
       <div class="separator"></div>
       <div id="showStudentsAddBtn" class="hidden">
-        <button onclick="addStudentsBtnClick()"><i class="material-icons">group_add</i> Add students</button>
+        <button id="studentsAddBtn"><i class="material-icons">group_add</i> Add students</button>
       </div>
       <div id="showStudentsOptions" class="flexrow vertical-center">
-        <button onclick="showAttendanceTable()"><i class="material-icons">group view_list</i></button>
-        <button onclick="showRoom()" id="getAttendanceShowRoomBtn"><i class="material-icons">event_seat event_seat</i></button>
+        <button id="getAttendanceShowAttendanceTableBtn"><i class="material-icons">group view_list</i></button>
+        <button id="getAttendanceShowRoomBtn"><i class="material-icons">event_seat event_seat</i></button>
         <span class="spacer"></span>
-        <button onclick="showLearnNames()" id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
+        <button id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
       </div>
       <div id="QRcodeContainer" class="hidden">
-        <div class="closeBtn material-symbols-outlined" onclick="hide('QRcodeContainer')">close</div>
+        <div class="closeBtn material-symbols-outlined" id="hideQRBtn">close</div>
+        <div class="material-symbols-outlined" id="showQRPopupBtn" title="Open in small popup window">north_east</div>
         <div id="QRcode"></div>
       </div>
       <div class="spacer-v"></div>
@@ -594,42 +606,42 @@
     <div id="attendanceTableScreen">
       <!-- navigation controls -->
       <div class="flexrow">
-        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <button onclick="navigateBack();setTimeout(showRoom,100)"><i class="material-icons">event_seat event_seat</i></button>
-        <button onclick="spinOnce(this.firstChild);createAttendanceTable(true)"><i class="material-icons">autorenew</i></button>
+        <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+        <button id="gotoRoomBtn"><i class="material-icons">event_seat event_seat</i></button>
+        <button id="refreshAttendTableBtn" class="spinnerBtn"><i class="material-icons">autorenew</i></button>
       </div>
       <div id="attendanceTableSectionId"></div>
       <!-- table action controls -->
       <div class="flexrow">
-        <i onclick="attendanceTableSelectCols()" class="material-symbols-outlined">page_info</i>
-        <i onclick="attendanceTableFitToWidth()" class="material-symbols-outlined">fit_width</i>
-        <i onclick="attendanceColFirst()" class="material-icons">first_page</i>
-        <i onclick="attendanceColLeft()" class="material-icons">navigate_before</i>
-        <i onclick="attendanceTableShowAllCols()" class="material-icons">date_range</i>
-        <i onclick="attendanceColRight()" class="material-icons">navigate_next</i>
-        <i onclick="attendanceColLast()" class="material-icons">last_page</i>
-        <i onclick="showHide('attendanceTableOptions')" class="material-symbols-outlined">more_horiz</i>
+        <i id="attendanceTableSelectColsBtn" class="material-symbols-outlined">page_info</i>
+        <i id="attendanceTableFitBtn" class="material-symbols-outlined">fit_width</i>
+        <i id="attendanceTableColFirstBtn" class="material-icons">first_page</i>
+        <i id="attendanceTableColLeftBtn" class="material-icons">navigate_before</i>
+        <i id="attendanceTableColsAllBtn" class="material-icons">date_range</i>
+        <i id="attendanceTableColRightBtn" class="material-icons">navigate_next</i>
+        <i id="attendanceTableColsLastBtn" class="material-icons">last_page</i>
+        <i id="attendanceTableOptionsBtn" class="material-symbols-outlined">more_horiz</i>
       </div>
       <!-- attendance options -->
       <div class="flexcol hidden" id="attendanceTableOptions">
-        <i class="closeBtn material-icons" onclick="hide('attendanceTableOptions')">close</i>
+        <i id="attendanceTableOptionsHideBtn" class="closeBtn material-icons">close</i>
         <div class="flexrow">
-          <button id="downloadAttendanceBtn" onclick="downloadAttendanceRecord()"><i class="material-symbols-outlined">download</i></button>
-          <button onclick="addAttendanceColBtnClick()" class="hoverHelp">
+          <button id="downloadAttendanceBtn"><i class="material-symbols-outlined">download</i></button>
+          <button id="attendanceTableAddColBtn" class="hoverHelp">
             <i class="material-symbols-outlined">calendar_add_on</i>
             <div class="hoverHelpText">
               <span class="material-symbols-outlined">info</span>
               <b>Add new attendance column</b>
             </div>
           </button>
-          <button onclick="addStudentBtnClick()" class="hoverHelp">
+          <button id="attendanceTableAddStudentBtn" class="hoverHelp">
             <i class="material-symbols-outlined">person_add_alt</i> <i class="material-icons">search</i>
             <div class="hoverHelpText">
               <span class="material-symbols-outlined">info</span>
               <b>Add existing user as a student for this section</b>
             </div>
           </button>
-          <button onclick="addStudentsBtnClick()" class="hoverHelp">
+          <button id="attendanceTableAddStudentsBtn" class="hoverHelp">
             <i class="material-symbols-outlined">group_add</i> <i class="material-icons">alternate_email</i>
             <div class="hoverHelpText">
               <span class="material-symbols-outlined">info</span>
@@ -640,12 +652,12 @@
         </div>
         <div>
           <small>
-            +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="1" size="1" oninput="createAttendanceTable()"><label for="minLateInput">min is considered late</label>
+            +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="1" size="1"><label for="minLateInput">min is considered late</label>
             <br>
-            <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3" oninput="createAttendanceTable()">
+            <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3">
           </small>
         </div>
-        <div onclick="classLocPrompt()">
+        <div id="attendanceTableClassLocBtn">
           <i class="material-icons">location_on</i>
           <small id="classLocation"></small>
         </div>
@@ -659,20 +671,20 @@
     <div id="room">
       <!-- navigation controls -->
       <div class="flexrow">
-        <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <button onclick="navigateBack();setTimeout(showAttendanceTable,100)"><i class="material-icons">group view_list</i></button>
-        <button onclick="spinOnce(this.firstElementChild);showRoom(true)"><i class="material-icons">autorenew</i></button>
+        <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+        <button id="showAttendanceTableBtn"><i class="material-icons">group view_list</i></button>
+        <button id="refreshRoomBtn" class="spinnerBtn"><i class="material-icons">autorenew</i></button>
       </div>
       <div id="attendanceRoomSectionId"></div>
       <!-- room map controls -->
       <div class="flexrow">
-        <i onclick="attendanceRoomViewLeft()" class="material-icons">navigate_before</i>
+        <i id="attendanceRoomViewLeftBtn" class="material-icons">navigate_before</i>
         <span id="roomViewDate"></span>
-        <i onclick="attendanceRoomViewRight()" class="material-icons">navigate_next</i>
-        <i onclick="attendanceRoomViewLast()" class="material-icons" id="attendanceRoomViewLastBtn">last_page</i>
-        <i onclick="attendanceRoomViewZoomOut()" class="material-symbols-outlined">zoom_out</i>
-        <i onclick="attendanceRoomViewZoomIn()" class="material-symbols-outlined">zoom_in</i>
-        <i onclick="roomNamesToggle()" class="material-symbols-outlined">title</i>
+        <i id="attendanceRoomViewRightBtn" class="material-icons">navigate_next</i>
+        <i id="attendanceRoomViewLastBtn" class="material-icons" id="attendanceRoomViewLastBtn">last_page</i>
+        <i id="attendanceRoomViewZoomOutBtn" class="material-symbols-outlined">zoom_out</i>
+        <i id="attendanceRoomViewZoomInBtn" class="material-symbols-outlined">zoom_in</i>
+        <i id="attendanceRoomViewNamesBtn" class="material-symbols-outlined">title</i>
       </div>
       <div id="roomMapHolder">
         <div id="roomMap"></div>
@@ -681,13 +693,13 @@
     </div>
     
     <div id="learnNames">
-      <button onclick="navigateBack()" class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="learnNamesMain">
-        <img id="learnNamesImg"  onclick="learnNamesImgClick()" src="user-icon.png" onerror="this.src='user-icon.png'">
-        <div id="learnNamesName" onclick="learnNamesNameClick()" class="hideName"></div>
-        <button id="learnNamesNextBtn" onclick="learnNamesNextBtnClick()">Next</button>
-        <button id="learnNamesPrevBtn" onclick="learnNamesPrevBtnClick()" class="hidden">Previous</button>
-        <button id="learnNamesRemoveBtn" onclick="learnNamesRemoveBtnClick()">I know them 🙂</button>
+        <img id="learnNamesImg" src="user-icon.png" onerror="this.src='user-icon.png'">
+        <div id="learnNamesName" class="hideName"></div>
+        <button id="learnNamesNextBtn">Next</button>
+        <button id="learnNamesPrevBtn" class="hidden">Previous</button>
+        <button id="learnNamesRemoveBtn">I know them 🙂</button>
       </div>
       <div id="learnNamesDone" class="hidden">
         <p>All Done!</p>
@@ -698,15 +710,15 @@
     
   </div>
   
-  <div id="attendanceCollectionStatus" class="hidden" onclick="showGetAttendance()">
+  <div id="attendanceCollectionStatus" class="hidden">
     Collecting Attendance
     <div></div>
     <span></span>
   </div>
   
-  <div id="helpScreen" class="hidden screen center" onclick="hide('helpScreen')">
+  <div id="helpScreen" class="hidden screen center">
     <div id="help">
-      <div class="closeBtn material-symbols-outlined" onclick="hide('helpScreen')">close</div>
+      <div id="closeHelpBtn" class="closeBtn material-symbols-outlined">close</div>
       <div class="flexrow">
         <img src="lecture-seats-256.png" style="width:75px;height:75px;border-radius:100%;margin-right:2em;">
         <div id="versionInfo" style="white-space: pre-wrap;"></div>
@@ -750,10 +762,10 @@
   </div>
   
   <div id="accessibility" class="flexcol">
-    <i class="material-icons" onclick="show('helpScreen')" title="About and help information">info</i>
-    <i class="material-icons" onclick="changeFontSize(1)" title="Increase font size">text_increase</i>
-    <i class="material-icons" onclick="changeFontSize(-1)" title="Decrease font size">text_decrease</i>
-    <i class="material-icons" id="theme-switch" onclick="toggleDarkMode()" title="Toggle dark mode">light_mode</i>
+    <i id="showHelpBtn" class="material-icons" title="About and help information">info</i>
+    <i id="fontPlusBtn" class="material-icons" title="Increase font size">text_increase</i>
+    <i id="fontMinusBtn" class="material-icons" title="Decrease font size">text_decrease</i>
+    <i class="material-icons" id="theme-switch" title="Toggle dark mode">light_mode</i>
   </div>
   
 </body>
