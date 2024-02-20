@@ -52,8 +52,8 @@
       <div class="separator"></div>
       <div>
         Forgot password?
-        <li><a href="#" id="resetPwdBtn">Reset password</a></li>
-        <li><a href="#" id="showNoPwdBtn">Sign in without a password</a> (we'll email you a sign-in link)</li>
+        <li><lnk id="resetPwdBtn">Reset password</lnk></li>
+        <li><lnk id="showNoPwdBtn">Sign in without a password</lnk> (we'll email you a sign-in link)</li>
       </div>
       <div class="separator"></div>
       <small>
@@ -79,7 +79,7 @@
       </div>
       <div>
         Having trouble signing in via an email link?<br>
-        Click <a href="#" id="signInWithEmailPasswordBtn">here</a> to use a password-based sign-in option.
+        Click <lnk class="signInWithEmailPasswordBtn">here</lnk> to use a password-based sign-in option.
       </div>
     </div>
     
@@ -94,8 +94,8 @@
       <div class="separator"></div>
       <div>
         If you did got to this page by error (rather than by clicking a sign-in link from your email), or if you are having another issue, please choose one of the links below to get back to a sign-in screen:
-        <li><a href="#" id="signInWithEmailPasswordBtn2">Sign in using email/password</a></li>
-        <li><a href="#" id="signIngSendEmailBtn">Sign in without a password</a> (we'll email you a sign-in link)</li>
+        <li><lnk class="signInWithEmailPasswordBtn">Sign in using email/password</lnk></li>
+        <li><lnk id="signIngSendEmailBtn">Sign in without a password</lnk> (we'll email you a sign-in link)</li>
       </div>
     </div>
     
@@ -109,7 +109,7 @@
         <div class="separator"></div>
         <div>
           Having trouble signing in via an email link?<br>
-          Click <a href="#" id="signInWithEmailPasswordBtn3">here</a> to use a password-based sign-in option.
+          Click <lnk class="signInWithEmailPasswordBtn">here</lnk> to use a password-based sign-in option.
         </div>
       </div>
     </div>
@@ -132,39 +132,11 @@
     
     <div id="profile">
       <div>
-        <br>
-        Last Name:
-        <br>
-        <input id="lastNameInput" placeholder="Enter your last name">
-        <br>
-        Preferred Name:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">info</span>
-            <b>Preferred Name</b>
-            <p>
-              What would you like to be called?
-            </p>
-          </div>
-        </span>
-        <br>
-        <input id="nameInput" placeholder="Enter your preferred name">
-        <br>
-        <button id="saveNameBtn" class="hidden">Save Name</button>
-      </div>
-      <div id="emailVerificationLink" class="hidden">
-        A link to verify your email was sent to you on <span id="emailVerificationLinkDate"></span>.
-        <br>
-        After you verify your email, click <a href="#" onclick="location.reload()">here</a> to refresh.
-        <br>
-        <br>
-        If you do not see an email with a verification link in your inbox:
-        <ol>
-          <li>Wait a few minutes and check your inbox again</li>
-          <li>Check your other email folders (e.g., Spam, Promotions)</li>
-          <li><a href="#" id="verifyEmailBtn">Resend email verification link.</a></li>
-        </ol>
+        <br><label for="lastNameInput">Last Name:</label>
+        <br><input id="lastNameInput" placeholder="Enter your last name">
+        <br><label for="nameInput">Preferred Name:</label>
+        <br><input id="nameInput" placeholder="Enter your preferred name">
+        <br><button id="saveNameBtn" class="hidden">Save Name</button>
       </div>
       <button id="sectionsBtn">My Sections</button>
       <!-- for instructors and admins -->
@@ -173,8 +145,27 @@
       <button id="manageUsersBtn" class="hidden">Manage Users</button>
       <div class="separator"></div>
       <!-- logout button -->
-      <button id="logoutBtn">Sign Out</button>
+      <button class="logoutBtn">Sign Out</button>
       <div class="spacer-v"></div>
+    </div>
+
+    <div id="emailVerification">
+      <div>
+        You are signed in as <span id="emailVerificationEmail"></span>.
+        <br><span class="bad">This email address has not yet been verified.</span>
+        <br>You must verify your email before proceeding.
+        <br><br>
+        A link to verify your email was sent to you on <span id="emailVerificationLinkDate"></span>.
+        <br>After you verify your email, click <lnk onclick="location.reload()">here</lnk> to refresh.
+        <br><br>
+        If you do not see an email with a verification link in your inbox:
+        <ol>
+          <li>Wait a few minutes and check your inbox again</li>
+          <li>Check your other email folders (e.g., Spam, Promotions)</li>
+          <li><lnk id="verifyEmailBtn">Resend email verification link.</lnk></li>
+        </ol>
+      </div>
+      <button class="logoutBtn">Sign Out</button>
     </div>
 
     <div id="offlineError">
@@ -195,7 +186,7 @@
       </div>
       <div>
         Alternatively, you can try signing out and then signing in again:
-        <p><button id="logoutBtn2">Sign Out</button>
+        <p><button class="logoutBtn">Sign Out</button>
       </div>
     </div>
     
@@ -213,6 +204,7 @@
     <div id="markAttendance">
       <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="markAttendanceSectionId"></div>
+      <div id="markAttendanceSectionInfo"></div>
       <details id="attendanceMarked"></details>
       <!-- attendance passcode -->
       <label class="required" for="markAttendanceClassCodeInput">Attendance passcode:</label>
@@ -243,23 +235,26 @@
         </div>
       </div>
       <!-- geolocation -->
-      <div class="nodisplay" id="markAttendanceLocationContainer">
+      <div id="markAttendanceLocationContainer">
         <label for="markAttendanceLocation">Location:</label>
         <span id="markAttendanceLocation" class="hidden">
           &nbsp;
           <i class="material-symbols-outlined">location_on</i> ✔️
         </span>
         <div id="markAttendanceLocationOff" class="hidden">
-          <i class="material-symbols-outlined">location_off</i> Your location sharing is off
-          <br>
-          <small>(turn on location-sharing and refresh page to enable)</small>
-          <i class="material-icons spinner" id="locationMissingBtn">autorenew</i>
+          <span class="refreshLocation">
+            <i class="material-symbols-outlined">location_off</i> Your location sharing is off
+            &nbsp; <i class="material-icons" id="locationMissingBtn">autorenew</i>
+          </span>
+          <br><small>(<lnk class="locationEnableHelp">turn on location-sharing</lnk> and <lnk class="refreshLocation">refresh</lnk> page to enable)</small>
         </div>
-        <div id="markAttendanceLocationOffButRequired" class="hidden">
-          <i class="material-symbols-outlined">location_off</i> ❌
-          Please turn on location sharing and refresh.
-          <i class="material-icons spinner" id="locationMissingBtn2">autorenew</i>
-        </div>
+        <span id="markAttendanceLocationOffButRequired" class="hidden">
+          <span class="refreshLocation">
+            <i class="material-symbols-outlined">location_off</i> ❌
+            &nbsp; <i class="material-icons" id="locationMissingBtn2">autorenew</i>
+          </span>
+          <br><small>Please <lnk class="locationEnableHelp">turn on location sharing</lnk> and <lnk class="refreshLocation">refresh</lnk>.</small>
+        </span>
       </div>
       <!-- submit button -->
       <button id="markAttendanceButton" disabled>Mark Attendance</button>
@@ -271,10 +266,12 @@
         </ul>
         <div class="required footnote">indicates required field</div>
       </div>
-      <div class="separator"></div>
       <br>
+      <div class="separator"></div>
       <!-- remove section button -->
-      <button id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from My Sections</button>
+      <div id="markAttendanceRemoveButton" class="w300"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from enrolled sections</div>
+      <!-- <button class="muted" id="markAttendanceRemoveButton"><i class="material-symbols-outlined">delete</i> Remove <span id="markAttendanceRemoveButtonSectionId"></span> from enrolled sections</button> -->
+      <div class="separator"></div>
       <div class="spacer-v"></div>
     </div>
     
@@ -297,7 +294,9 @@
       <input id="editSectionIdInput" placeholder="e.g., CS-195-001">
       Additional Id's (i.e., cross-listed; one section id per line):
       <textarea id="editSectionCrosslistInput"></textarea>
-      <label for="editSectionPatternInput" class="required">Pattern (days/times):</label>
+      <label for="editSectionTitleInput">Title and/or short description:</label>
+      <input id="editSectionTitleInput" placeholder="e.g., Computer Programming">
+      <label for="editSectionPatternInput">Pattern (days/times):</label>
       <input id="editSectionPatternInput" placeholder="e.g., TR 8:30AM-9:45AM">
       <div>
         Room:
@@ -309,24 +308,13 @@
       <textarea id="editSectionInstructorEmailsInput"></textarea>
       <label for="editSectionInstructorNamesInput" class="required">Instructor Name(s):</label>
       <textarea id="editSectionInstructorNamesInput"></textarea>
-      <!-- Observer Email(s) (one email per line):
+      <!-- <label for="editSectionObserverEmailsInput">Observer Email(s) (one email per line):</label>
       <textarea id="editSectionObserverEmailsInput"></textarea> -->
-      <div>Collect seat information:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">info</span>
-            <b>Seat information collection</b>
-            <br><br>
-            If this section has a room selected, the room will have a Seat Code assigned to each seat location.
-            Collecting Seat Code information will enable viewing student names/photos within a mapped room layout.
-            <li>Selecting "No" will not collect Seat Code information when attendance is marked.</li>
-            <li>Selecting "Yes" will present a text input for a student to enter their Seat Code.</li>
-            <li>Selecting "Request" will warn a student that Seat Code is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a Seat Code.</li>
-            <li>Selecting "Require" will require a student to enter their Seat Code.</li>
-          </div>
-        </span>
-      </div>
+      <label for="editSectionGradeInput" class="required">Attendance grade equation:</label>
+      <textarea id="editSectionGradeInput" value="( 100 * P + 50 * L ) / N" rows="3"></textarea>
+      <label for="editSectionLateInput" class="required">How many minutes is considered late:</label>
+      <span><input id="editSectionLateInput" type="number" size="5" value="25">min</span>
+      <div id="editSectionSeatLabel">Collect seat information:</div>
       <div>
         <input type="radio" name="editSectionSeat" id="editSectionSeatNo">
         <label for="editSectionSeatNo">No</label>
@@ -337,21 +325,7 @@
         <input type="radio" name="editSectionSeat" id="editSectionSeatRequire">
         <label for="editSectionSeatRequire">Require</label>
       </div>
-      <div>Collect student photos:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">info</span>
-            <b>Student photo collection</b>
-            <br><br>
-            Collecting student photos may be helpful for verifying attendance and for learning student names.
-            <li>Selecting "No" will not collect student photos when attendance is marked.</li>
-            <li>Selecting "Yes" will present an option for taking a selfie to each student.</li>
-            <li>Selecting "Request" will warn a student that a selfie is requested by instructor, but will allow student to ignore the warning and mark attendance without supplying a selfie.</li>
-            <li>Selecting "Require" will require a student to take a selfie for marking attendance.</li>
-          </div>
-        </span>
-      </div>
+      <div id="editSectionPhotoLabel">Collect student photos:</div>
       <div>
         <input type="radio" name="editSectionPhoto" id="editSectionPhotoNo">
         <label for="editSectionPhotoNo">No</label>
@@ -362,22 +336,7 @@
         <input type="radio" name="editSectionPhoto" id="editSectionPhotoRequire">
         <label for="editSectionPhotoRequire">Require</label>
       </div>
-      <div>Collect geolocation:
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">info</span>
-            <b>Geo-Location collection</b>
-            <br><br>
-            Collecting geolocation may be very helpful for verifying attendance.
-            However, many devices have location-sharing turned off, and some of the students may be uncomfortable turning on location-sharing due to privacy concerns or for some technical reasons.
-            <li>Selecting "No" will not collect student geolocation when attendance is marked.</li>
-            <li>Selecting "Yes" will collect student location when location-sharing is enabled.</li>
-            <li>Selecting "Request" will warn a student that location-sharing is requested by instructor, but will allow student to ignore the warning and mark attendance even if location-sharing is off.</li>
-            <li>Selecting "Require" will require a student to turn on location-sharing for marking attendance.</li>
-          </div>
-        </span>
-      </div>
+      <div id="editSectionLocationLabel">Collect geolocation:</div>
       <div>
         <input type="radio" name="editSectionLocation" id="editSectionLocationNo">
         <label for="editSectionLocationNo">No</label>
@@ -390,16 +349,6 @@
       </div>
       <div>
         <input type="checkbox" id="editSectionAllowSelfEnroll"><label for="editSectionAllowSelfEnroll">Allow students to self-enroll</label>
-        <span class="hoverHelp">
-          <span class="material-symbols-outlined">help</span>
-          <div class="hoverHelpText">
-            <span class="material-symbols-outlined">info</span>
-            <b>Allow students to self-enroll</b>
-            <br><br>
-            <li>When this option is checked, any student will be able to add this section to their My Sections screen.</li>
-            <li>When this option is unchecked, this section will only appear in a student's My Sections screen if the instructor had enrolled the student in this section, or after a student used an attendance QR code to mark their attendance for this section.</li>
-          </div>
-        </span>
       </div>
       <button id="editSectionSubmitBtn">Save Section</button>
       <button id="editSectionDeleteBtn" class="hidden">Delete Section</button>
@@ -493,49 +442,13 @@
       <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div class="flexrow flexwrap small">
         <div>
-          <label for="addUsersEmails" class="required">Emails or usernames (one per line):</label> 
-          <span class="hoverHelp">
-            <span class="material-symbols-outlined">help</span>
-            <div class="hoverHelpText">
-              <span class="material-symbols-outlined">info</span>
-              <b>Enter emails or usernames</b>
-              <br><br>
-              Enter each user's email or username on its own line.<br>
-              WARNING: Blank lines will be ignored.
-              <br><br>
-              If entering emails, each email must be in the format <i>username<span class="domainName"></span></i>.
-              <br><br>
-              If entering usernames, <i><span class="domainName"></span></i> will be automatically added at the end of each username to get user's email addresses.
-            </div>
-          </span>
-          <br>
-          <textarea id="addUsersEmails" cols="30" rows="10" wrap="off"></textarea>
+          <label for="addUsersEmails" class="required">Emails or usernames (one per line):</label>
+          <br><textarea id="addUsersEmails" cols="30" rows="10" wrap="off"></textarea>
         </div>
         <div>
           <label for="addUsersNames">Names (one per line):</label>
-          <span class="hoverHelp">
-            <span class="material-symbols-outlined">help</span>
-            <div class="hoverHelpText">
-              <span class="material-symbols-outlined">info</span>
-              <b>Enter user's names</b>
-              <br><br>
-              Enter each user's name on their own line.
-              <br><br>
-              If the "Last name first" checkbox is checked, enter names in one of the following formats:
-              <li>Last Name</li>
-              <li>Last Name, First Name</li>
-              <li>Last Name &nbsp; First Name</li>
-              <br>
-              If the "Last name first" checkbox is unchecked, enter names in one of the following formats:
-              <li>First Name</li>
-              <li>First Name, Last Name</li>
-              <li>First Name &nbsp; Last Name</li>
-            </div>
-          </span>
-          <br>
-          <textarea id="addUsersNames" cols="30" rows="10" wrap="off"></textarea>
-          <br>
-          <input type="checkbox" id="addUsersLastNameFirst" checked="true"><label for="addUsersLastNameFirst">Last name first</label>
+          <br><textarea id="addUsersNames" cols="30" rows="10" wrap="off"></textarea>
+          <br><input type="checkbox" id="addUsersLastNameFirst" checked="true"><label for="addUsersLastNameFirst">Last name first</label>
         </div>
       </div>
       <div id="addUsersRoleOptions">
@@ -587,13 +500,13 @@
       </div>
       <div class="separator"></div>
       <div id="showStudentsAddBtn" class="hidden">
-        <button id="studentsAddBtn"><i class="material-icons">group_add</i> Add students</button>
+        <button id="studentsAddBtn" title="Add students to this section"><i class="material-icons">group_add</i> Add students</button>
       </div>
       <div id="showStudentsOptions" class="flexrow vertical-center">
-        <button id="getAttendanceShowAttendanceTableBtn"><i class="material-icons">group view_list</i></button>
-        <button id="getAttendanceShowRoomBtn"><i class="material-icons">event_seat event_seat</i></button>
+        <button id="getAttendanceShowAttendanceTableBtn" title="Show attendance table"><i class="material-icons">group view_list</i></button>
+        <button id="getAttendanceShowRoomBtn" title="Show room/photo view"><i class="material-icons">event_seat event_seat</i></button>
         <span class="spacer"></span>
-        <button id="learnNamesBtn"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
+        <button id="learnNamesBtn" title="Learn student names"><i class="material-symbols-outlined">recent_actors play_arrow</i></button>
       </div>
       <div id="QRcodeContainer" class="hidden">
         <div class="closeBtn material-symbols-outlined" id="hideQRBtn">close</div>
@@ -607,54 +520,48 @@
       <!-- navigation controls -->
       <div class="flexrow">
         <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
-        <button id="gotoRoomBtn"><i class="material-icons">event_seat event_seat</i></button>
-        <button id="refreshAttendTableBtn" class="spinnerBtn"><i class="material-icons">autorenew</i></button>
+        <button id="gotoRoomBtn" title="Go to room/photo view"><i class="material-icons">event_seat event_seat</i></button>
+        <button id="refreshAttendTableBtn" title="Refresh" class="spinnerBtn"><i class="material-icons">autorenew</i></button>
       </div>
       <div id="attendanceTableSectionId"></div>
       <!-- table action controls -->
       <div class="flexrow">
-        <i id="attendanceTableSelectColsBtn" class="material-symbols-outlined">page_info</i>
-        <i id="attendanceTableFitBtn" class="material-symbols-outlined">fit_width</i>
-        <i id="attendanceTableColFirstBtn" class="material-icons">first_page</i>
-        <i id="attendanceTableColLeftBtn" class="material-icons">navigate_before</i>
-        <i id="attendanceTableColsAllBtn" class="material-icons">date_range</i>
-        <i id="attendanceTableColRightBtn" class="material-icons">navigate_next</i>
-        <i id="attendanceTableColsLastBtn" class="material-icons">last_page</i>
-        <i id="attendanceTableOptionsBtn" class="material-symbols-outlined">more_horiz</i>
+        <i id="attendanceTableSelectColsBtn" class="material-symbols-outlined" title="Select visible columns">page_info</i>
+        <i id="attendanceTableFitBtn" class="material-symbols-outlined" title="Auto-fit columns based on screen width">fit_width</i>
+        <i id="attendanceTableColFirstBtn" class="material-icons" title="Go to first attendance column">first_page</i>
+        <i id="attendanceTableColLeftBtn" class="material-icons" title="Previous attendance column">navigate_before</i>
+        <i id="attendanceTableColsAllBtn" class="material-icons" title="Show one/show all attendance columns">date_range</i>
+        <i id="attendanceTableColRightBtn" class="material-icons" title="Next attendance column">navigate_next</i>
+        <i id="attendanceTableColsLastBtn" class="material-icons" title="Go to last attendance column">last_page</i>
+        <i id="attendanceTableOptionsBtn" class="material-symbols-outlined" title="More attendance options">more_horiz</i>
       </div>
       <!-- attendance options -->
       <div class="flexcol hidden" id="attendanceTableOptions">
         <i id="attendanceTableOptionsHideBtn" class="closeBtn material-icons">close</i>
         <div class="flexrow">
-          <button id="downloadAttendanceBtn"><i class="material-symbols-outlined">download</i></button>
-          <button id="attendanceTableAddColBtn" class="hoverHelp">
+          <button id="downloadAttendanceBtn" title="Download attendance data"><i class="material-symbols-outlined">download</i></button>
+          <button id="attendanceTableAddColBtn" title="Add new attendance column">
             <i class="material-symbols-outlined">calendar_add_on</i>
-            <div class="hoverHelpText">
-              <span class="material-symbols-outlined">info</span>
-              <b>Add new attendance column</b>
-            </div>
           </button>
-          <button id="attendanceTableAddStudentBtn" class="hoverHelp">
+          <button id="attendanceTableAddStudentBtn" title="Add existing user as a student for this section">
             <i class="material-symbols-outlined">person_add_alt</i> <i class="material-icons">search</i>
-            <div class="hoverHelpText">
-              <span class="material-symbols-outlined">info</span>
-              <b>Add existing user as a student for this section</b>
-            </div>
           </button>
-          <button id="attendanceTableAddStudentsBtn" class="hoverHelp">
+          <button id="attendanceTableAddStudentsBtn" title="Add students by emails or usernames">
             <i class="material-symbols-outlined">group_add</i> <i class="material-icons">alternate_email</i>
-            <div class="hoverHelpText">
-              <span class="material-symbols-outlined">info</span>
-              <b>Add students by emails or usernames</b>
-            </div>
           </button>
           <datalist id="addStudentUserSelectDataList"></datalist>
         </div>
-        <div>
+        <div class="flexrow">
           <small>
-            +<input id="minLateInput" type="number" step="1" min="5" max="200" maxlength="1" size="1"><label for="minLateInput">min is considered late</label>
-            <br>
-            <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3">
+            <!-- <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3">
+            <br> -->
+            <label for="attendanceTableGradeEquationInput">Attendance grade equation: </label>
+            <br><textarea id="attendanceTableGradeEquationInput" cols="40" rows="3"></textarea>
+            <br>+<input id="minLateInput" type="number" step="1" min="1" max="200" maxlength="1" size="1"><label for="minLateInput">min is considered Late</label>
+          </small>
+          <small>
+            <span id="errorGradingOptions" class="hidden">⚠️ Invalid equation</span>
+            <button id="saveGradingOptionsBtn" class="hidden">Save grading options</button>
           </small>
         </div>
         <div id="attendanceTableClassLocBtn">
@@ -696,10 +603,11 @@
       <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
       <div id="learnNamesMain">
         <img id="learnNamesImg" src="user-icon.png" onerror="this.src='user-icon.png'">
-        <div id="learnNamesName" class="hideName"></div>
+        <div id="learnNamesName" class="hidden"></div>
+        <button id="learnNamesNameBtn">Reveal name</button>
         <button id="learnNamesNextBtn">Next</button>
         <button id="learnNamesPrevBtn" class="hidden">Previous</button>
-        <button id="learnNamesRemoveBtn">I know them 🙂</button>
+        <button id="learnNamesRemoveBtn">I know them 😊</button>
       </div>
       <div id="learnNamesDone" class="hidden">
         <p>All Done!</p>
@@ -716,7 +624,7 @@
     <span></span>
   </div>
   
-  <div id="helpScreen" class="hidden screen center">
+  <div id="infoScreen" class="hidden screen center">
     <div id="help">
       <div id="closeHelpBtn" class="closeBtn material-symbols-outlined">close</div>
       <div class="flexrow">
