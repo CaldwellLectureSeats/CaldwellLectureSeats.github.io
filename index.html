@@ -41,8 +41,10 @@
       You may be using an outdated browser.
       <br>
       Please use Chrome, Edge, or Safari for best experience.
-      <br><br>
     </div>
+    <hr>
+    <div id="initialCheck">No javascript detected.</div>
+    <hr>
     <div id="errorDetails"></div>
   </div>
 
@@ -692,5 +694,16 @@
   </div>
   
 </body>
+<script>
+  window.onload=function(){
+    const checkDiv=document.getElementById('initialCheck');
+    checkDiv.innerHTML='JavaScript: Detected.<br>';
+    checkDiv.innerHTML+='Browser: '+window.navigator.userAgent+'<br>';
+    checkDiv.innerHTML+='MediaDevices: '+Boolean(window.navigator.mediaDevices)+'<br>';
+    checkDiv.innerHTML+='GeoLocation: '+Boolean(window.navigator.geolocation)+'<br>';
+    checkDiv.innerHTML+='Firebase loaded: '+Boolean(window.onAuth)+'<br>';
+    checkDiv.innerHTML+=APP_TITLE+': '+VERSION+'<br>';
+  }
+</script>
 <script src="main.js?20240225"></script>
 </html>
