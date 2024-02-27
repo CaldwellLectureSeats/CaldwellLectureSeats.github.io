@@ -686,7 +686,7 @@
     <span id="toastMessage"></span>
   </div>
   
-  <div id="accessibility" class="flexcol">
+  <div id="accessibility" class="hidden flexcol">
     <i id="showHelpBtn" class="material-icons" title="About and help information">info</i>
     <i id="fontPlusBtn" class="material-icons" title="Increase font size">text_increase</i>
     <i id="fontMinusBtn" class="material-icons" title="Decrease font size">text_decrease</i>
@@ -702,7 +702,7 @@
     checkDiv.innerHTML+='MediaDevices: '+Boolean(window.navigator.mediaDevices)+'<br>';
     checkDiv.innerHTML+='GeoLocation: '+Boolean(window.navigator.geolocation)+'<br>';
     checkDiv.innerHTML+='Firebase loaded: '+Boolean(window.onAuth)+'<br>';
-    checkDiv.innerHTML+=APP_TITLE+': '+VERSION+'<br>';
+    checkDiv.innerHTML+=window.APP_TITLE+': '+window.VERSION+'<br>';
   }
 </script>
 <script src="main.js?20240225"></script>
