@@ -694,7 +694,7 @@
   </div>
   
 </body>
-<script src="main.js?ver=20240227"></script>
+<script src="main.js"></script>
 <script>
   window.onload=function(){
     const checkDiv=document.getElementById('initialCheck');
@@ -704,8 +704,8 @@
     checkDiv.innerHTML+='GeoLocation: '+Boolean(window.navigator.geolocation)+'<br>';
     checkDiv.innerHTML+='Main app loaded: '+((window.APP_VERSION?(window.APP_TITLE+' '+window.APP_VERSION):'false'))+'<br>';
     checkDiv.innerHTML+='Firebase library loaded: '+Boolean(window.onAuth)+'<br>';
-    checkDiv.innerHTML+='Photo library loaded: '+Boolean(stopCamera)+'<br>';
-    checkDiv.innerHTML+='QR library loaded: '+Boolean(Boolean(ZXing))+'<br>';
+    checkDiv.innerHTML+='Photo library loaded: '+Boolean(window.stopCamera)+'<br>';
+    checkDiv.innerHTML+='QR library loaded: '+Boolean(Boolean(window.ZXing))+'<br>';
   }
 </script>
 </html>
