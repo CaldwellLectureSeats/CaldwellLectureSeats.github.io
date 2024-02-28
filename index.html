@@ -9,7 +9,9 @@
   <!-- qr code generator amd scanner -->
   <script type="text/javascript" src="https://unpkg.com/@zxing/library@0.20.0"></script>
   <!-- photo -->
-  <script src="photo.js"></script>
+  <script type="text/javascript" src="photo.js"></script>
+  <!-- equation -->
+  <script type="text/javascript" src="equation.js"></script>
   <!-- geolocation map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -706,6 +708,7 @@
     // checkDiv.innerHTML+='Main app loaded: '+((window.APP_VERSION?(window.APP_TITLE+' '+window.APP_VERSION):'false'))+'<br>';
     checkDiv.innerHTML+='Firebase library loaded: '+Boolean(window.onAuth)+'<br>';
     checkDiv.innerHTML+='Photo library loaded: '+Boolean(stopCamera)+'<br>';
+    checkDiv.innerHTML+='Equation library loaded: '+Boolean(executeEquation)+'<br>';
     checkDiv.innerHTML+='QR library loaded: '+Boolean(Boolean(ZXing))+'<br>';
   }
 </script>
