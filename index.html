@@ -201,8 +201,8 @@
       <div>Failed to search database.</div>
       <div>
         This may be an issue with your browser.
-        <br>Please use Chrome or Safari for best experience.
-        <br>If you are using Chrome or Safari, please report this issue <a href="https://github.com/CaldwellLectureSeats/CaldwellLectureSeats.github.io/issues">here</a>.
+        <br>Please use Chrome, Edge, or Safari for best experience.
+        <br>If you are using Chrome, Edge, or Safari, please report this issue <a href="https://github.com/CaldwellLectureSeats/CaldwellLectureSeats.github.io/issues">here</a>.
       </div>
       <div>
         Alternatively, you can try signing out and then signing in again:
@@ -710,7 +710,10 @@
     checkDiv.innerHTML+='Photo library loaded: '+Boolean(stopCamera)+'<br>';
     checkDiv.innerHTML+='Equation library loaded: '+Boolean(executeEquation)+'<br>';
     checkDiv.innerHTML+='QR library loaded: '+Boolean(Boolean(ZXing))+'<br>';
+    checkDiv.innerHTML+='Loading main...<br>';
+    checkDiv.innerHTML+=APP_TITLE+' ';
+    checkDiv.innerHTML+=APP_VERSION+'<br>';
   }
 </script>
-<script src="main.js?ver=20240228" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
+<script src="main.js?ver=20240314" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
 </html>
