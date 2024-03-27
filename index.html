@@ -18,7 +18,7 @@
   <!-- firebase init -->
   <script src="firebase.mjs?ver=20240225" type="module"></script>
   <!-- stylesheet and icons -->
-  <link rel="stylesheet" href="style.css?ver=20240225">
+  <link rel="stylesheet" href="style.css?ver=20240327">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
@@ -36,13 +36,10 @@
   <div id="error">
     <div>
       <br>
-      Unable to initialize app.
-      <br>
       Sorry, something went wrong.
-      <br><br>
-      You may be using an outdated browser.
       <br>
-      Please use Chrome, Edge, or Safari for best experience.
+      If possible, please take a screenshot of this error, and email it to <a href="mailto:vveksler@caldwell.edu">vveksler@caldwell.edu</a>.
+      <br>
     </div>
     <hr>
     <div id="initialCheckNoJS">No javascript detected.</div>
@@ -745,7 +742,6 @@
   window.onload=function(){
     document.getElementById('initialCheckNoJS').innerHTML='';
     const checkDiv=document.getElementById('initialCheck');
-    checkDiv.innerHTML+='JavaScript: Detected.<br>';
     checkDiv.innerHTML+='Browser: '+window.navigator.userAgent+'<br>';
     checkDiv.innerHTML+='MediaDevices: '+Boolean(window.navigator.mediaDevices)+'<br>';
     checkDiv.innerHTML+='GeoLocation: '+Boolean(window.navigator.geolocation)+'<br>';
@@ -759,5 +755,5 @@
     checkDiv.innerHTML+=APP_VERSION+'<br>';
   }
 </script>
-<script src="main.js?ver=20240314" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
+<script src="main.js?ver=20240327" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
 </html>
