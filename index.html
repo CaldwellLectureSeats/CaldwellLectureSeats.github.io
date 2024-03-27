@@ -18,7 +18,7 @@
   <!-- firebase init -->
   <script src="firebase.mjs?ver=20240225" type="module"></script>
   <!-- stylesheet and icons -->
-  <link rel="stylesheet" href="style.css?ver=20240317">
+  <link rel="stylesheet" href="style.css?ver=20240225">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
@@ -222,7 +222,10 @@
     </div>
     
     <div id="markAttendance">
-      <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+      <div class="flexrow">
+        <button class="back"><i class="material-icons">arrow_back_ios</i>Back</button>
+        <button id="markAttendanceRefreshBtn" title="Refresh" class="spinnerBtn"><i class="material-icons">autorenew</i></button>
+      </div>
       <div id="markAttendanceSectionId"></div>
       <div id="markAttendanceSectionInfo"></div>
       <details id="attendanceMarked"></details>
@@ -502,12 +505,16 @@
       </div>
       <!-- <div class="getAttendanceLoader"></div> -->
       <div id="getAttendanceControls" class="nodisplay">
-        Attendance passcode:
         <div class="flexrow">
-          <input id="getAttendanceClassCodeInput" maxlength="11" size="11">
-          <i class="material-icons" id="randomAttendanceClassCodeBtn" title="New random passcode">repeat_one</i>
+          Attendance passcode: &nbsp; &nbsp; 
           <i class="material-icons hidden" id="createQRCodeBtn" title="Show/hide attendance QR code">qr_code</i>
           <i class="material-icons hidden" id="createURLBtn" title="Get link that students can use to mark attendance">link</i>
+
+        </div>
+        <div class="flexrow">
+          <input id="getAttendanceClassCodeInput">
+          <span id="getAttendanceClassCodeText" class="hidden"></span>
+          <i class="material-icons" id="randomAttendanceClassCodeBtn" title="New random passcode">repeat_one</i>
         </div>
         <div id="collectingAttendanceDiv">
           <span id="collectingAttendance">Collect</span>
@@ -556,13 +563,46 @@
         <i id="attendanceTableColsAllBtn" class="material-icons" title="Show one/show all attendance columns">date_range</i>
         <i id="attendanceTableColRightBtn" class="material-icons" title="Next attendance column">navigate_next</i>
         <i id="attendanceTableColsLastBtn" class="material-icons" title="Go to last attendance column">last_page</i>
+        <!-- <i id="attendanceTableAddColBtn" class="material-symbols-outlined" title="Add new attendance column">calendar_add_on</i> -->
         <i id="attendanceTableOptionsBtn" class="material-symbols-outlined" title="More attendance options">more_horiz</i>
+        <!-- <small class="flexrow">
+          <button id="downloadAttendanceBtn" title="Download attendance data">
+            <i class="material-symbols-outlined">download</i>
+            Download
+          </button>
+          <button id="attendanceTableAddColBtn" title="Add new attendance column">
+            <i class="material-symbols-outlined">calendar_add_on</i>
+            Add column
+          </button>
+          <button id="attendanceTableAddColBtn" title="Grading options">
+            <i class="material-symbols-outlined">tune</i>
+            Grading
+          </button>
+          <button id="attendanceTableAddColBtn" title="Change class location">
+            <i class="material-symbols-outlined">location_on</i>
+            Location
+          </button>
+          <button id="attendanceTableAddStudentBtn" title="Add existing user as a student for this section">
+            <i class="material-symbols-outlined">person_add_alt</i> <i class="material-icons">search</i>
+            Find and add student
+          </button>
+          <button id="attendanceTableAddStudentsBtn" title="Add students by emails or usernames">
+            <i class="material-symbols-outlined">group_add</i> <i class="material-icons">alternate_email</i>
+            Add students by email
+          </button>
+        </small> -->
+        <!-- <i class="material-symbols-outlined">download</i>
+        <i class="material-symbols-outlined">calendar_add_on</i>
+        <i class="material-symbols-outlined">group_add</i>
+        <i class="material-icons">location_on</i> -->
       </div>
       <!-- attendance options -->
-      <div class="flexcol hidden" id="attendanceTableOptions">
+      <div class="flexrow hidden" id="attendanceTableOptions">
         <i id="attendanceTableOptionsHideBtn" class="closeBtn material-icons">close</i>
-        <div class="flexrow">
-          <button id="downloadAttendanceBtn" title="Download attendance data"><i class="material-symbols-outlined">download</i></button>
+        <!-- <div class="flexrow">
+          <button id="downloadAttendanceBtn" title="Download attendance data">
+            <i class="material-symbols-outlined">download</i>
+          </button>
           <button id="attendanceTableAddColBtn" title="Add new attendance column">
             <i class="material-symbols-outlined">calendar_add_on</i>
           </button>
@@ -572,25 +612,26 @@
           <button id="attendanceTableAddStudentsBtn" title="Add students by emails or usernames">
             <i class="material-symbols-outlined">group_add</i> <i class="material-icons">alternate_email</i>
           </button>
-          <datalist id="addStudentUserSelectDataList"></datalist>
-        </div>
-        <div class="flexrow">
+        </div> -->
+        <!-- <div class="flexrow"> -->
           <small>
             <!-- <label for="pointsLateInput">Points (out of 100) for late attendance </label><input id="pointsLateInput" type="number" step="1" min="0" max="100" value="50"  maxlength="3" size="3">
             <br> -->
             <label for="attendanceTableGradeEquationInput">Attendance grade equation: </label>
             <br><textarea id="attendanceTableGradeEquationInput" cols="40" rows="3"></textarea>
             <br>+<input id="minLateInput" type="number" step="1" min="1" max="200" maxlength="1" size="1"><label for="minLateInput">min is considered Late</label>
+            <br><span id="errorGradingOptions" class="hidden">&nbsp; ⚠️ Invalid equation</span>
           </small>
-          <small>
-            <span id="errorGradingOptions" class="hidden">⚠️ Invalid equation</span>
-            <button id="saveGradingOptionsBtn" class="hidden">Save grading options</button>
-          </small>
-        </div>
-        <div id="attendanceTableClassLocBtn">
+          <div class="flexcol" style="gap:0.4em">
+            <i id="testGradingOptionsBtn" class="material-symbols-outlined" title="Test grading equation">play_circle</i>
+            <i id="resetGradingOptionsBtn" class="material-symbols-outlined hidden" title="Reset grading options">undo</i>
+            <i id="saveGradingOptionsBtn" class="material-symbols-outlined hidden" title="Save grading options">save</i>
+          </div>
+        <!-- </div> -->
+        <!-- <div id="attendanceTableClassLocBtn">
           <i class="material-icons">location_on</i>
           <small id="classLocation"></small>
-        </div>
+        </div> -->
       </div>
       <!-- attendance table -->
       <div id="attendancesHolder">
@@ -718,5 +759,5 @@
     checkDiv.innerHTML+=APP_VERSION+'<br>';
   }
 </script>
-<script src="main.js?ver=20240317" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
+<script src="main.js?ver=20240314" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
 </html>
