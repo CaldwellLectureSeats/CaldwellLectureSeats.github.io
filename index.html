@@ -749,11 +749,11 @@
     checkDiv.innerHTML+='Firebase library loaded: '+Boolean(window.onAuth)+'<br>';
     checkDiv.innerHTML+='Photo library loaded: '+Boolean(stopCamera)+'<br>';
     checkDiv.innerHTML+='Equation library loaded: '+Boolean(executeEquation)+'<br>';
-    checkDiv.innerHTML+='QR library loaded: '+Boolean(Boolean(ZXing))+'<br>';
+    checkDiv.innerHTML+='QR library loaded: '+Boolean(window.ZXing)+'<br>';
     checkDiv.innerHTML+='Loading main...<br>';
     checkDiv.innerHTML+=APP_TITLE+' ';
     checkDiv.innerHTML+=APP_VERSION+'<br>';
   }
 </script>
-<script src="main.js?ver=20240327" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
+<script src="main.js?ver=20260917" onerror="document.getElementById('initialCheck').innerHTML+='main.js failed to load.<br>'"></script>
 </html>
